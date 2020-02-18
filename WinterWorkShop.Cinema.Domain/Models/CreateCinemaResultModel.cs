@@ -10,6 +10,6 @@ namespace WinterWorkShop.Cinema.Domain.Models
 
         public string ErrorMessage { get; set; }
 
-        public CinemaDomainModel Auditorium { get; set; }
+        public CinemaDomainModel Cinema { get; set; }
     }
 }

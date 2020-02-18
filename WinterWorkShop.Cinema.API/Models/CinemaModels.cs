@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace WinterWorkShop.Cinema.API.Models
 {
-    public class CinemaModels
-    { 
-        [Required]
-        [Range(1, 255)]
-        public string Name { get; set; }
-    }
+	public class CinemaModels
+	{
+		[Required]
+		public string Name { get; set; }
+	}
 }
