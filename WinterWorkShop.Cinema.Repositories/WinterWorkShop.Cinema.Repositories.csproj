@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="GenericRepository.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WinterWorkShop.Cinema.Data\WinterWorkShop.Cinema.Data.csproj" />
   </ItemGroup>
 
