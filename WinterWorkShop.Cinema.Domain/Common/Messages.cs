@@ -22,8 +22,10 @@
         #endregion
 
         #region Cinemas
-        public const string CINEMA_GET_ALL_CINEMAS_ERROR = "Error occured while getting all cinemas, please try again";
+        public const string CINEMA_GET_ALL_CINEMAS_ERROR = "Error occured while getting all cinemas, please try again.";
         public const string CINEMA_CREATION_ERROR = "Error occured while creating a new cinema, please try again.";
+        public const string CINEMA_DOES_NOT_EXIST = "Cinema does not exist.";
+
         #endregion
 
         #region Movies        
