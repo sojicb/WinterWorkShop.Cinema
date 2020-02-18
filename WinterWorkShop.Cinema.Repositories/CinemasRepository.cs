@@ -43,7 +43,9 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public Data.Cinema Insert(Data.Cinema obj)
         {
-            return _cinemaContext.Cinemas.Add(obj).Entity;
+            var data = _cinemaContext.Cinemas.Add(obj).Entity;
+
+            return data;
         }
 
         public void Save()

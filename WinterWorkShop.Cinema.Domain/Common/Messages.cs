@@ -23,6 +23,7 @@
 
         #region Cinemas
         public const string CINEMA_GET_ALL_CINEMAS_ERROR = "Error occured while getting all cinemas, please try again";
+        public const string CINEMA_CREATION_ERROR = "Error occured while creating a new cinema, please try again.";
         #endregion
 
         #region Movies        
