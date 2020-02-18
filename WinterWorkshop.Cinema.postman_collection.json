@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "6ed76b78-39fa-46ae-bcc5-06ccc60c57ec",
+		"name": "WinterWorkshop.Cinema",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Movie By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:55430/movies/a2bb7da9-5ec8-418b-1619-08d77f13cb32",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "55430",
+					"path": [
+						"movies",
+						"a2bb7da9-5ec8-418b-1619-08d77f13cb32"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Movies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:55430/movies",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "55430",
+					"path": [
+						"movies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Movie",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"title\": \"Tralalalal 3\",\r\n   \"year\": 2015,\r\n   \"rating\": 7.3,\r\n   \"current\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:55430/movies",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "55430",
+					"path": [
+						"movies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Movie",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"title\": \"Tralalalal 3\",\r\n   \"year\": 2015,\r\n   \"rating\": 7.3,\r\n   \"current\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:55430/movies/23756630-1634-4a0f-e55a-08d77f14e6f1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "55430",
+					"path": [
+						"movies",
+						"23756630-1634-4a0f-e55a-08d77f14e6f1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Movie",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:55430/movies/23756630-1634-4a0f-e55a-08d77f14e6f1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "55430",
+					"path": [
+						"movies",
+						"23756630-1634-4a0f-e55a-08d77f14e6f1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
