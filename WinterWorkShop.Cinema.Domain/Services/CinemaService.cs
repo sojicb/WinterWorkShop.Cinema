@@ -23,7 +23,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             Data.Cinema cinemaToCreate = new Data.Cinema()
             {
-             Name = newCinema.Name
+                Name = newCinema.Name
             };
 
             Data.Cinema insertedCinema = _cinemasRepository.Insert(cinemaToCreate);

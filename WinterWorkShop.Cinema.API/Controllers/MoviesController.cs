@@ -115,7 +115,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    ErrorMessage = Messages.MOVIE_CREATION_ERROR,
+                    ErrorMessage = Messages.CINEMA_CREATION_ERROR,
                     StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
 
@@ -149,7 +149,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    ErrorMessage = Messages.MOVIE_DOES_NOT_EXIST,
+                    ErrorMessage = Messages.CINEMA_DOES_NOT_EXIST,
                     StatusCode = System.Net.HttpStatusCode.BadRequest
                 };
 
@@ -211,7 +211,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    ErrorMessage = Messages.MOVIE_DOES_NOT_EXIST,
+                    ErrorMessage = Messages.CINEMA_DOES_NOT_EXIST,
                     StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
 
