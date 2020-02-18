@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Google.Apis.Admin.Directory.directory_v1.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,10 @@ using WinterWorkShop.Cinema.Data;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
-    public interface ICinemasRepository : IRepository<Data.Cinema> { }
+    public interface ICinemasRepository : IRepository<Data.Cinema> 
+    {
+        Task<Data.Cinema> GetByCinemaName(string cinemaName);
+    }
 
     public class CinemasRepository : ICinemasRepository
     {
@@ -34,6 +38,13 @@ namespace WinterWorkShop.Cinema.Repositories
             return data;
         }
 
+        public async Task<Data.Cinema> GetByCinemaName(string cinemaName)
+        {
+            var data = await _cinemaContext.Cinemas.SingleOrDefaultAsync(x => x.Name == cinemaName);
+
+            return data;
+        }
+
         public async Task<Data.Cinema> GetByIdAsync(object id)
         {
             var data = await _cinemaContext.Cinemas.FindAsync(id);
@@ -43,9 +54,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public Data.Cinema Insert(Data.Cinema obj)
         {
-            var data = _cinemaContext.Cinemas.Add(obj).Entity;
-
-            return data;
+            return _cinemaContext.Cinemas.Add(obj).Entity;
         }
 
         public void Save()

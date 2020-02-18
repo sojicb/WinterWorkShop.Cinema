@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -52,13 +53,13 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Act
             var resultAction = cinemasController.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            var result = (List<ProjectionDomainModel>)resultAction;
+            var result = (List<CinemaDomainModel>)resultAction;
 
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedResultCount, result.Count);
             Assert.AreEqual(_cinema.Id, result[0].Id);
-            Assert.IsInstanceOfType(result[0], typeof(ProjectionDomainModel));
+            Assert.IsInstanceOfType(result[0], typeof(CinemaDomainModel));
         }
 
         [TestMethod]
@@ -79,29 +80,50 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsNull(resultAction);
         }
 
+        //[TestMethod]
+        //public async void CinemaService_CreateCinema_InsertMockedNull_ReturnErrorMessage()
+        //{
+        //    //Arrange
+        //    List<Data.Cinema> cinemasModelsList = new List<Data.Cinema>();
+        //    _cinema = null;
+        //    string expectedMessage = "Error occured while creating new projection, please try again.";
+
+        //    _mockCinemasRepository = new Mock<ICinemasRepository>();
+        //    await _mockCinemasRepository.Setup(x => x.GetByCinemaName(It.IsAny<string>())).Returns(cinemasModelsList);
+        //    _mockCinemasRepository.Setup(x => x.Insert(It.IsAny<Data.Cinema>())).Returns(_cinema);
+        //    CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+        //    //Act
+        //    var resultAction = cinemasController
+        //        .AddCinema(_cinemaDomainModel)
+        //        .ConfigureAwait(false)
+        //        .GetAwaiter()
+        //        .GetResult();
+
+        //    //Assert
+        //    Assert.IsNotNull(resultAction);
+        //    Assert.AreEqual(expectedMessage, resultAction.ErrorMessage);
+        //    Assert.IsFalse(resultAction.IsSuccessful);
+        //}
+
         [TestMethod]
-        public void CinemaService_CreateCinema_InsertMockedNull_ReturnErrorMessage()
+        [ExpectedException(typeof(DbUpdateException))]
+        public void Cinemaservice_CreateCinema_When_Updating_Non_Existing_Cinema()
         {
-            //Arrange
+            // Arrange
             List<Data.Cinema> cinemasModelsList = new List<Data.Cinema>();
-            _cinema = null;
-            string expectedMessage = "Error occured while creating new projection, please try again.";
 
             _mockCinemasRepository = new Mock<ICinemasRepository>();
-            _mockCinemasRepository.Setup(x => x.Equals(It.IsAny<int>())).Returns(cinemasModelsList);
-            _mockCinemasRepository.Setup(x => x.Insert(It.IsAny<Data.Cinema>())).Returns(_cinema);
+            _mockCinemasRepository.Setup(x => x.Insert(It.IsAny<Data.Cinema>())).Throws(new DbUpdateException());
+            _mockCinemasRepository.Setup(x => x.Save());
             CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
 
             //Act
-            var resultAction = cinemasController
-                .CreateCinema(_cinemaDomainModel)
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+            var resultAction = cinemasController.AddCinema(_cinemaDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+
 
             //Assert
             Assert.IsNotNull(resultAction);
-            Assert.AreEqual(expectedMessage, resultAction.ErrorMessage);
             Assert.IsFalse(resultAction.IsSuccessful);
         }
     }

@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Admin.Directory.directory_v1" Version="1.43.0.1736" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WinterWorkShop.Cinema.Data\WinterWorkShop.Cinema.Data.csproj" />
   </ItemGroup>
 

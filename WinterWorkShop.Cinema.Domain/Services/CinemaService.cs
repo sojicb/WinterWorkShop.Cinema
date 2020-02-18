@@ -138,6 +138,24 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
         }
+
+        public async Task<CinemaDomainModel> GetCinemaByName(string cinemaName)
+        {
+            var data = await _cinemasRepository.GetByCinemaName(cinemaName);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            CinemaDomainModel domainModel = new CinemaDomainModel
+            {
+                Id = data.Id,
+                Name = data.Name
+            };
+
+            return domainModel;
+        }
     }
 
 }
