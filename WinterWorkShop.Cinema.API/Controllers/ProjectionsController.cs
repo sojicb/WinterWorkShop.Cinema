@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WinterWorkShop.Cinema.API.Models;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -102,6 +103,39 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
+        }
+
+        [HttpGet]
+        [Route("filteringProjections")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilteringProjections([FromBody]object obj)
+        {
+            IEnumerable<ProjectionDomainModel> projCinema = await _projectionService.FilterProjectionsByCinemas();
+            IEnumerable<ProjectionDomainModel> projAudit = await _projectionService.FilterProjectionsByAuditoriums();
+            IEnumerable<ProjectionDomainModel> projMovie = await _projectionService.FilterProjectionsByMovies();
+            IEnumerable<ProjectionDomainModel> projDateime = await _projectionService.FilterProjectionsBySpecificTime();
+
+            if (projCinema == obj)
+            {
+                projCinema = new List<ProjectionDomainModel>();
+                return Ok(projCinema);
+            }
+            else if (projAudit == obj)
+            {
+                projAudit = new List<ProjectionDomainModel>();
+                return Ok(projAudit);
+            }
+            else if (projMovie == obj)
+            {
+                projMovie = new List<ProjectionDomainModel>();
+                return Ok(projMovie);
+            }
+            else if (projDateime == obj)
+            {
+                projDateime = new List<ProjectionDomainModel>();
+                return Ok(projDateime);
+            }
+
+            return BadRequest();
         }
     }
 }

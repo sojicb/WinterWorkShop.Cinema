@@ -11,7 +11,12 @@ namespace WinterWorkShop.Cinema.Repositories
 {
     public interface IProjectionsRepository : IRepository<Projection> 
     {
-        IEnumerable<Projection> GetByAuditoriumId(int salaId);        
+        IEnumerable<Projection> GetByAuditoriumId(int salaId);
+        Task<IEnumerable<Projection>> FilteringProjections(object obj);
+        Task<IEnumerable<Projection>> FilteringProjectionsByCinemas();
+        Task<IEnumerable<Projection>> FilteringProjectionsByAuditoriums();
+        Task<IEnumerable<Projection>> FilteringProjectionsByMovies();
+        Task<IEnumerable<Projection>> FilteringProjectionsByDateTime();
     }
 
     public class ProjectionsRepository : IProjectionsRepository
@@ -68,6 +73,55 @@ namespace WinterWorkShop.Cinema.Repositories
             _cinemaContext.Entry(obj).State = EntityState.Modified;
 
             return updatedEntry;
+        }
+
+         public Task<IEnumerable<Projection>> FilteringProjections(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Projection>> FilteringProjectionsByCinemas()
+        {
+            var filteringProjections = await _cinemaContext.Projections
+                .Include(x => x.Movie)
+                .Include(x => x.Auditorium)
+                .OrderByDescending(x => x.Auditorium.Cinema.Name)
+                .ToListAsync();
+
+            return filteringProjections;
+        }
+
+        public async Task<IEnumerable<Projection>> FilteringProjectionsByAuditoriums()
+        {
+            var filteringProjections = await _cinemaContext.Projections
+                .Include(x => x.Movie)
+                .Include(x => x.Auditorium)
+                .OrderByDescending(x => x.Auditorium.Name)
+                .ToListAsync();
+
+            return filteringProjections;
+        }
+
+        public async Task<IEnumerable<Projection>> FilteringProjectionsByMovies()
+        {
+            var filteringProjections = await _cinemaContext.Projections
+                .Include(x => x.Movie)
+                .Include(x => x.Auditorium)
+                .OrderByDescending(x => x.Movie.Title)
+                .ToListAsync();
+
+            return filteringProjections;
+        }
+
+        public async Task<IEnumerable<Projection>> FilteringProjectionsByDateTime()
+        {
+            var filteringProjections = await _cinemaContext.Projections
+                .Include(x => x.Movie)
+                .Include(x => x.Auditorium)
+                .OrderByDescending(x => x.DateTime)
+                .ToListAsync();
+
+            return filteringProjections;
         }
     }
 }

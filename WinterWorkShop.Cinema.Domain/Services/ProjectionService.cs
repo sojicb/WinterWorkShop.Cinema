@@ -98,5 +98,115 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
+
+        public Task<IEnumerable<ProjectionDomainModel>> FilterProjections(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsByCinemas()
+        {
+            var data = await _projectionsRepository.FilteringProjectionsByCinemas();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<ProjectionDomainModel> result = new List<ProjectionDomainModel>();
+            ProjectionDomainModel model;
+            foreach (var item in data)
+            {
+                model = new ProjectionDomainModel
+                {
+                   AuditoriumId = item.AuditoriumId,
+                   Id = item.Id,
+                   MovieId = item.MovieId,
+                   ProjectionTime = item.DateTime,
+                   
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsByAuditoriums()
+        {
+            var data = await _projectionsRepository.FilteringProjectionsByAuditoriums();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<ProjectionDomainModel> result = new List<ProjectionDomainModel>();
+            ProjectionDomainModel model;
+            foreach (var item in data)
+            {
+                model = new ProjectionDomainModel
+                {
+                    AuditoriumId = item.AuditoriumId,
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    ProjectionTime = item.DateTime
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsByMovies()
+        {
+            var data = await _projectionsRepository.FilteringProjectionsByMovies();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<ProjectionDomainModel> result = new List<ProjectionDomainModel>();
+            ProjectionDomainModel model;
+            foreach (var item in data)
+            {
+                model = new ProjectionDomainModel
+                {
+                    AuditoriumId = item.AuditoriumId,
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    ProjectionTime = item.DateTime
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsBySpecificTime()
+        {
+            var data = await _projectionsRepository.FilteringProjectionsByDateTime();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<ProjectionDomainModel> result = new List<ProjectionDomainModel>();
+            ProjectionDomainModel model;
+            foreach (var item in data)
+            {
+                model = new ProjectionDomainModel
+                {
+                    AuditoriumId = item.AuditoriumId,
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    ProjectionTime = item.DateTime
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
     }
 }
