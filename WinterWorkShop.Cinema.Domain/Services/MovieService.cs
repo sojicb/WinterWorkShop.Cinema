@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
@@ -153,5 +154,30 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
+        public IEnumerable<MovieDomainModel> GetMoviesByTag(string tagValue)
+        {
+            var data = _moviesRepository.GetMoviesByTag(tagValue).ToList();
+
+            if(data == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> movieDomainModels = new List<MovieDomainModel>();
+
+            foreach(var movie in data)
+            {
+                movieDomainModels.Add(new MovieDomainModel
+                {
+                    Current = movie.Current,
+                    Id = movie.Id,
+                    Rating = movie.Rating ?? 0,
+                    Title = movie.Title,
+                    Year = movie.Year
+                });
+            }
+
+            return movieDomainModels;
+        }
     }   
 }   

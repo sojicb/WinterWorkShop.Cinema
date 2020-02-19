@@ -12,7 +12,7 @@ namespace WinterWorkShop.Cinema.Repositories
     public interface IMoviesRepository : IRepository<Movie> 
     {
         IEnumerable<Movie> GetCurrentMovies();
- 
+        IEnumerable<Movie> GetMoviesByTag(string tagValue);
     }
 
     public class MoviesRepository : IMoviesRepository
@@ -52,10 +52,14 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public IEnumerable<Movie> GetCurrentMovies()
         {
-            var data = _cinemaContext.Movies
-                .Where(x => x.Current);            
+            var data = _cinemaContext.Movies.Where(x => x.Current);
 
             return data;
+        }
+
+        public IEnumerable<Movie> GetMoviesByTag(string tagValue)
+        {
+            return _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Value.Equals(tagValue))).ToList();
         }
 
         public Movie Insert(Movie obj)

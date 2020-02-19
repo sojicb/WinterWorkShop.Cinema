@@ -56,6 +56,25 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         /// <summary>
+        /// Gets Movie by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tag/{tagValue}")]
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesByTag(string tagValue)
+        {
+            List<MovieDomainModel> movies = _movieService.GetMoviesByTag(tagValue).ToList();
+
+            if (movies == null)
+            {
+                return NotFound(Messages.MOVIE_DOES_NOT_EXIST);
+            }
+
+            return Ok(movies);
+        }
+
+        /// <summary>
         /// Gets all current movies
         /// </summary>
         /// <returns></returns>

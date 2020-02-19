@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
@@ -19,6 +20,9 @@ namespace WinterWorkShop.Cinema.Data
         public bool Current { get; set; }
 
 
+        #region [Relationships]
         public virtual ICollection<Projection> Projections { get; set; }
+        public virtual ICollection<MovieTags> MovieTags { get; set; } 
+        #endregion
     }
 }
