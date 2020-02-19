@@ -12,6 +12,7 @@ namespace WinterWorkShop.Cinema.Repositories
     public interface IMoviesRepository : IRepository<Movie> 
     {
         IEnumerable<Movie> GetCurrentMovies();
+ 
     }
 
     public class MoviesRepository : IMoviesRepository

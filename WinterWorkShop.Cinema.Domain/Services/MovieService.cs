@@ -97,7 +97,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie) {
+        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie)
+        {
 
             Movie movie = new Movie()
             {
@@ -107,7 +108,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Year = updateMovie.Year,
                 Rating = updateMovie.Rating
             };
-            
+
             var data = _moviesRepository.Update(movie);
 
             if (data == null)
@@ -148,8 +149,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Rating = data.Rating ?? 0
 
             };
-            
+
             return domainModel;
         }
-    }
-}
+
+    }   
+}   

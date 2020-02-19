@@ -19,5 +19,6 @@ namespace WinterWorkShop.Cinema.Repositories
         void Save();
 
         T Update(T obj);
+
     }
 }

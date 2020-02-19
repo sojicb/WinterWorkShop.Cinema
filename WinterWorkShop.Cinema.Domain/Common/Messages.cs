@@ -22,9 +22,8 @@
         #endregion
 
         #region Cinemas
-        public const string CINEMA_GET_ALL_CINEMAS_ERROR = "Error occured while getting all cinemas, please try again.";
+        public const string CINEMA_GET_ALL_CINEMAS_ERROR = "Error occured while getting all cinemas, please try again";
         public const string CINEMA_CREATION_ERROR = "Error occured while creating a new cinema, please try again.";
-        public const string CINEMA_DOES_NOT_EXIST = "Cinema does not exist.";
         #endregion
 
         #region Movies        
@@ -43,6 +42,7 @@
         public const string PROJECTION_CREATION_ERROR = "Error occured while creating new projection, please try again.";
         public const string PROJECTIONS_AT_SAME_TIME = "Cannot create new projection, there are projections at same time alredy.";
         public const string PROJECTION_IN_PAST = "Projection time cannot be in past.";
+        public const string PROJECTION_IN_FUTURE = "Projection termine is in future so it can not be deactivated yet.";
         #endregion
 
         #region Seats
