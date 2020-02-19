@@ -36,10 +36,6 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// <returns></returns>
         Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie);
 
-
-        //Dodato za deaktivaciju
-        Task<MovieDomainModel> PatchCurrent(MovieDomainModel patchCurrent, Data.Projection ProjectionTime);
-
         /// <summary>
         /// Delete a movie by ID
         /// </summary>

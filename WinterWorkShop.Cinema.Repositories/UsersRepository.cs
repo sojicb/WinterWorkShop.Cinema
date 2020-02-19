@@ -53,11 +53,6 @@ namespace WinterWorkShop.Cinema.Repositories
             return _cinemaContext.Users.Add(obj).Entity;
         }
 
-        public User Patch(User obj)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Save()
         {
             _cinemaContext.SaveChanges();

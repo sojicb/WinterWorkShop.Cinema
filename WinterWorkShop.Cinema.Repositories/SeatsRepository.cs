@@ -45,12 +45,6 @@ namespace WinterWorkShop.Cinema.Repositories
             return data;
         }
 
-        //Dodato
-        public Seat Patch(Seat obj)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Save()
         {
             _cinemaContext.SaveChanges();

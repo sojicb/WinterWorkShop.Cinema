@@ -69,11 +69,5 @@ namespace WinterWorkShop.Cinema.Repositories
 
             return updatedEntry;
         }
-
-        //Dodato
-        public Projection Patch(Projection obj)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

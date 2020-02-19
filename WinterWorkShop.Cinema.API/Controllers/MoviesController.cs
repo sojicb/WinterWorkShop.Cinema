@@ -23,13 +23,15 @@ namespace WinterWorkShop.Cinema.API.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMovieService _movieService;
+        private readonly IProjectionService _projectionService;
 
         private readonly ILogger<MoviesController> _logger;
 
-        public MoviesController(ILogger<MoviesController> logger, IMovieService movieService)
+        public MoviesController(ILogger<MoviesController> logger, IMovieService movieService, IProjectionService projectionService)
         {
             _logger = logger;
             _movieService = movieService;
+            _projectionService = projectionService;
         }
 
         /// <summary>
@@ -81,39 +83,24 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="movieModel"></param>
         /// <returns></returns>
         [Authorize(Roles = "admin")]
-        [HttpPatch]
-        [Route("patch/id")]
-        public async  Task<ActionResult> Patch(Guid id, Projection projection)
+        [HttpPut]
+        [Route("change/{id}")]
+        public async Task<ActionResult> ChangeCurrent(Guid id)
         {
 
-            MovieDomainModel movieDomainModel;
-
-            movieDomainModel = await  _movieService.GetMovieByIdAsync(id);
-
-            if(movieDomainModel.Current == true)
+            if (!ModelState.IsValid)
             {
-                
-            };
-
-            if (projection.DateTime > DateTime.Now)
-            {
-                ModelState.AddModelError(nameof(projection.DateTime), Messages.PROJECTION_IN_FUTURE);
                 return BadRequest(ModelState);
             }
 
-            return Ok(movieDomainModel);
+            MovieDomainModel movieToUpdate;
 
+            movieToUpdate = await _movieService.GetMovieByIdAsync(id);
+            var projections = await _projectionService.GetAllAsync();
 
-/*            MovieDomainModel domainModel = new MovieDomainModel
-            {
-                Current = movieModel.Current
-            };
+            var projection = projections.Where(x => x.MovieId.Equals(id));
 
-            MovieDomainModel movieToPatch;
-
-            movieToPatch = await _movieService.GetMovieByIdAsync(id);
-
-            if (movieToPatch == null)
+            if (movieToUpdate == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
@@ -124,14 +111,26 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
+            if (projection.Any(x => x.ProjectionTime > DateTime.Now))
+            {
 
-            movieToPatch.Current = movieModel.Current;
+                return BadRequest(Messages.PROJECTION_IN_FUTURE);
+            }
 
+            if (movieToUpdate.Current == true)
+            {
+                movieToUpdate.Current = false;
+            }
+            else
+            {
+                movieToUpdate.Current = true;
+            }
+           
 
             MovieDomainModel movieDomainModel;
             try
             {
-                movieDomainModel = await _movieService.PatchCurrent(movieToPatch);
+                movieDomainModel = await _movieService.UpdateMovie(movieToUpdate);
             }
             catch (DbUpdateException e)
             {
@@ -144,14 +143,9 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-            return Accepted("movies//" + movieDomainModel.Id, movieDomainModel);*/
-
+            return Accepted("movies//" + movieDomainModel.Id, movieDomainModel);
         }
-
-
-
-
-
+          
 
         /// <summary>
         /// Adds a new movie

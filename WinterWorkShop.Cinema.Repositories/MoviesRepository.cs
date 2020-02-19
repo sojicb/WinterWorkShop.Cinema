@@ -12,8 +12,7 @@ namespace WinterWorkShop.Cinema.Repositories
     public interface IMoviesRepository : IRepository<Movie> 
     {
         IEnumerable<Movie> GetCurrentMovies();
-
-        
+ 
     }
 
     public class MoviesRepository : IMoviesRepository
@@ -58,16 +57,6 @@ namespace WinterWorkShop.Cinema.Repositories
 
             return data;
         }
-
-        //Dodato za deaktivaciju
-        public Movie Patch(Movie obj)
-        {
-            var patchedEntry = _cinemaContext.Movies.Attach(obj).Entity;
-            _cinemaContext.Entry(obj).State = EntityState.Modified;
-
-            return patchedEntry;
-        }
-
 
         public Movie Insert(Movie obj)
         {

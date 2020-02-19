@@ -46,38 +46,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         }
 
-        //Dodato za deaktivaciju
-        //Proveriti da li je projekcija u buducnosti, ako jeste onda ne moze biti deaktivirana
-        public async Task<MovieDomainModel> PatchCurrent(MovieDomainModel patchCurrent, Projection ProjectionTime)
-        {
-           
-                Movie movie = new Movie()
-                {  
-                    Current = patchCurrent.Current
-                };
-
-                var data = _moviesRepository.Patch(movie);
-
-            if (data == null)
-            {
-                return null;
-            }
-            
-            
-            _moviesRepository.Save();
-
-            MovieDomainModel domainModel = new MovieDomainModel()
-            {
-
-                Current = data.Current,
-
-            };
-
-            return domainModel;
-        }
-
-
-
         public async Task<MovieDomainModel> GetMovieByIdAsync(Guid id)
         {
             var data = await _moviesRepository.GetByIdAsync(id);
