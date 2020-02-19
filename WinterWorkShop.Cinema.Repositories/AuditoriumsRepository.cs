@@ -69,5 +69,10 @@ namespace WinterWorkShop.Cinema.Repositories
 
             return updatedEntry.Entity;
         }
+        //Dodato
+        public Auditorium Patch(Auditorium obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

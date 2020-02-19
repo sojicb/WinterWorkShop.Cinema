@@ -46,6 +46,38 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         }
 
+        //Dodato za deaktivaciju
+        //Proveriti da li je projekcija u buducnosti, ako jeste onda ne moze biti deaktivirana
+        public async Task<MovieDomainModel> PatchCurrent(MovieDomainModel patchCurrent, Projection ProjectionTime)
+        {
+           
+                Movie movie = new Movie()
+                {  
+                    Current = patchCurrent.Current
+                };
+
+                var data = _moviesRepository.Patch(movie);
+
+            if (data == null)
+            {
+                return null;
+            }
+            
+            
+            _moviesRepository.Save();
+
+            MovieDomainModel domainModel = new MovieDomainModel()
+            {
+
+                Current = data.Current,
+
+            };
+
+            return domainModel;
+        }
+
+
+
         public async Task<MovieDomainModel> GetMovieByIdAsync(Guid id)
         {
             var data = await _moviesRepository.GetByIdAsync(id);
@@ -97,7 +129,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie) {
+        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie)
+        {
 
             Movie movie = new Movie()
             {
@@ -107,7 +140,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Year = updateMovie.Year,
                 Rating = updateMovie.Rating
             };
-            
+
             var data = _moviesRepository.Update(movie);
 
             if (data == null)
@@ -148,8 +181,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Rating = data.Rating ?? 0
 
             };
-            
+
             return domainModel;
         }
-    }
-}
+
+    }   
+}   

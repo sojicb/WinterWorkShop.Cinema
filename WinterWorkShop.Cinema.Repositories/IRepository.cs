@@ -19,5 +19,8 @@ namespace WinterWorkShop.Cinema.Repositories
         void Save();
 
         T Update(T obj);
+
+        //Dodato za deaktivaciju
+        T Patch(T obj);
     }
 }

@@ -48,6 +48,12 @@ namespace WinterWorkShop.Cinema.Repositories
             return data;
         }
 
+        //Dodato
+        public Data.Cinema Patch(Data.Cinema obj)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Save()
         {
             _cinemaContext.SaveChanges();

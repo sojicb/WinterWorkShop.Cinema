@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -72,6 +73,86 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(movieDomainModels);
         }
 
+
+        //Dodato za deaktivaciju
+        /// <summary>
+        /// Adds a new movie
+        /// </summary>
+        /// <param name="movieModel"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "admin")]
+        [HttpPatch]
+        [Route("patch/id")]
+        public async  Task<ActionResult> Patch(Guid id, Projection projection)
+        {
+
+            MovieDomainModel movieDomainModel;
+
+            movieDomainModel = await  _movieService.GetMovieByIdAsync(id);
+
+            if(movieDomainModel.Current == true)
+            {
+                
+            };
+
+            if (projection.DateTime > DateTime.Now)
+            {
+                ModelState.AddModelError(nameof(projection.DateTime), Messages.PROJECTION_IN_FUTURE);
+                return BadRequest(ModelState);
+            }
+
+            return Ok(movieDomainModel);
+
+
+/*            MovieDomainModel domainModel = new MovieDomainModel
+            {
+                Current = movieModel.Current
+            };
+
+            MovieDomainModel movieToPatch;
+
+            movieToPatch = await _movieService.GetMovieByIdAsync(id);
+
+            if (movieToPatch == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.MOVIE_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+
+            movieToPatch.Current = movieModel.Current;
+
+
+            MovieDomainModel movieDomainModel;
+            try
+            {
+                movieDomainModel = await _movieService.PatchCurrent(movieToPatch);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("movies//" + movieDomainModel.Id, movieDomainModel);*/
+
+        }
+
+
+
+
+
+
         /// <summary>
         /// Adds a new movie
         /// </summary>
@@ -115,7 +196,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    ErrorMessage = Messages.CINEMA_CREATION_ERROR,
+                    ErrorMessage = Messages.MOVIE_CREATION_ERROR,
                     StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
 
@@ -149,7 +230,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    ErrorMessage = Messages.CINEMA_DOES_NOT_EXIST,
+                    ErrorMessage = Messages.MOVIE_DOES_NOT_EXIST,
                     StatusCode = System.Net.HttpStatusCode.BadRequest
                 };
 
@@ -181,6 +262,9 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         }
 
+
+
+
         /// <summary>
         /// Delete a movie by id
         /// </summary>
@@ -211,7 +295,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    ErrorMessage = Messages.CINEMA_DOES_NOT_EXIST,
+                    ErrorMessage = Messages.MOVIE_DOES_NOT_EXIST,
                     StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
 
@@ -220,5 +304,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Accepted("movies//" + deletedMovie.Id, deletedMovie);
         }
+
+
     }
 }
