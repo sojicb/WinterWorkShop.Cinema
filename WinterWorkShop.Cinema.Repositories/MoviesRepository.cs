@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WinterWorkShop.Cinema.Repositories
 {
     public interface IMoviesRepository : IRepository<Movie> 
     {
         IEnumerable<Movie> GetCurrentMovies();
+        IEnumerable<Movie> GetTopMovies();
     }
 
     public class MoviesRepository : IMoviesRepository
@@ -75,6 +77,13 @@ namespace WinterWorkShop.Cinema.Repositories
             _cinemaContext.Entry(obj).State = EntityState.Modified;
 
             return updatedEntry;
+        }
+
+        public IEnumerable<Movie> GetTopMovies()
+        {
+            var result = _cinemaContext.Movies.OrderByDescending(x => x.Rating);
+
+            return result;
         }
     }
 }
