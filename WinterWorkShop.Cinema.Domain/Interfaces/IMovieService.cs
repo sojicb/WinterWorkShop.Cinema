@@ -27,7 +27,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// </summary>
         /// <param name="newMovie"></param>
         /// <returns></returns>
-        Task<MovieDomainModel> AddMovie(MovieDomainModel newMovie);
+        Task<CreateMovieResultModel> AddMovie(MovieDomainModel newMovie);
 
         /// <summary>
         /// Update a movie to DB
@@ -42,5 +42,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<MovieDomainModel> DeleteMovie(Guid id);
+
+        IEnumerable<CreateMovieResultModel> GetMoviesByTag(string tagValue);
     }
 }

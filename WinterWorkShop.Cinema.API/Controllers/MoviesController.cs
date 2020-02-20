@@ -56,12 +56,31 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         /// <summary>
+        /// Gets all Movies by Tag
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tag/{tagValue}")]
+        public async Task<ActionResult<IEnumerable<CreateMovieResultModel>>> GetMoviesByTag(string tagValue)
+        {
+            List<CreateMovieResultModel> movies = _movieService.GetMoviesByTag(tagValue).ToList();
+
+            if (movies == null)
+            {
+                return NotFound(Messages.MOVIE_INVALID_TAG);
+            }
+
+            return Ok(movies);
+        }
+
+        /// <summary>
         /// Gets all current movies
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Route("current")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesAsync()
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
 
@@ -169,7 +188,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 Year = movieModel.Year
             };
 
-            MovieDomainModel createMovie;
+            CreateMovieResultModel createMovie;
 
             try
             {
@@ -197,7 +216,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
             }
 
-            return Created("movies//" + createMovie.Id, createMovie);
+            return Created("movies//" + createMovie.Movie.Id, createMovie.Movie);
         }
 
         /// <summary>
