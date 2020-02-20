@@ -59,7 +59,9 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public IEnumerable<Movie> GetMoviesByTag(string tagValue)
         {
-            return _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Value.Equals(tagValue))).ToList();
+            var data = _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Value.Equals(tagValue))).ToList();
+            
+            return data;
         }
 
         public Movie Insert(Movie obj)

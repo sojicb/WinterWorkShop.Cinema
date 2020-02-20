@@ -18,6 +18,7 @@ namespace WinterWorkShop.Cinema.Data
         public double? Rating { get; set; }
 
         public bool Current { get; set; }
+        public virtual ICollection<Tag> Tags { get; set; }
 
 
         #region [Relationships]

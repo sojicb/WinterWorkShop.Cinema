@@ -26,6 +26,10 @@ namespace WinterWorkShop.Cinema.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            /// <summary>
+            /// Initializing a multy-part primary key
+            /// </summary>
+            /// <returns></returns>
             modelBuilder.Entity<MovieTags>()
                 .HasKey(x => new { x.MovieId, x.TagId });
 
@@ -108,23 +112,39 @@ namespace WinterWorkShop.Cinema.Data
                 .WithOne(x => x.Movie)
                 .IsRequired();
 
+            /// <summary>
+            /// Movie -> MovieTags relation
+            /// </summary>
+            /// <returns></returns>
             modelBuilder.Entity<Movie>()
                 .HasMany(x => x.MovieTags)
                 .WithOne(x => x.Movie)
                 .IsRequired();
 
+            /// <summary>
+            /// MovieTags -> Movie relation
+            /// </summary>
+            /// <returns></returns>
             modelBuilder.Entity<MovieTags>()
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieTags)
                 .HasForeignKey(x => x.MovieId)
                 .IsRequired();
 
+            /// <summary>
+            /// MovieTags -> Tags relation
+            /// </summary>
+            /// <returns></returns>
             modelBuilder.Entity<MovieTags>()
                 .HasOne(x => x.Tag)
                 .WithMany(x => x.MovieTags)
                 .HasForeignKey(x => x.TagId)
                 .IsRequired();
 
+            /// <summary>
+            /// Tags -> MovieTags relation
+            /// </summary>
+            /// <returns></returns>
             modelBuilder.Entity<Tag>()
                 .HasMany(x => x.MovieTags)
                 .WithOne(x => x.Tag)
