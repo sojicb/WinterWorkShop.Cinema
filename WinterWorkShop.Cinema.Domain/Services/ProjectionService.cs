@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -97,6 +98,53 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return result;
+        }
+
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
+        {
+            var data = await _projectionsRepository.GetAll();
+
+            List<Projection> result = new List<Projection>();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            
+            //Filter By AuditoriumId
+            if (filterModel.AuditoriumId != null)
+            {
+                result = data.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
+            }
+            //Filter By CinemaId
+            else if(filterModel.CinemaId != null)
+            {
+                result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
+            }
+            //Filter ByMovieId
+            else if(filterModel.MovieId != null)
+            {
+                result = data.Where(x => x.Movie.Id.Equals(filterModel.MovieId)).ToList();
+            }
+
+            List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
+            ProjectionDomainModel model;
+            foreach (var item in result)
+            {
+                model = new ProjectionDomainModel
+                {
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    AuditoriumId = item.AuditoriumId,
+                    ProjectionTime = item.DateTime,
+                    MovieTitle = item.Movie.Title,
+                    AditoriumName = item.Auditorium.Name
+                };
+                results.Add(model);
+            }
+
+            return results;
         }
     }
 }

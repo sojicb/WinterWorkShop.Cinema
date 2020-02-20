@@ -103,5 +103,32 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
         }
+
+        /// <summary>
+        /// Gets all projections
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("filter")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
+        {
+            FilterDomainModel filterDomain = new FilterDomainModel
+            {
+                AuditoriumId = filter.AuditoriumId,
+                CinemaId = filter.CinemaId,
+                MovieId = filter.MovieId,
+                ProjectionDateFrom = filter.ProjectionDateFrom,
+                ProjectionDateTo = filter.ProjectionDateTo
+            };
+
+            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
+
+            if (projectionDomainModels == null)
+            {
+                projectionDomainModels = new List<ProjectionDomainModel>();
+            }
+
+            return Ok(projectionDomainModels);
+        }
     }
 }

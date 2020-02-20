@@ -11,7 +11,8 @@ namespace WinterWorkShop.Cinema.Repositories
 {
     public interface IProjectionsRepository : IRepository<Projection> 
     {
-        IEnumerable<Projection> GetByAuditoriumId(int salaId);        
+        IEnumerable<Projection> GetByAuditoriumId(int salaId);
+        IEnumerable<Projection> FilterProjections(object id);
     }
 
     public class ProjectionsRepository : IProjectionsRepository
@@ -68,6 +69,13 @@ namespace WinterWorkShop.Cinema.Repositories
             _cinemaContext.Entry(obj).State = EntityState.Modified;
 
             return updatedEntry;
+        }
+
+        public IEnumerable<Projection> FilterProjections(object id)
+        {
+            var projections = _cinemaContext.Projections.Where(x => x.Auditorium.Cinema.Id.Equals(id)).ToList();
+
+            return projections;
         }
     }
 }
