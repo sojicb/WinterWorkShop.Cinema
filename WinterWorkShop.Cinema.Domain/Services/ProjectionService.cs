@@ -111,7 +111,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 return null;
             }
 
-            
             //Filter By AuditoriumId
             if (filterModel.AuditoriumId != null)
             {
@@ -126,6 +125,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
             else if(filterModel.MovieId != null)
             {
                 result = data.Where(x => x.Movie.Id.Equals(filterModel.MovieId)).ToList();
+            }
+            //Filter by TimeSpan
+            else if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
+            {
+                result = data.Where(x => x.DateTime >= filterModel.ProjectionDateFrom && x.DateTime <= filterModel.ProjectionDateTo).ToList();
             }
 
             List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
