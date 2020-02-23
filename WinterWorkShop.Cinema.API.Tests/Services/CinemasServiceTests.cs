@@ -63,6 +63,52 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
         [TestMethod]
+        public void CinemaService_GetCinemasByName_ReturnsACinema()
+        {
+            //Arrange
+            int expectedResultCount = 1;
+            _cinema.Name = "Zrenjanin";
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController
+                .GetCinemaByName("Zrenjanin")
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+            var result = (CinemaDomainModel)resultAction;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedResultCount, result.Id);
+            Assert.AreEqual(_cinema.Name, result.Name);
+            Assert.IsInstanceOfType(result, typeof(CinemaDomainModel));
+        }
+
+        [TestMethod]
+        public void CinemaService_GetCinemasByName_ReturnNull()
+        {
+            //Arrange
+            Data.Cinema cinemas = null;
+            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByCinemaName("")).Returns(responseTask);
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController
+                .GetCinemaByName("")
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+            Assert.AreEqual(cinemas, resultAction);
+        }
+
+        [TestMethod]
         public void CinemaService_GetAllAsync_ReturnNull()
         {
             //Arrange
