@@ -14,7 +14,7 @@ using WinterWorkShop.Cinema.Domain.Models;
 
 namespace WinterWorkShop.Cinema.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class AuditoriumsController : ControllerBase
@@ -31,6 +31,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "admin")]
         [Route("all")]
         public async Task<ActionResult<IEnumerable<AuditoriumDomainModel>>> GetAsync()
         {
@@ -53,7 +54,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult<AuditoriumDomainModel>> PostAsync(CreateAuditoriumModel createAuditoriumModel) 
+        [Route("create")]
+        public async Task<ActionResult<AuditoriumDomainModel>> PostAsync(CreateAuditoriumModel createAuditoriumModel)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +70,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             CreateAuditoriumResultModel createAuditoriumResultModel;
 
-            try 
+            try
             {
                 createAuditoriumResultModel = await _auditoriumService.CreateAuditorium(auditoriumDomainModel, createAuditoriumModel.numberOfSeats, createAuditoriumModel.seatRows);
             }
@@ -93,8 +95,97 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
                 return BadRequest(errorResponse);
             }
-            
+
             return Created("auditoriums//" + createAuditoriumResultModel.Auditorium.Id, createAuditoriumResultModel);
+        }
+
+
+        [HttpPut]
+        [Authorize(Roles = "admin")]
+        [Route("{id}")]
+        public async Task<ActionResult> Put(Guid id, [FromBody] CreateAuditoriumModel createAuditoriumModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            AuditoriumDomainModel auditoriumToUpdate;
+
+            auditoriumToUpdate = await _auditoriumService.GetAuditoriumByIdAsync(id);
+
+            if (auditoriumToUpdate == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.AUDITORIUM_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+
+            }
+
+            auditoriumToUpdate.Name = createAuditoriumModel.auditName;
+            auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
+
+            AuditoriumDomainModel auditoriumDomainModel;
+            try
+            {
+                auditoriumDomainModel = await _auditoriumService.UpdateAuditorium(auditoriumToUpdate);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("auditroiums//" + auditoriumDomainModel.Id, auditoriumDomainModel);
+
+        }
+
+
+        [HttpDelete]
+        [Authorize(Roles = "admin")]
+        [Route("delete")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+
+            AuditoriumDomainModel deleteAuditorium;
+            try
+            {
+                deleteAuditorium = await _auditoriumService.deleteAuditorium(id);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+
+            if (deleteAuditorium == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.AUDITORIUM_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("auditroiums//" + deleteAuditorium.Id, deleteAuditorium);
+
         }
     }
 }

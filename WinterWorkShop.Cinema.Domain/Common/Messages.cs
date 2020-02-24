@@ -11,6 +11,7 @@
         #endregion
 
         #region Auditoriums
+        public const string AUDITORIUM_DOES_NOT_EXIST = "Auditorium does not exist.";
         public const string AUDITORIUM_GET_ALL_AUDITORIUMS_ERROR = "Error occured while getting all auditoriums, please try again.";
         public const string AUDITORIUM_PROPERTIE_NAME_NOT_VALID = "The auditorium Name cannot be longer than 50 characters.";
         public const string AUDITORIUM_PROPERTIE_SEATROWSNUMBER_NOT_VALID = "The auditorium number of seats rows must be between 1-20.";
