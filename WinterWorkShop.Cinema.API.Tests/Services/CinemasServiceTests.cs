@@ -62,28 +62,28 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsInstanceOfType(result[0], typeof(CinemaDomainModel));
         }
 
-        [TestMethod]
-        public void CinemaService_GetCinemasByName_ReturnsACinema()
-        {
-            //Arrange
-            int expectedResultCount = 1;
-            _cinema.Name = "Zrenjanin";
-            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+        //[TestMethod]
+        //public void CinemaService_GetCinemasByName_ReturnsACinema()
+        //{
+        //    //Arrange
+        //    int expectedResultCount = 1;
+        //    _cinema.Name = "Zrenjanin";
+        //    CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
 
-            //Act
-            var resultAction = cinemasController
-                .GetCinemaByName("Zrenjanin")
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
-            var result = (CinemaDomainModel)resultAction;
+        //    //Act
+        //    var resultAction = cinemasController
+        //        .GetCinemaByName("Zrenjanin")
+        //        .ConfigureAwait(false)
+        //        .GetAwaiter()
+        //        .GetResult();
+        //    var result = (CinemaDomainModel)resultAction;
 
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedResultCount, result.Id);
-            Assert.AreEqual(_cinema.Name, result.Name);
-            Assert.IsInstanceOfType(result, typeof(CinemaDomainModel));
-        }
+        //    //Assert
+        //    Assert.IsNotNull(result);
+        //    Assert.AreEqual(expectedResultCount, result.Id);
+        //    Assert.AreEqual(_cinema.Name, result.Name);
+        //    Assert.IsInstanceOfType(result, typeof(CinemaDomainModel));
+        //}
 
         [TestMethod]
         public void CinemaService_GetCinemasByName_ReturnNull()
@@ -126,35 +126,9 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsNull(resultAction);
         }
 
-        //[TestMethod]
-        //public async void CinemaService_CreateCinema_InsertMockedNull_ReturnErrorMessage()
-        //{
-        //    //Arrange
-        //    List<Data.Cinema> cinemasModelsList = new List<Data.Cinema>();
-        //    _cinema = null;
-        //    string expectedMessage = "Error occured while creating new projection, please try again.";
-
-        //    _mockCinemasRepository = new Mock<ICinemasRepository>();
-        //    await _mockCinemasRepository.Setup(x => x.GetByCinemaName(It.IsAny<string>())).Returns(cinemasModelsList);
-        //    _mockCinemasRepository.Setup(x => x.Insert(It.IsAny<Data.Cinema>())).Returns(_cinema);
-        //    CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
-
-        //    //Act
-        //    var resultAction = cinemasController
-        //        .AddCinema(_cinemaDomainModel)
-        //        .ConfigureAwait(false)
-        //        .GetAwaiter()
-        //        .GetResult();
-
-        //    //Assert
-        //    Assert.IsNotNull(resultAction);
-        //    Assert.AreEqual(expectedMessage, resultAction.ErrorMessage);
-        //    Assert.IsFalse(resultAction.IsSuccessful);
-        //}
-
         [TestMethod]
         [ExpectedException(typeof(DbUpdateException))]
-        public void Cinemaservice_CreateCinema_When_Updating_Non_Existing_Cinema()
+        public void CinemaService_CreateCinema_When_Updating_Non_Existing_Cinema()
         {
             // Arrange
             List<Data.Cinema> cinemasModelsList = new List<Data.Cinema>();
@@ -171,6 +145,120 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Assert
             Assert.IsNotNull(resultAction);
             Assert.IsFalse(resultAction.IsSuccessful);
+        }
+
+        [TestMethod]
+        public void CinemaService_GetCinemasById_ReturnCinema()
+        {
+            //Arrange
+            Data.Cinema cinemas = new Data.Cinema()
+            {
+                Id = 0,
+                Name = "Randomz"
+            };
+            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(cinemas.Id)).Returns(responseTask);
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController
+                .GetCinemaByIdAsync(0)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(cinemas.Id, resultAction.Id);
+            Assert.IsInstanceOfType(resultAction, typeof(CinemaDomainModel));
+        }
+
+        [TestMethod]
+        public void CinemaService_GetCinemasById_ReturnNull()
+        {
+            //Arrange
+            Data.Cinema cinemas = null;
+            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(null)).Returns(responseTask);
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController
+                .GetCinemaByIdAsync(0)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+            Assert.AreEqual(cinemas, resultAction);
+        }
+
+        //[TestMethod]
+        //public void CinemaService_UpdatingCinema_ReturnCinema()
+        //{
+        //    //Arrange
+        //    Data.Cinema cinemas = new Data.Cinema()
+        //    {
+        //        Id = 0,
+        //        Name = "Randomz"
+        //    };
+
+        //    Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+
+        //    _mockCinemasRepository = new Mock<ICinemasRepository>();
+        //    _mockCinemasRepository.Setup(x => x.Update(cinemas)).Returns(cinemas);
+        //    CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+        //    CinemaDomainModel domainModel = new CinemaDomainModel()
+        //    {
+        //        Id = 0,
+        //        Name = "Rendomz123"
+        //    };
+
+        //    //Act
+        //    var resultAction = cinemasController
+        //        .UpdateCinema(domainModel)
+        //        .ConfigureAwait(false)
+        //        .GetAwaiter()
+        //        .GetResult();
+
+        //    //Assert
+        //    Assert.IsNotNull(resultAction);
+        //    Assert.AreNotEqual(cinemas.Name, resultAction.Name);
+        //    Assert.IsInstanceOfType(resultAction, typeof(CinemaDomainModel));
+        //}
+
+        [TestMethod]
+        public void CinemaService_DeletingCinema_ReturnsACinema()
+        {
+            //Arrange
+            Data.Cinema cinemas = new Data.Cinema()
+            {
+                Id = 0,
+                Name = "Randomz"
+            };
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.Delete(cinemas.Id)).Returns(cinemas);
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController
+                .DeleteCinema(0)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(cinemas.Id, resultAction.Id);
+            Assert.IsInstanceOfType(resultAction, typeof(CinemaDomainModel));
+            Assert.AreEqual(cinemas.Name, resultAction.Name);
         }
     }
 }
