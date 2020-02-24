@@ -110,6 +110,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 return null;
             }
+
             //Filter By CinemaId
             if (filterModel.CinemaId != null)
             {
@@ -141,10 +142,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
-            ProjectionDomainModel model;
             foreach (var item in result)
             {
-                model = new ProjectionDomainModel
+                results.Add(new ProjectionDomainModel
                 {
                     Id = item.Id,
                     MovieId = item.MovieId,
@@ -152,10 +152,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     ProjectionTime = item.DateTime,
                     MovieTitle = item.Movie.Title,
                     AditoriumName = item.Auditorium.Name
-                };
-                results.Add(model);
-            }
 
+                });
+            }
             return results;
         }
     }
