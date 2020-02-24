@@ -110,26 +110,34 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 return null;
             }
+            //Filter By CinemaId
+            if (filterModel.CinemaId != null)
+            {
+                result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
+            }
 
             //Filter By AuditoriumId
             if (filterModel.AuditoriumId != null)
             {
-                result = data.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
+                var projections =  filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
+
+                return projections;
             }
-            //Filter By CinemaId
-            else if(filterModel.CinemaId != null)
-            {
-                result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
-            }
+           
             //Filter ByMovieId
-            else if(filterModel.MovieId != null)
+             if(filterModel.MovieId != null)
             {
-                result = data.Where(x => x.Movie.Id.Equals(filterModel.MovieId)).ToList();
+                var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
+
+                return projections;
             }
+
             //Filter by TimeSpan
-            else if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
+             if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
             {
-                result = data.Where(x => x.DateTime >= filterModel.ProjectionDateFrom && x.DateTime <= filterModel.ProjectionDateTo).ToList();
+                var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
+
+                return projections;
             }
 
             List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();

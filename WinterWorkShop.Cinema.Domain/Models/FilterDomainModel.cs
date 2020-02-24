@@ -11,5 +11,6 @@ namespace WinterWorkShop.Cinema.Domain.Models
 		public int? AuditoriumId { get; set; }
 		public DateTime? ProjectionDateFrom { get; set; }
 		public DateTime? ProjectionDateTo { get; set; }
+		public List<ProjectionDomainModel> Projections { get; set; }
 	}
 }

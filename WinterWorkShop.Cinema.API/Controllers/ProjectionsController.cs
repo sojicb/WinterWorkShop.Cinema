@@ -112,13 +112,31 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("filter")]
         public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
         {
+            List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
+            if(filter.Projections != null)
+            {
+                foreach (var projection in filter.Projections)
+                {
+                    projections.Add(new ProjectionDomainModel
+                    {
+                        Id = projection.Id,
+                        AditoriumName = projection.AditoriumName,
+                        AuditoriumId = projection.AuditoriumId,
+                        MovieId = projection.MovieId,
+                        MovieTitle = projection.MovieTitle,
+                        ProjectionTime = projection.ProjectionTime
+                    });
+                }
+            }
+            
             FilterDomainModel filterDomain = new FilterDomainModel
             {
                 AuditoriumId = filter.AuditoriumId,
                 CinemaId = filter.CinemaId,
                 MovieId = filter.MovieId,
                 ProjectionDateFrom = filter.ProjectionDateFrom,
-                ProjectionDateTo = filter.ProjectionDateTo
+                ProjectionDateTo = filter.ProjectionDateTo,
+                Projections = projections
             };
 
             IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
