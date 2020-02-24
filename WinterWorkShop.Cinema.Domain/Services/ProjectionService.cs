@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -97,6 +98,64 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return result;
+        }
+
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
+        {
+            var data = await _projectionsRepository.GetAll();
+
+            List<Projection> result = new List<Projection>();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            //Filter By CinemaId
+            if (filterModel.CinemaId != null)
+            {
+                result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
+            }
+
+            //Filter By AuditoriumId
+            if (filterModel.AuditoriumId != null)
+            {
+                var projections =  filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
+
+                return projections;
+            }
+           
+            //Filter ByMovieId
+             if(filterModel.MovieId != null)
+            {
+                var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
+
+                return projections;
+            }
+
+            //Filter by TimeSpan
+             if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
+            {
+                var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
+
+                return projections;
+            }
+
+            List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
+            foreach (var item in result)
+            {
+                results.Add(new ProjectionDomainModel
+                {
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    AuditoriumId = item.AuditoriumId,
+                    ProjectionTime = item.DateTime,
+                    MovieTitle = item.Movie.Title,
+                    AditoriumName = item.Auditorium.Name
+
+                });
+            }
+            return results;
         }
     }
 }
