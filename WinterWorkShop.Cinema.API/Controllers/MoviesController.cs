@@ -173,7 +173,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody]MovieModel movieModel)
+        public async Task<ActionResult<CreateMovieResultModel>> Post([FromBody]MovieModel movieModel)
         {
             if (!ModelState.IsValid)
             {
@@ -188,7 +188,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 Year = movieModel.Year
             };
 
-            CreateMovieResultModel createMovie;
+            CreateMovieResultModel createMovie = new CreateMovieResultModel();
 
             try
             {
