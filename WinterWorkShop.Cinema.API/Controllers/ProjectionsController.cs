@@ -105,6 +105,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
         }
 
+
+        /// <summary>
+        /// Updates a projection
+        /// </summary>
+        /// <param name="projectionModel"></param>
+        /// <returns></returns>
         [HttpPut]
         [Authorize(Roles = "admin")]
         [Route("update/{id}")]
@@ -193,40 +199,52 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Accepted("projections//" + deleteProjection.Id, deleteProjection);
         }
 
-        
-
-
+        /// <summary>
+        /// Gets all projections
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        [Route("filteringProjections")]
-        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilteringProjections([FromBody]object obj)
+        [Route("filter")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
         {
-            IEnumerable<ProjectionDomainModel> projCinema = await _projectionService.FilterProjectionsByCinemas();
-            IEnumerable<ProjectionDomainModel> projAudit = await _projectionService.FilterProjectionsByAuditoriums();
-            IEnumerable<ProjectionDomainModel> projMovie = await _projectionService.FilterProjectionsByMovies();
-            IEnumerable<ProjectionDomainModel> projDateime = await _projectionService.FilterProjectionsBySpecificTime();
-
-            if (projCinema == obj)
+            
+            List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
+            if (filter.Projections != null)
             {
-                projCinema = new List<ProjectionDomainModel>();
-                return Ok(projCinema);
-            }
-            else if (projAudit == obj)
-            {
-                projAudit = new List<ProjectionDomainModel>();
-                return Ok(projAudit);
-            }
-            else if (projMovie == obj)
-            {
-                projMovie = new List<ProjectionDomainModel>();
-                return Ok(projMovie);
-            }
-            else if (projDateime == obj)
-            {
-                projDateime = new List<ProjectionDomainModel>();
-                return Ok(projDateime);
+                foreach (var projection in filter.Projections)
+                {
+                    projections.Add(new ProjectionDomainModel
+                    {
+                        Id = projection.Id,
+                        AditoriumName = projection.AditoriumName,
+                        AuditoriumId = projection.AuditoriumId,
+                        MovieId = projection.MovieId,
+                        MovieTitle = projection.MovieTitle,
+                        ProjectionTime = projection.ProjectionTime
+                    });
+                }
             }
 
-            return BadRequest();
+            FilterDomainModel filterDomain = new FilterDomainModel
+            {
+                AuditoriumId = filter.AuditoriumId,
+                CinemaId = filter.CinemaId,
+                MovieId = filter.MovieId,
+                ProjectionDateFrom = filter.ProjectionDateFrom,
+                ProjectionDateTo = filter.ProjectionDateTo,
+                Projections = projections
+            };
+
+            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
+
+            if (projectionDomainModels == null)
+            {
+                projectionDomainModels = new List<ProjectionDomainModel>();
+            }
+
+
+            return Ok(projectionDomainModels);
         }
+
     }
 }
