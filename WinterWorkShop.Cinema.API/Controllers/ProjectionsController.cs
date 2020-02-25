@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WinterWorkShop.Cinema.API.Models;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -52,7 +53,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        [Route("")]
+        [Route("create")]
         public async Task<ActionResult<ProjectionDomainModel>> PostAsync(CreateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
@@ -104,49 +105,128 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
         }
 
-        /// <summary>
-        /// Gets all projections
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("filter")]
-        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
+        [HttpPut]
+        [Authorize(Roles = "admin")]
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(Guid id, [FromBody] CreateProjectionModel projectionModel)
         {
-            List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
-            if(filter.Projections != null)
+            if (!ModelState.IsValid)
             {
-                foreach (var projection in filter.Projections)
+                return BadRequest(ModelState);
+            }
+
+            ProjectionDomainModel projectionToUpdate;
+
+            projectionToUpdate = await _projectionService.GetProjectionByIdAsync(id);
+
+            if (projectionToUpdate == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
-                    projections.Add(new ProjectionDomainModel
-                    {
-                        Id = projection.Id,
-                        AditoriumName = projection.AditoriumName,
-                        AuditoriumId = projection.AuditoriumId,
-                        MovieId = projection.MovieId,
-                        MovieTitle = projection.MovieTitle,
-                        ProjectionTime = projection.ProjectionTime
-                    });
-                }
-            }
-            
-            FilterDomainModel filterDomain = new FilterDomainModel
-            {
-                AuditoriumId = filter.AuditoriumId,
-                CinemaId = filter.CinemaId,
-                MovieId = filter.MovieId,
-                ProjectionDateFrom = filter.ProjectionDateFrom,
-                ProjectionDateTo = filter.ProjectionDateTo,
-                Projections = projections
-            };
+                    ErrorMessage = Messages.PROJECTION_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
 
-            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
-
-            if (projectionDomainModels == null)
-            {
-                projectionDomainModels = new List<ProjectionDomainModel>();
+                return BadRequest(errorResponse);
             }
 
-            return Ok(projectionDomainModels);
+           
+            projectionToUpdate.AuditoriumId = projectionModel.AuditoriumId;
+            projectionToUpdate.MovieId = projectionModel.MovieId;
+            projectionToUpdate.ProjectionTime = projectionModel.ProjectionTime;
+
+
+
+            ProjectionDomainModel projectionDomainModel;
+            try
+            {
+                projectionDomainModel = await _projectionService.UpdateProjection(projectionToUpdate);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("projections//" + projectionDomainModel.Id, projectionDomainModel);
+
+        }
+
+
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [Authorize(Roles ="admin")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            ProjectionDomainModel deleteProjection;
+            try
+            {
+                deleteProjection = _projectionService.DeleteProjection(id);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (deleteProjection == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("projections//" + deleteProjection.Id, deleteProjection);
+        }
+
+        
+
+
+        [HttpGet]
+        [Route("filteringProjections")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilteringProjections([FromBody]object obj)
+        {
+            IEnumerable<ProjectionDomainModel> projCinema = await _projectionService.FilterProjectionsByCinemas();
+            IEnumerable<ProjectionDomainModel> projAudit = await _projectionService.FilterProjectionsByAuditoriums();
+            IEnumerable<ProjectionDomainModel> projMovie = await _projectionService.FilterProjectionsByMovies();
+            IEnumerable<ProjectionDomainModel> projDateime = await _projectionService.FilterProjectionsBySpecificTime();
+
+            if (projCinema == obj)
+            {
+                projCinema = new List<ProjectionDomainModel>();
+                return Ok(projCinema);
+            }
+            else if (projAudit == obj)
+            {
+                projAudit = new List<ProjectionDomainModel>();
+                return Ok(projAudit);
+            }
+            else if (projMovie == obj)
+            {
+                projMovie = new List<ProjectionDomainModel>();
+                return Ok(projMovie);
+            }
+            else if (projDateime == obj)
+            {
+                projDateime = new List<ProjectionDomainModel>();
+                return Ok(projDateime);
+            }
+
+            return BadRequest();
         }
     }
 }

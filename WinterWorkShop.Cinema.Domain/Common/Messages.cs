@@ -11,6 +11,7 @@
         #endregion
 
         #region Auditoriums
+        public const string AUDITORIUM_DOES_NOT_EXIST = "Auditorium does not exist.";
         public const string AUDITORIUM_GET_ALL_AUDITORIUMS_ERROR = "Error occured while getting all auditoriums, please try again.";
         public const string AUDITORIUM_PROPERTIE_NAME_NOT_VALID = "The auditorium Name cannot be longer than 50 characters.";
         public const string AUDITORIUM_PROPERTIE_SEATROWSNUMBER_NOT_VALID = "The auditorium number of seats rows must be between 1-20.";
@@ -39,6 +40,7 @@
         #endregion
 
         #region Projections
+        public const string PROJECTION_DOES_NOT_EXIST = "Projection does not exist.";
         public const string PROJECTION_GET_ALL_PROJECTIONS_ERROR = "Error occured while getting all projections, please try again.";
         public const string PROJECTION_CREATION_ERROR = "Error occured while creating new projection, please try again.";
         public const string PROJECTIONS_AT_SAME_TIME = "Cannot create new projection, there are projections at same time alredy.";

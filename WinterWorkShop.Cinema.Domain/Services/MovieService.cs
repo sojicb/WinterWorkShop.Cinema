@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
@@ -126,7 +129,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 return null;
             }
-            _moviesRepository.Save();
+           // _moviesRepository.Save();
 
             MovieDomainModel domainModel = new MovieDomainModel()
             {
@@ -164,6 +167,37 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
+        public async Task<IEnumerable<MovieDomainModel>> MovieTopList()
+        {
+            var data = _moviesRepository.GetTopMovies();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> result = new List<MovieDomainModel>();
+            MovieDomainModel model;
+                foreach (var item in data)
+                {
+                if (result.Count == 10)
+                {
+                    break;
+                }
+                    model = new MovieDomainModel
+                    {
+                        Current = item.Current,
+                        Id = item.Id,
+                        Rating = item.Rating ?? 0,
+                        Title = item.Title,
+                        Year = item.Year
+                    };
+                    result.Add(model);
+                }
+
+            return result;
+        }
+        
         public IEnumerable<CreateMovieResultModel> GetMoviesByTag(string tagValue)
         {
             var data = _moviesRepository.GetMoviesByTag(tagValue).ToList();
