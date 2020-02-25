@@ -39,6 +39,7 @@
         #endregion
 
         #region Projections
+        public const string PROJECTION_DOES_NOT_EXIST = "Projection does not exist.";
         public const string PROJECTION_GET_ALL_PROJECTIONS_ERROR = "Error occured while getting all projections, please try again.";
         public const string PROJECTION_CREATION_ERROR = "Error occured while creating new projection, please try again.";
         public const string PROJECTIONS_AT_SAME_TIME = "Cannot create new projection, there are projections at same time alredy.";

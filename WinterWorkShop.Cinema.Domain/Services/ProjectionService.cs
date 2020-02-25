@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -207,6 +208,79 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             return result;
+        }
+
+        public async Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id)
+        {
+            var data = await _projectionsRepository.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            ProjectionDomainModel  domainModel = new ProjectionDomainModel
+            {
+                Id = data.Id,
+                AuditoriumId  = data.AuditoriumId,
+                MovieId = data.MovieId,
+                ProjectionTime = data.DateTime
+            };
+
+            return domainModel;
+        }
+
+        public async Task<ProjectionDomainModel> UpdateProjection(ProjectionDomainModel updateProjection)
+        {
+            Projection projection = new Projection()
+            {
+              Id = updateProjection.Id,
+              AuditoriumId = updateProjection.AuditoriumId,
+              MovieId = updateProjection.MovieId,
+              DateTime = updateProjection.ProjectionTime
+
+            };
+
+            var data = _projectionsRepository.Update(projection);
+
+            if (data == null)
+            {
+                return null;
+            }
+            _projectionsRepository.Save();
+
+            ProjectionDomainModel domainModel = new ProjectionDomainModel()
+            {
+                Id = data.Id,
+                AuditoriumId = data.AuditoriumId,
+                MovieId = data.MovieId,
+                ProjectionTime = data.DateTime
+            };
+
+            return domainModel;
+        }
+
+        public ProjectionDomainModel DeleteProjection(Guid id)
+        {
+            var data = _projectionsRepository.Delete(id);
+
+            if(data == null)
+            {
+                return null;
+            }
+
+            _projectionsRepository.Save();
+
+            ProjectionDomainModel domainModel = new ProjectionDomainModel
+            {
+                Id = data.MovieId,
+                AuditoriumId = data.AuditoriumId,
+                ProjectionTime = data.DateTime,
+                MovieId = data.MovieId,
+
+            };
+            
+            return domainModel;
         }
     }
 }

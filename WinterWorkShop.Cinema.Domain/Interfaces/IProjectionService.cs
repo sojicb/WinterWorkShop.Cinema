@@ -15,6 +15,8 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsByAuditoriums();
         Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsByMovies();
         Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsBySpecificTime();
-
+        Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id);
+        Task<ProjectionDomainModel> UpdateProjection(ProjectionDomainModel movieToUpdate);
+        ProjectionDomainModel DeleteProjection(Guid id);
     }
 }

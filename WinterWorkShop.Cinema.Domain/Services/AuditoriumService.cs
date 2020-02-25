@@ -127,11 +127,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Row = item.Row
                 });
             }
-
+            _auditoriumsRepository.Save();
             return resultModel;
         }
 
-        public async Task<AuditoriumDomainModel> GetAuditoriumByIdAsync(Guid id)
+        public async Task<AuditoriumDomainModel> GetAuditoriumByIdAsync(int id)
         {
             var data = await _auditoriumsRepository.GetByIdAsync(id);
 
@@ -158,7 +158,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             Auditorium auditroium = new Auditorium()
             {
-                Id = auditoriumToUpdate.Id,
+                //Id = auditoriumToUpdate.Id,
                 CinemaId = auditoriumToUpdate.CinemaId,
                 Name = auditoriumToUpdate.Name,
                 

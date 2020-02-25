@@ -65,7 +65,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
             AuditoriumDomainModel auditoriumDomainModel = new AuditoriumDomainModel
             {
                 CinemaId = createAuditoriumModel.cinemaId,
-                Name = createAuditoriumModel.auditName
+                Name = createAuditoriumModel.auditName,
+                
             };
 
             CreateAuditoriumResultModel createAuditoriumResultModel;
@@ -102,8 +103,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         [HttpPut]
         [Authorize(Roles = "admin")]
-        [Route("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] CreateAuditoriumModel createAuditoriumModel)
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody]CreateAuditoriumModel createAuditoriumModel)
         {
             if (!ModelState.IsValid)
             {
@@ -126,8 +127,9 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             }
 
-            auditoriumToUpdate.Name = createAuditoriumModel.auditName;
             auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
+            auditoriumToUpdate.Name = createAuditoriumModel.auditName;
+
 
             AuditoriumDomainModel auditoriumDomainModel;
             try
@@ -152,7 +154,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         [HttpDelete]
         [Authorize(Roles = "admin")]
-        [Route("delete")]
+        [Route("delete/{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
 

@@ -53,7 +53,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        [Route("")]
+        [Route("create")]
         public async Task<ActionResult<ProjectionDomainModel>> PostAsync(CreateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
@@ -104,6 +104,98 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
         }
+
+
+        [HttpPut]
+        [Authorize(Roles = "admin")]
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(Guid id, [FromBody] CreateProjectionModel projectionModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ProjectionDomainModel projectionToUpdate;
+
+            projectionToUpdate = await _projectionService.GetProjectionByIdAsync(id);
+
+            if (projectionToUpdate == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+           
+            projectionToUpdate.AuditoriumId = projectionModel.AuditoriumId;
+            projectionToUpdate.MovieId = projectionModel.MovieId;
+            projectionToUpdate.ProjectionTime = projectionModel.ProjectionTime;
+
+
+
+            ProjectionDomainModel projectionDomainModel;
+            try
+            {
+                projectionDomainModel = await _projectionService.UpdateProjection(projectionToUpdate);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("projections//" + projectionDomainModel.Id, projectionDomainModel);
+
+        }
+
+
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [Authorize(Roles ="admin")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            ProjectionDomainModel deleteProjection;
+            try
+            {
+                deleteProjection = _projectionService.DeleteProjection(id);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (deleteProjection == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.PROJECTION_DOES_NOT_EXIST,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("projections//" + deleteProjection.Id, deleteProjection);
+        }
+
+        
+
 
         [HttpGet]
         [Route("filteringProjections")]

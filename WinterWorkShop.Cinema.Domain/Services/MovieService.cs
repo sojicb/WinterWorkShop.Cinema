@@ -116,7 +116,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 return null;
             }
-            _moviesRepository.Save();
+           // _moviesRepository.Save();
 
             MovieDomainModel domainModel = new MovieDomainModel()
             {

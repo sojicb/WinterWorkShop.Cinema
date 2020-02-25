@@ -188,7 +188,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [Authorize(Roles = "admin")]
         [HttpDelete]
-        [Route("{id}")]
+        [Route("delete/{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
             MovieDomainModel deletedMovie;
