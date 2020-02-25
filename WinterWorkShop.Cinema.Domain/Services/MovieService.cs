@@ -89,17 +89,17 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 };
             }
 
-            _moviesRepository.Save();
+            //_moviesRepository.Save();
 
             CreateMovieResultModel resultModel = new CreateMovieResultModel
             {
                 IsSuccessful = true,
                 ErrorMessage = null,
-                Movie =
+                Movie = new MovieDomainModel
                 {
                     Id = createdMovie.Id,
                     Current = createdMovie.Current,
-                    Rating = createdMovie.Rating ?? 0,
+                    Rating = createdMovie.Rating?? 0,
                     Title = createdMovie.Title,
                     Year = createdMovie.Year
                 }
