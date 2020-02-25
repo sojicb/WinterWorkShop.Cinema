@@ -35,8 +35,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
         public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> GetAsync()
         {
             IEnumerable<ProjectionDomainModel> projectionDomainModels;
-           
-             projectionDomainModels = await _projectionService.GetAllAsync();            
+
+            projectionDomainModels = await _projectionService.GetAllAsync();
 
             if (projectionDomainModels == null)
             {
@@ -45,6 +45,29 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Ok(projectionDomainModels);
         }
+
+
+        /// <summary>
+        /// Gets Movie by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("get/{id}")]
+        public async Task<ActionResult<ProjectionDomainModel>> GetAsyncById(Guid id)
+        {
+            ProjectionDomainModel projection;
+
+            projection = await _projectionService.GetProjectionById2Async(id);
+
+            if (projection == null)
+            {
+                return NotFound(Messages.PROJECTION_DOES_NOT_EXIST);
+            }
+
+            return Ok(projection);
+        }
+
 
         /// <summary>
         /// Adds a new projection
@@ -99,7 +122,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                     StatusCode = System.Net.HttpStatusCode.BadRequest
                 };
 
-                return BadRequest(errorResponse);                
+                return BadRequest(errorResponse);
             }
 
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
@@ -136,7 +159,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-           
+
             projectionToUpdate.AuditoriumId = projectionModel.AuditoriumId;
             projectionToUpdate.MovieId = projectionModel.MovieId;
             projectionToUpdate.ProjectionTime = projectionModel.ProjectionTime;
@@ -166,7 +189,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         [HttpDelete]
         [Route("delete/{id}")]
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(Guid id)
         {
             ProjectionDomainModel deleteProjection;
@@ -207,7 +230,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("filter")]
         public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
         {
-            
+
             List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
             if (filter.Projections != null)
             {

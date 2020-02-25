@@ -35,7 +35,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             List<SeatDomainModel> seats = new List<SeatDomainModel>();
             AuditoriumDomainModel model;
 
-           
+
 
             foreach (var item in data)
             {
@@ -49,7 +49,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                         Row = seat.Row
                     });
                 }
-                
+
                 model = new AuditoriumDomainModel
                 {
                     Id = item.Id,
@@ -208,6 +208,27 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 Id = data.Id,
                 Name = data.Name
+
+
+            };
+
+            return domainModel;
+        }
+
+        public async Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id)
+        {
+            var data = await _auditoriumsRepository.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            AuditoriumDomainModel domainModel = new AuditoriumDomainModel
+            {
+                Id = data.Id,
+                Name = data.Name,
+                CinemaId = data.CinemaId
 
 
             };

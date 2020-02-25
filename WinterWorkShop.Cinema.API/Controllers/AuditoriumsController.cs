@@ -48,6 +48,27 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         /// <summary>
+        /// Gets Movie by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("get/{id}")]
+        public async Task<ActionResult<AuditoriumDomainModel>> GetAsyncById(int id)
+        {
+            AuditoriumDomainModel auditorium;
+
+            auditorium = await _auditoriumService.GetAuditroiumByIdAsync(id);
+
+            if (auditorium == null)
+            {
+                return NotFound(Messages.AUDITORIUM_DOES_NOT_EXIST);
+            }
+
+            return Ok(auditorium);
+        }
+
+        /// <summary>
         /// Adds a new auditorium
         /// </summary>
         /// <param name="createAuditoriumModel"></param>
@@ -66,7 +87,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             {
                 CinemaId = createAuditoriumModel.cinemaId,
                 Name = createAuditoriumModel.auditName,
-                
+
             };
 
             CreateAuditoriumResultModel createAuditoriumResultModel;
