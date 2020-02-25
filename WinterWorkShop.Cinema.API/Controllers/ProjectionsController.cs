@@ -105,7 +105,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("projections//" + createProjectionResultModel.Projection.Id, createProjectionResultModel.Projection);
         }
 
-
         [HttpPut]
         [Authorize(Roles = "admin")]
         [Route("update/{id}")]

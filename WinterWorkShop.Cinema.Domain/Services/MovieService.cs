@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
@@ -69,7 +71,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<MovieDomainModel> AddMovie(MovieDomainModel newMovie)
+        public async Task<CreateMovieResultModel> AddMovie(MovieDomainModel newMovie)
         {
             Movie movieToCreate = new Movie()
             {
@@ -79,27 +81,38 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Rating = newMovie.Rating
             };
 
-            var data = _moviesRepository.Insert(movieToCreate);
-            if (data == null)
+            var createdMovie = _moviesRepository.Insert(movieToCreate);
+
+            if (createdMovie == null)
             {
-                return null;
+                return new CreateMovieResultModel
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = Messages.MOVIE_CREATION_ERROR
+                };
             }
 
-            _moviesRepository.Save();
+            //_moviesRepository.Save();
 
-            MovieDomainModel domainModel = new MovieDomainModel()
+            CreateMovieResultModel resultModel = new CreateMovieResultModel
             {
-                Id = data.Id,
-                Title = data.Title,
-                Current = data.Current,
-                Year = data.Year,
-                Rating = data.Rating ?? 0
+                IsSuccessful = true,
+                ErrorMessage = null,
+                Movie = new MovieDomainModel
+                {
+                    Id = createdMovie.Id,
+                    Current = createdMovie.Current,
+                    Rating = createdMovie.Rating?? 0,
+                    Title = createdMovie.Title,
+                    Year = createdMovie.Year
+                }
             };
 
-            return domainModel;
+            return resultModel;
         }
 
-        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie) {
+        public async Task<MovieDomainModel> UpdateMovie(MovieDomainModel updateMovie)
+        {
 
             Movie movie = new Movie()
             {
@@ -109,7 +122,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Year = updateMovie.Year,
                 Rating = updateMovie.Rating
             };
-            
+
             var data = _moviesRepository.Update(movie);
 
             if (data == null)
@@ -150,7 +163,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Rating = data.Rating ?? 0
 
             };
-            
+
             return domainModel;
         }
 
@@ -184,5 +197,43 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
-    }
-}
+        
+        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(string tagValue)
+        {
+            var data = _moviesRepository.GetMoviesByTag(tagValue).ToList();
+
+            List<CreateMovieResultModel> movies = new List<CreateMovieResultModel>();
+
+            if (data.Count == 0)
+            {
+                movies.Add(new CreateMovieResultModel
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = Messages.MOVIE_INVALID_TAG
+                });
+                return movies;
+            }
+
+            foreach(var movie in data)
+            {
+                
+                movies.Add(new CreateMovieResultModel
+                {
+                    IsSuccessful = true,
+                    ErrorMessage = null,
+                    Movie = new MovieDomainModel
+                    {
+                        Current = movie.Current,
+                        Id = movie.Id,
+                        Rating = movie.Rating ?? 0,
+                        Title = movie.Title,
+                        Year = movie.Year,
+                        
+                    }
+                });
+            }
+
+            return movies;
+        }
+    }   
+}   

@@ -36,6 +36,7 @@
         public const string MOVIE_GET_ALL_CURRENT_MOVIES_ERROR = "Error occured while getting current movies, please try again.";
         public const string MOVIE_GET_BY_ID = "Error occured while getting movie by Id, please try again.";
         public const string MOVIE_GET_ALL_MOVIES_ERROR = "Error occured while getting all movies, please try again.";
+        public const string MOVIE_INVALID_TAG = "There are no Movies under this tag, please try again with another tag.";
         #endregion
 
         #region Projections
@@ -44,6 +45,7 @@
         public const string PROJECTION_CREATION_ERROR = "Error occured while creating new projection, please try again.";
         public const string PROJECTIONS_AT_SAME_TIME = "Cannot create new projection, there are projections at same time alredy.";
         public const string PROJECTION_IN_PAST = "Projection time cannot be in past.";
+        public const string PROJECTION_IN_FUTURE = "Projection termine is in future so it can not be deactivated yet.";
         #endregion
 
         #region Seats

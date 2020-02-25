@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
@@ -13,6 +14,8 @@ namespace WinterWorkShop.Cinema.Data
         public DbSet<Cinema> Cinemas { get; set; }
         public DbSet<Auditorium> Auditoriums { get; set; }
         public DbSet<Seat> Seats { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<MovieTags> MovieTags { get; set; }
 
         public CinemaContext(DbContextOptions options)
             : base(options)
@@ -22,6 +25,13 @@ namespace WinterWorkShop.Cinema.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            /// <summary>
+            /// Initializing a multy-part primary key
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<MovieTags>()
+                .HasKey(x => new { x.MovieId, x.TagId });
 
             /// <summary>
             /// Seat -> Auditorium relation
@@ -100,6 +110,44 @@ namespace WinterWorkShop.Cinema.Data
             modelBuilder.Entity<Movie>()
                 .HasMany(x => x.Projections)
                 .WithOne(x => x.Movie)
+                .IsRequired();
+
+            /// <summary>
+            /// Movie -> MovieTags relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Movie>()
+                .HasMany(x => x.MovieTags)
+                .WithOne(x => x.Movie)
+                .IsRequired();
+
+            /// <summary>
+            /// MovieTags -> Movie relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<MovieTags>()
+                .HasOne(x => x.Movie)
+                .WithMany(x => x.MovieTags)
+                .HasForeignKey(x => x.MovieId)
+                .IsRequired();
+
+            /// <summary>
+            /// MovieTags -> Tags relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<MovieTags>()
+                .HasOne(x => x.Tag)
+                .WithMany(x => x.MovieTags)
+                .HasForeignKey(x => x.TagId)
+                .IsRequired();
+
+            /// <summary>
+            /// Tags -> MovieTags relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Tag>()
+                .HasMany(x => x.MovieTags)
+                .WithOne(x => x.Tag)
                 .IsRequired();
         }
     }
