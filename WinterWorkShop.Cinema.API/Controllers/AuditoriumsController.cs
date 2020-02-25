@@ -148,7 +148,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("auditroiums//" + auditoriumDomainModel.Id, auditoriumDomainModel);
-
         }
 
 

@@ -32,16 +32,30 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             List<AuditoriumDomainModel> result = new List<AuditoriumDomainModel>();
+            List<SeatDomainModel> seats = new List<SeatDomainModel>();
             AuditoriumDomainModel model;
+
+           
+
             foreach (var item in data)
             {
+                foreach (var seat in item.Seats)
+                {
+                    seats.Add(new SeatDomainModel
+                    {
+                        Id = seat.Id,
+                        AuditoriumId = seat.AuditoriumId,
+                        Number = seat.Number,
+                        Row = seat.Row
+                    });
+                }
+                
                 model = new AuditoriumDomainModel
                 {
                     Id = item.Id,
                     CinemaId = item.CinemaId,
                     Name = item.Name,
-                    SeatsList = new List<SeatDomainModel>()
-                    
+                    SeatsList = seats.Where(x => x.AuditoriumId.Equals(item.Id)).ToList()
                 };
                 result.Add(model);
             }
@@ -142,11 +156,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             AuditoriumDomainModel domainModel = new AuditoriumDomainModel
             {
+                Id = data.Id,
                 CinemaId = data.CinemaId,
                 Name = data.Name,
-                
-                
-
             };
 
             return domainModel;
@@ -158,12 +170,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             Auditorium auditroium = new Auditorium()
             {
-                //Id = auditoriumToUpdate.Id,
+                Id = auditoriumToUpdate.Id,
                 CinemaId = auditoriumToUpdate.CinemaId,
                 Name = auditoriumToUpdate.Name,
-                
-                
-               
             };
 
             var data = _auditoriumsRepository.Update(auditroium);

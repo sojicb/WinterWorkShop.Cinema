@@ -40,7 +40,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Auditorium>> GetAll()
         {
-            var data = await _cinemaContext.Auditoriums.ToListAsync();
+            var data = await _cinemaContext.Auditoriums.Include(x => x.Seats).ToListAsync();
 
             return data;
         }
