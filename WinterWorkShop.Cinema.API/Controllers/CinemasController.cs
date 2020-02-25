@@ -96,5 +96,46 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("cinemas//" + createCienema.Cinema.Id, createCienema.Cinema);
         }
 
+        /// <summary>
+        /// Adds a new movie
+        /// </summary>
+        /// <param name="cinemaModel"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Authorize(Roles = "admin")]
+        [Route("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            CinemaDomainModel deleteCinemaModel;
+
+            try
+            {
+                deleteCinemaModel = await _cinemaService.DeleteCinema(id);
+            }
+            catch(DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if(deleteCinemaModel == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.CINEMA_DOES_NOT_EXIST_ERROR,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
+            }
+
+            return Accepted("cinemas//" + deleteCinemaModel.Id, deleteCinemaModel);
+        }
+
     }
 }

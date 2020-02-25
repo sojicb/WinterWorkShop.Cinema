@@ -201,13 +201,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             var seats = audit.Seats.ToList();
 
-            var data = _auditoriumsRepository.Delete(id);
-
-            if (data == null)
-            {
-                return null;
-            }
-
             if(seats == null)
             {
                 return null;
@@ -221,6 +214,14 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 {
                     return null;
                 }
+            }
+
+            var data = _auditoriumsRepository.Delete(id);
+
+
+            if (data == null)
+            {
+                return null;
             }
 
             _seatsRepository.Save();

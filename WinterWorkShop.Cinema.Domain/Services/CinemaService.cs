@@ -13,10 +13,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class CinemaService : ICinemaService
     {
         private readonly ICinemasRepository _cinemasRepository;
+        private readonly IAuditoriumsRepository _auditoriumsRepository;
 
-        public CinemaService(ICinemasRepository cinemasRepository)
+        public CinemaService(ICinemasRepository cinemasRepository, IAuditoriumsRepository auditoriumsRepository)
         {
             _cinemasRepository = cinemasRepository;
+            _auditoriumsRepository = auditoriumsRepository;
         }
 
         public async Task<CreateCinemaResultModel> AddCinema(CinemaDomainModel newCinema)
@@ -54,6 +56,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<CinemaDomainModel> DeleteCinema(int id)
         {
+            //var auditoriu
             var data = _cinemasRepository.Delete(id);
 
             if (data == null)
