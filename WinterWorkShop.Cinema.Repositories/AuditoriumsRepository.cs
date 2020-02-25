@@ -25,7 +25,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Auditorium>> GetByAuditName(string name, int id)
         {
-            var data = await _cinemaContext.Auditoriums.Where(x => x.Name.Equals(name) && x.CinemaId.Equals(id)).ToListAsync();
+            var data = await _cinemaContext.Auditoriums.Where(x => x.Name.Equals(name) && x.CinemaId.Equals(id)).Include(x => x.Seats).ToListAsync();
 
             return data;
         }
@@ -47,7 +47,10 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<Auditorium> GetByIdAsync(object id)
         {
-            return await _cinemaContext.Auditoriums.FindAsync(id);
+            var data = await GetAll();
+            var audit = data.Where(x => x.Id.Equals(id)).FirstOrDefault();
+
+            return audit;
         }
 
         public Auditorium Insert(Auditorium obj)
