@@ -75,7 +75,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        [Route("create")]
         public async Task<ActionResult<AuditoriumDomainModel>> PostAsync(CreateAuditoriumModel createAuditoriumModel)
         {
             if (!ModelState.IsValid)
@@ -121,10 +120,14 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("auditoriums//" + createAuditoriumResultModel.Auditorium.Id, createAuditoriumResultModel);
         }
 
-
+        /// <summary>
+        /// Updates auditorium
+        /// </summary>
+        /// <param name="createAuditoriumModel"></param>
+        /// <returns></returns>
         [HttpPut]
         [Authorize(Roles = "admin")]
-        [Route("update/{id}")]
+        [Route("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody]CreateAuditoriumModel createAuditoriumModel)
         {
             if (!ModelState.IsValid)
@@ -171,17 +174,21 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Accepted("auditroiums//" + auditoriumDomainModel.Id, auditoriumDomainModel);
         }
 
-
+        /// <summary>
+        /// Delets auditorium
+        /// </summary>
+        /// <param name="createAuditoriumModel"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Authorize(Roles = "admin")]
-        [Route("delete/{id}")]
-        public async Task<ActionResult> Delete(Guid id)
+        [Route("{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
 
             AuditoriumDomainModel deleteAuditorium;
             try
             {
-                deleteAuditorium = await _auditoriumService.deleteAuditorium(id);
+                deleteAuditorium = await _auditoriumService.DeleteAuditorium(id);
             }
             catch (DbUpdateException e)
             {
