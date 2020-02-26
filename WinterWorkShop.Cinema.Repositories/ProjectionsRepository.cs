@@ -41,7 +41,11 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<Projection> GetByIdAsync(object id)
         {
-            return await _cinemaContext.Projections.FindAsync(id);
+            var data = await GetAll();
+            var audit = data.Where(x => x.Id.Equals(id)).FirstOrDefault();
+
+            return audit;
+            
         }
 
         public IEnumerable<Projection> GetByAuditoriumId(int auditoriumId)
