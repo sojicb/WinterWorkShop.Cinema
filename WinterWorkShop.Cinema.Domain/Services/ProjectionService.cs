@@ -111,35 +111,26 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 return null;
             }
 
-            //Filter By CinemaId
             if (cinemaId != 0)
             {
                 result = data.Where(x => x.Auditorium.CinemaId.Equals(cinemaId)).ToList();
+
+                if (auditoriumId != 0)
+                {
+                    result = data.Where(x => x.AuditoriumId.Equals(auditoriumId)).ToList();
+
+                    if (movieId != null)
+                    {
+                        result = data.Where(x => x.MovieId.Equals(movieId)).ToList();
+
+                    }
+                }
             }
 
-            ////Filter By AuditoriumId
-            //if (auditoriumId != 0)
-            //{
-            //    var projections = filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
-
-            //    return projections;
-            //}
-
-            ////Filter ByMovieId
-            //if (movieId != null)
-            //{
-            //    var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
-
-            //    return projections;
-            //}
-
-            ////Filter by TimeSpan
-            //if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
-            //{
-            //    var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
-
-            //    return projections;
-            //}
+            if (dateFrom != null && dateTo != null)
+            {
+                result = data.Where(x => x.DateTime >= dateFrom && x.DateTime <= dateTo).ToList();
+            }
 
             List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
             foreach (var item in result)
@@ -156,8 +147,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 });
             }
             return results;
-
         }
+
 
         public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
         {
