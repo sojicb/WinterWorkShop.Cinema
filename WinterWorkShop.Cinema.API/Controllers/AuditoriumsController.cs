@@ -128,7 +128,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [HttpPut]
         [Authorize(Roles = "admin")]
         [Route("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody]CreateAuditoriumModel createAuditoriumModel)
+        public async Task<ActionResult> Put(int id, [FromBody]UpdateAuditoriumModel createAuditoriumModel)
         {
             if (!ModelState.IsValid)
             {
