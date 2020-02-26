@@ -58,5 +58,11 @@
         #region User
         public const string USER_NOT_FOUND = "User does not exist.";
         #endregion
+
+        #region Tag
+        public const string TAG_DOES_NOT_EXIST = "Tag does not exist.";
+        public const string TAG_CREATION_ERROR = "Error occured while creating new tag, please try again.";
+
+        #endregion
     }
 }
