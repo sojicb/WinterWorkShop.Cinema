@@ -47,6 +47,8 @@
         public const string PROJECTIONS_AT_SAME_TIME = "Cannot create new projection, there are projections at same time alredy.";
         public const string PROJECTION_IN_PAST = "Projection time cannot be in past.";
         public const string PROJECTION_IN_FUTURE = "Projection termine is in future so it can not be deactivated yet.";
+        public const string PROJECTION_IN_FUTURE_ON_CINEMA_DELETE = "Cinema cannot be deleted due to projections in the future";
+
         #endregion
 
         #region Seats

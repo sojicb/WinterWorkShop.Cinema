@@ -12,6 +12,6 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         Task<CinemaDomainModel> GetCinemaByIdAsync(int id);
         Task<CreateCinemaResultModel> AddCinema(CinemaDomainModel newCinema);
         Task<CinemaDomainModel> UpdateCinema(CinemaDomainModel updateCinema);
-        Task<CinemaDomainModel> DeleteCinema(int id);
+        Task<DeleteCinemaDomainModel> DeleteCinema(int id);
     }
 }
