@@ -14,7 +14,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class ProjectionService : IProjectionService
     {
         private readonly IProjectionsRepository _projectionsRepository;
-        
+
         public ProjectionService(IProjectionsRepository projectionsRepository)
         {
             _projectionsRepository = projectionsRepository;
@@ -169,10 +169,10 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 return null;
             }
 
-            ProjectionDomainModel  domainModel = new ProjectionDomainModel
+            ProjectionDomainModel domainModel = new ProjectionDomainModel
             {
                 Id = data.Id,
-                AuditoriumId  = data.AuditoriumId,
+                AuditoriumId = data.AuditoriumId,
                 MovieId = data.MovieId,
                 ProjectionTime = data.DateTime
             };
@@ -184,10 +184,10 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             Projection projection = new Projection()
             {
-              Id = updateProjection.Id,
-              AuditoriumId = updateProjection.AuditoriumId,
-              MovieId = updateProjection.MovieId,
-              DateTime = updateProjection.ProjectionTime
+                Id = updateProjection.Id,
+                AuditoriumId = updateProjection.AuditoriumId,
+                MovieId = updateProjection.MovieId,
+                DateTime = updateProjection.ProjectionTime
 
             };
 
@@ -232,6 +232,31 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
 
+        }
+
+        public async Task<ProjectionDomainModel> GetProjectionById2Async(Guid id)
+        {
+
+            var data = await _projectionsRepository.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            ProjectionDomainModel domainModel = new ProjectionDomainModel
+            {
+                Id = data.Id,
+                AuditoriumId = data.AuditoriumId,
+                ProjectionTime = data.DateTime,
+                MovieId = data.MovieId,
+                MovieTitle = data.Movie.Title,
+                AditoriumName = data.Auditorium.Name
+
+
+            };
+
+            return domainModel;
         }
     }
 }
