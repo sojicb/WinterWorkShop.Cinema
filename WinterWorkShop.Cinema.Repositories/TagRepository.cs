@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,50 +23,32 @@ namespace WinterWorkShop.Cinema.Repositories
 
 		public Tag Delete(object id)
 		{
-			Tag existing = _cinemaContext.Tags.Find(id);
-
-			if (existing == null)
-			{
-				return null;
-			}
-
-			var result = _cinemaContext.Tags.Remove(existing);
-
-			return result.Entity;
+			throw new NotImplementedException();
 		}
 
-
-		public async Task<IEnumerable<Tag>> GetAll()
+		public Task<IEnumerable<Tag>> GetAll()
 		{
-			return await _cinemaContext.Tags.ToListAsync();
+			throw new NotImplementedException();
 		}
 
-
-		public async Task<Tag> GetByIdAsync(object id)
+		public Task<Tag> GetByIdAsync(object id)
 		{
-			var data = await _cinemaContext.Tags.SingleOrDefaultAsync(x=>x.Id.Equals((int)id));
-
-			return data;
+			throw new NotImplementedException();
 		}
 
 		public Tag Insert(Tag obj)
 		{
-			var data = _cinemaContext.Tags.Add(obj).Entity;
-
-			return data;
+			throw new NotImplementedException();
 		}
 
 		public void Save()
 		{
-			_cinemaContext.SaveChanges();
+			throw new NotImplementedException();
 		}
 
 		public Tag Update(Tag obj)
 		{
-			var updatedEntry = _cinemaContext.Tags.Attach(obj).Entity;
-			_cinemaContext.Entry(obj).State = EntityState.Modified;
-
-			return updatedEntry;
+			throw new NotImplementedException();
 		}
 	}
 }
