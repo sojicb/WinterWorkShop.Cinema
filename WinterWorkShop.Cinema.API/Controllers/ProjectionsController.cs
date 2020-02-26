@@ -76,7 +76,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        [Route("create")]
         public async Task<ActionResult<ProjectionDomainModel>> PostAsync(CreateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
@@ -136,7 +135,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPut]
         [Authorize(Roles = "admin")]
-        [Route("update/{id}")]
+        [Route("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] CreateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
@@ -188,7 +187,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
         [HttpDelete]
-        [Route("delete/{id}")]
+        [Route("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(Guid id)
         {
@@ -259,6 +258,26 @@ namespace WinterWorkShop.Cinema.API.Controllers
             };
 
             IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
+
+            if (projectionDomainModels == null)
+            {
+                projectionDomainModels = new List<ProjectionDomainModel>();
+            }
+
+
+            return Ok(projectionDomainModels);
+        }
+
+        /// <summary>
+        /// Gets all projections
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("filtering/{cinemaId}/{auditoriumId}/{movieId}/{dateFrom}/{dateTo}")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid movieId, DateTime dateFrom, DateTime dateTo)
+        {
+
+            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjectionsTwo(cinemaId, auditoriumId, movieId, dateFrom, dateTo);
 
             if (projectionDomainModels == null)
             {

@@ -100,6 +100,64 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid movieId, DateTime dateFrom, DateTime dateTo)
+        {
+            var data = await _projectionsRepository.GetAll();
+
+            List<Projection> result = new List<Projection>();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            //Filter By CinemaId
+            if (cinemaId != 0)
+            {
+                result = data.Where(x => x.Auditorium.CinemaId.Equals(cinemaId)).ToList();
+            }
+
+            ////Filter By AuditoriumId
+            //if (auditoriumId != 0)
+            //{
+            //    var projections = filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
+
+            //    return projections;
+            //}
+
+            ////Filter ByMovieId
+            //if (movieId != null)
+            //{
+            //    var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
+
+            //    return projections;
+            //}
+
+            ////Filter by TimeSpan
+            //if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
+            //{
+            //    var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
+
+            //    return projections;
+            //}
+
+            List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
+            foreach (var item in result)
+            {
+                results.Add(new ProjectionDomainModel
+                {
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    AuditoriumId = item.AuditoriumId,
+                    ProjectionTime = item.DateTime,
+                    MovieTitle = item.Movie.Title,
+                    AditoriumName = item.Auditorium.Name
+
+                });
+            }
+            return results;
+
+        }
 
         public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
         {
@@ -158,7 +216,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
             return results;
         }
-
 
         public async Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id)
         {
