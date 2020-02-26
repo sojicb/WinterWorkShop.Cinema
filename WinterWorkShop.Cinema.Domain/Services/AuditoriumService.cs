@@ -16,12 +16,14 @@ namespace WinterWorkShop.Cinema.Domain.Services
         private readonly IAuditoriumsRepository _auditoriumsRepository;
         private readonly ICinemasRepository _cinemasRepository;
         private readonly ISeatsRepository _seatsRepository;
+        private readonly IProjectionsRepository _projectionsRepository;
 
-        public AuditoriumService(IAuditoriumsRepository auditoriumsRepository, ICinemasRepository cinemasRepository, ISeatsRepository seatsRepository)
+        public AuditoriumService(IAuditoriumsRepository auditoriumsRepository, ICinemasRepository cinemasRepository, ISeatsRepository seatsRepository, IProjectionsRepository projectionsRepository)
         {
             _auditoriumsRepository = auditoriumsRepository;
             _cinemasRepository = cinemasRepository;
             _seatsRepository = seatsRepository;
+            _projectionsRepository = projectionsRepository;
         }
 
         public async Task<IEnumerable<AuditoriumDomainModel>> GetAllAsync()
@@ -195,18 +197,32 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<AuditoriumDomainModel> DeleteAuditorium(int id)
+        public async Task<DeleteAuditoriumDomainModel> DeleteAuditorium(int id)
         {
             var audit = await _auditoriumsRepository.GetByIdAsync(id);
 
             var seats = audit.Seats.ToList();
 
-            if(seats == null)
+            var projections = audit.Projections.ToList();
+
+            foreach (var projection in projections)
             {
-                return null;
+                if (projection.DateTime > DateTime.Now)
+                {
+                    return new DeleteAuditoriumDomainModel
+                    {
+                        ErrorMessage = Messages.PROJECTION_IN_FUTURE_ON_CINEMA_DELETE,
+                        IsSuccessful = false
+                    };
+                }
             }
 
-            foreach(var seat in seats)
+            foreach(var projection in projections)
+            {
+                _projectionsRepository.Delete(projection.Id);
+            }
+
+            foreach (var seat in seats)
             {
                 var seatResult = _seatsRepository.Delete(seat.Id);
 
@@ -224,14 +240,18 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 return null;
             }
 
-            _seatsRepository.Save();
-
             _auditoriumsRepository.Save();
 
-            AuditoriumDomainModel domainModel = new AuditoriumDomainModel
+            DeleteAuditoriumDomainModel domainModel = new DeleteAuditoriumDomainModel
             {
-                Id = data.Id,
-                Name = data.Name
+               IsSuccessful = true,
+               ErrorMessage = null,
+               Auditorium = new AuditoriumDomainModel
+               {
+                   Id = data.Id,
+                   Name = data.Name,
+                   CinemaId = data.CinemaId,
+               }
             };
 
             return domainModel;
