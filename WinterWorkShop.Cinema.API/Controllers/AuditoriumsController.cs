@@ -185,7 +185,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         public async Task<ActionResult> Delete(int id)
         {
 
-            AuditoriumDomainModel deleteAuditorium;
+            DeleteAuditoriumDomainModel deleteAuditorium;
             try
             {
                 deleteAuditorium = await _auditoriumService.DeleteAuditorium(id);
@@ -213,7 +213,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
             }
 
-            return Accepted("auditroiums//" + deleteAuditorium.Id, deleteAuditorium);
+            return Accepted("auditroiums//" + deleteAuditorium.Auditorium.Id, deleteAuditorium.Auditorium);
 
         }
     }

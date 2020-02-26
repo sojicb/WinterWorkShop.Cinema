@@ -57,7 +57,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return resultModel;
         }
 
-        public async Task<CinemaDomainModel> DeleteCinema(int id)
+        public async Task<DeleteCinemaDomainModel> DeleteCinema(int id)
         {
             var cinema = await _cinemasRepository.GetAll();
 
@@ -71,6 +71,15 @@ namespace WinterWorkShop.Cinema.Domain.Services
             foreach (var audit in auditoriums)
             {
                 var auditorium = await _auditoriumService.DeleteAuditorium(audit.Id);
+
+                if (!auditorium.IsSuccessful)
+                {
+                    return new DeleteCinemaDomainModel
+                    {
+                        IsSuccessful = false,
+                        ErrorMessage = Messages.PROJECTION_IN_FUTURE_ON_CINEMA_DELETE
+                    };
+                }
             }
 
             var data = _cinemasRepository.Delete(id);
@@ -82,10 +91,15 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             _cinemasRepository.Save();
 
-            CinemaDomainModel domainModel = new CinemaDomainModel
+            DeleteCinemaDomainModel domainModel = new DeleteCinemaDomainModel
             {
-                Id = data.Id,
-                Name = data.Name
+                IsSuccessful = true,
+                ErrorMessage = null,
+                Cinema =
+                {
+                    Id = data.Id,
+                    Name = data.Name
+                }
             };
 
             return domainModel;
