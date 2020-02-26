@@ -92,7 +92,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 };
             }
 
-            //_moviesRepository.Save();
+            _moviesRepository.Save();
 
             CreateMovieResultModel resultModel = new CreateMovieResultModel
             {
@@ -129,7 +129,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 return null;
             }
-           // _moviesRepository.Save();
+           
+            _moviesRepository.Save();
 
             MovieDomainModel domainModel = new MovieDomainModel()
             {
