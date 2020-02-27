@@ -151,8 +151,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             }
 
-            auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
-            auditoriumToUpdate.Name = createAuditoriumModel.auditName;
+            //auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
+            auditoriumToUpdate.Name = createAuditoriumModel.Name;
 
 
             AuditoriumDomainModel auditoriumDomainModel;
