@@ -22,7 +22,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             _moviesRepository = moviesRepository;
         }
 
-        public IEnumerable<MovieDomainModel> GetAllMovies(bool? isCurrent)
+        public async Task<IEnumerable<MovieDomainModel>> GetAllMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
 
