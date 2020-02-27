@@ -95,7 +95,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 IsSuccessful = true,
                 ErrorMessage = null,
-                Cinema =
+                Cinema = new CinemaDomainModel
                 {
                     Id = data.Id,
                     Name = data.Name

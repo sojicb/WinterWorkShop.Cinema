@@ -135,8 +135,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPut]
         [Authorize(Roles = "admin")]
-        [Route("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] CreateProjectionModel projectionModel)
+        [Route("update/{id}")]
+        public async Task<ActionResult> Put(Guid id, [FromBody] UpdateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
             {
@@ -160,7 +160,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
             projectionToUpdate.AuditoriumId = projectionModel.AuditoriumId;
-            projectionToUpdate.MovieId = projectionModel.MovieId;
+            //projectionToUpdate.MovieId = projectionModel.MovieId;
             projectionToUpdate.ProjectionTime = projectionModel.ProjectionTime;
 
 
@@ -187,7 +187,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("delete/{id}")]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(Guid id)
         {

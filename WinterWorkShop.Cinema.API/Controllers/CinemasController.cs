@@ -46,6 +46,27 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         /// <summary>
+        /// Gets Movie by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("get/{id}")]
+        public async Task<ActionResult<CinemaDomainModel>> GetAsyncById(int id)
+        {
+            CinemaDomainModel cinema;
+
+            cinema = await _cinemaService.GetCinemaByIdAsync(id);
+
+            if (cinema == null)
+            {
+                return NotFound(Messages.CINEMA_DOES_NOT_EXIST_ERROR);
+            }
+
+            return Ok(cinema);
+        }
+
+        /// <summary>
         /// Adds a new movie
         /// </summary>
         /// <param name="cinemaModel"></param>
@@ -146,6 +167,60 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("cinemas//" + deleteCinemaModel.Cinema.Id, deleteCinemaModel.Cinema);
+        }
+
+        /// <summary>
+        /// Updates cinemas
+        /// </summary>
+        /// <param name="createAuditoriumModel"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Authorize(Roles = "admin")]
+        [Route("{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody]CinemaModels cinemaModels)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            CinemaDomainModel cinemaToUpdate;
+
+            cinemaToUpdate = await _cinemaService.GetCinemaByIdAsync(id);
+
+            if (cinemaToUpdate == null)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.CINEMA_DOES_NOT_EXIST_ERROR,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+
+            }
+
+            //auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
+            cinemaToUpdate.Name = cinemaModels.Name;
+
+
+            CinemaDomainModel cinemaDomainModel;
+            try
+            {
+                cinemaDomainModel = await _cinemaService.UpdateCinema(cinemaToUpdate);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Accepted("cinemas//" + cinemaDomainModel.Id, cinemaDomainModel);
         }
 
     }
