@@ -100,7 +100,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
-        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid movieId, DateTime dateFrom, DateTime dateTo)
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo)
         {
             var data = await _projectionsRepository.GetAll();
 
@@ -117,12 +117,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
                 if (auditoriumId != 0)
                 {
-                    result = data.Where(x => x.AuditoriumId.Equals(auditoriumId)).ToList();
+                    result = result.Where(x => x.AuditoriumId.Equals(auditoriumId)).ToList();
 
                     if (movieId != null)
                     {
-                        result = data.Where(x => x.MovieId.Equals(movieId)).ToList();
-
+                        result = result.Where(x => x.MovieId.Equals(movieId)).ToList();
                     }
                 }
             }
