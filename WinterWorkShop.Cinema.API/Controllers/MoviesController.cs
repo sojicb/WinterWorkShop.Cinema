@@ -61,10 +61,10 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("tag/{tagValue}")]
-        public async Task<ActionResult<IEnumerable<CreateMovieResultModel>>> GetMoviesByTag(string tagValue)
+        [Route("tag/{id}")]
+        public async Task<ActionResult<IEnumerable<CreateMovieResultModel>>> GetMoviesByTag(int id)
         {
-            List<CreateMovieResultModel> movies = _movieService.GetMoviesByTag(tagValue).ToList();
+            List<CreateMovieResultModel> movies = _movieService.GetMoviesByTag(id).ToList();
 
             if (movies == null)
             {

@@ -14,7 +14,7 @@ namespace WinterWorkShop.Cinema.Repositories
     {
         IEnumerable<Movie> GetCurrentMovies();
         IEnumerable<Movie> GetTopMovies();
-        IEnumerable<Movie> GetMoviesByTag(string tagValue);
+        IEnumerable<Movie> GetMoviesByTag(int id);
     }
 
     public class MoviesRepository : IMoviesRepository
@@ -59,9 +59,9 @@ namespace WinterWorkShop.Cinema.Repositories
             return data;
         }
 
-        public IEnumerable<Movie> GetMoviesByTag(string tagValue)
+        public IEnumerable<Movie> GetMoviesByTag(int id)
         {
-            var data = _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Value.Equals(tagValue))).ToList();
+            var data = _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Id.Equals(id))).ToList();
             
             return data;
         }

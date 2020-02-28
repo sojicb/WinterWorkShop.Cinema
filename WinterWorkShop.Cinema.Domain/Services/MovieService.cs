@@ -199,9 +199,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
         
-        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(string tagValue)
+        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(int id)
         {
-            var data = _moviesRepository.GetMoviesByTag(tagValue).ToList();
+            var data = _moviesRepository.GetMoviesByTag(id).ToList();
 
             List<CreateMovieResultModel> movies = new List<CreateMovieResultModel>();
 
