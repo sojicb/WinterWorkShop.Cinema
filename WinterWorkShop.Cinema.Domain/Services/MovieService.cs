@@ -16,15 +16,18 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class MovieService : IMovieService
     {
         private readonly IMoviesRepository _moviesRepository;
+        private readonly IMovieTagsService _movieTagsService;
 
-        public MovieService(IMoviesRepository moviesRepository)
+        public MovieService(IMoviesRepository moviesRepository, IMovieTagsService movieTagsService)
         {
             _moviesRepository = moviesRepository;
+            _movieTagsService = movieTagsService;
         }
 
         public IEnumerable<MovieDomainModel> GetAllMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
+            var tags = _movieTagsService.GetAllAsync();
 
             if (data == null)
             {

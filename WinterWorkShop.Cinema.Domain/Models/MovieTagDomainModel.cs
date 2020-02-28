@@ -4,8 +4,9 @@ using System.Text;
 
 namespace WinterWorkShop.Cinema.Domain.Models
 {
-	public class MovieTagsDomainModel
+	public class MovieTagDomainModel
 	{
-		public int MyProperty { get; set; }
+		public Guid MovieId { get; set; }
+		public int TagId { get; set; }
 	}
 }
