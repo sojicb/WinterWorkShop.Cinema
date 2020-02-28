@@ -170,7 +170,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<IEnumerable<MovieDomainModel>> MovieTopList()
         {
-            var data = _moviesRepository.GetTopMovies();
+            var data = await _moviesRepository.GetTopMovies();
 
             if (data == null)
             {

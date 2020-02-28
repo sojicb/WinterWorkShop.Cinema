@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
@@ -17,7 +18,11 @@ namespace WinterWorkShop.Cinema.Tests.Services
 	{
 		private Mock<IMoviesRepository> _mockMoviesRepository;
 		private Movie _movie;
+		private Movie _movieTwo;
+		private Movie _movieThree;
+		private Movie _movieFour;
 		private MovieDomainModel _movieDomainModel;
+		private MovieDomainModel _movieToDelete;
 		private MovieDomainModel _updateMovie;
 
 		[TestInitialize]
@@ -26,11 +31,39 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			_movie = new Movie
 			{
 				Id = Guid.NewGuid(),
-				Title = "ProbaFilm",
+				Title = "Proba",
 				Rating = 10,
 				Year = 2000,
 				Current = true
 			};
+
+			_movieTwo = new Movie
+			{
+				Id = Guid.NewGuid(),
+				Title = "Two",
+				Rating = 8,
+				Year = 2000,
+				Current = true
+			};
+
+			_movieThree = new Movie
+			{
+				Id = Guid.NewGuid(),
+				Title = "Three",
+				Rating = 7,
+				Year = 2000,
+				Current = true
+			};
+
+			_movieFour = new Movie
+			{
+				Id = Guid.NewGuid(),
+				Title = "Four",
+				Rating = 9,
+				Year = 2000,
+				Current = true
+			};
+
 
 			_movieDomainModel = new MovieDomainModel
 			{
@@ -47,7 +80,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 				Current = true,
 				Rating = 8,
 				Year = 2066,
-				Title = "UpdateFilm"
+				Title = "Proba"
 			};
 
 			List<Movie> movieModelsList = new List<Movie>();
@@ -180,8 +213,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			//Arrange
 			_mockMoviesRepository = new Mock<IMoviesRepository>();
 
-			//_mockMoviesRepository.Setup(x => x.Insert(_movie)).Returns(_movie);
-			//_mockMoviesRepository.Setup(x => x.Save());
+			_mockMoviesRepository.Setup(x => x.Update(It.IsAny<Movie>())).Returns(_movie);
 			MovieService movieService = new MovieService(_mockMoviesRepository.Object);
 
 			//Act
@@ -189,8 +221,120 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
 			//Assert
 			Assert.IsNotNull(resultAction);
-			Assert.AreEqual(_updateMovie.Id, resultAction.Id);
+			Assert.AreEqual(_updateMovie.Title, resultAction.Title);
 		}
 
+		[TestMethod]
+		public void MovieService_UpdateMovie_InsertedNull_ReturnsError()
+		{
+			//Arrange
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_movie = null;
+
+			_mockMoviesRepository.Setup(x => x.Update(It.IsAny<Movie>())).Returns(_movie);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object);
+
+			//Act
+			var resultAction = movieService.UpdateMovie(_updateMovie).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
+		}
+
+		//[TestMethod]
+		//public void MovieService_DeleteMovie_ReturnDeletedMovie()
+		//{
+		//	//Arrange
+		//	_mockMoviesRepository = new Mock<IMoviesRepository>();
+
+		//	_mockMoviesRepository.Setup(x => x.Delete(It.IsAny<Movie>())).Returns(_movie);
+		//	MovieService movieService = new MovieService(_mockMoviesRepository.Object);
+
+		//	//Act
+		//	var resultAction = movieService.DeleteMovie(_movie.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+		//	//Assert
+		//	Assert.IsNotNull(resultAction);
+		//}
+
+		[TestMethod]
+		public void MovieService_MovieTopList_ReturnListOfTopMovies()
+		{
+			//Arrange
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			List<Movie> movies = new List<Movie>();
+			int expectedResult = 4;
+			movies.Add(_movie);
+			movies.Add(_movieTwo);
+			movies.Add(_movieThree);
+			movies.Add(_movieFour);
+			IEnumerable<Movie> moviesList = movies;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(moviesList);
+
+			_mockMoviesRepository.Setup(x => x.GetTopMovies()).Returns(responseTask);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object);
+
+			//Act
+			List<MovieDomainModel> resultAction = movieService.MovieTopList().ConfigureAwait(false).GetAwaiter().GetResult().ToList();
+
+			//Assert
+			Assert.IsNotNull(resultAction);
+			Assert.AreEqual(resultAction.Count, expectedResult);
+			Assert.IsTrue(resultAction[0].Rating > resultAction[1].Rating);
+		}
+
+		[TestMethod]
+		public void MovieService_MovieTopList_InsertedMockeNull_ReturnsNull()
+		{
+			//Arrange
+			IEnumerable<Movie> movies = null;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
+
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_mockMoviesRepository.Setup(x => x.GetTopMovies()).Returns(responseTask);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object);
+
+			//Act
+			var resultAction = movieService.MovieTopList().ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
+		}
+
+		[TestMethod]
+		public void MovieService_GetMoviesByTag_ReturnsMoviesByTag()
+		{
+			//Arrange
+			IEnumerable<Movie> movies = null;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
+
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_mockMoviesRepository.Setup(x => x.GetTopMovies()).Returns(responseTask);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object);
+
+			//Act
+			var resultAction = movieService.MovieTopList().ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
+		}
+
+		[TestMethod]
+		public void MovieService_GetMoviesByTag_InsertedNonExistentTag_ReturnsErrorMessage()
+		{
+			//Arrange
+			IEnumerable<Movie> movies = null;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
+
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_mockMoviesRepository.Setup(x => x.GetTopMovies()).Returns(responseTask);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object);
+
+			//Act
+			var resultAction = movieService.MovieTopList().ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
+		}
 	}
 }
