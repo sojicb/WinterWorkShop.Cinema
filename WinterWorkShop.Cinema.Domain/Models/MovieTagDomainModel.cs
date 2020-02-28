@@ -8,5 +8,7 @@ namespace WinterWorkShop.Cinema.Domain.Models
 	{
 		public Guid MovieId { get; set; }
 		public int TagId { get; set; }
+		public TagDomainModel Tag { get; set; }
+		public MovieDomainModel Movie { get; set; }
 	}
 }

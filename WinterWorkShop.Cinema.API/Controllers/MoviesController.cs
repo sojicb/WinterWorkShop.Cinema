@@ -84,7 +84,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
 
-            movieDomainModels = _movieService.GetAllMovies(true);
+            movieDomainModels = await _movieService.GetAllMovies(true);
 
             if (movieDomainModels == null)
             {

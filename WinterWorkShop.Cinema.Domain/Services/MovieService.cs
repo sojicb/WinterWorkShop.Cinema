@@ -24,10 +24,15 @@ namespace WinterWorkShop.Cinema.Domain.Services
             _movieTagsService = movieTagsService;
         }
 
-        public IEnumerable<MovieDomainModel> GetAllMovies(bool? isCurrent)
+        public async Task<IEnumerable<MovieDomainModel>> GetAllMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
-            var tags = _movieTagsService.GetAllAsync();
+            var tags = await _movieTagsService.GetAllAsync();
+
+            if(tags == null)
+            {
+                return null;
+            }
 
             if (data == null)
             {
@@ -35,16 +40,26 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             List<MovieDomainModel> result = new List<MovieDomainModel>();
+            List<TagDomainModel> tagResults = new List<TagDomainModel>();
             MovieDomainModel model;
             foreach (var item in data)
             {
+                foreach(var tag in tags)
+                {
+                    tagResults.Add(new TagDomainModel
+                    {
+                        Id = tag.TagId,
+                        value = tag.Tag.value
+                    });
+                }
                 model = new MovieDomainModel
                 {
                     Current = item.Current,
                     Id = item.Id,
                     Rating = item.Rating ?? 0,
                     Title = item.Title,
-                    Year = item.Year
+                    Year = item.Year,
+                    Tags = tagResults
                 };
                 result.Add(model);
             }
@@ -56,10 +71,26 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<MovieDomainModel> GetMovieByIdAsync(Guid id)
         {
             var data = await _moviesRepository.GetByIdAsync(id);
+            var tags = await _movieTagsService.GetAllAsync();
 
             if (data == null)
             {
                 return null;
+            }
+
+            List<TagDomainModel> tagResults = new List<TagDomainModel>();
+
+            foreach (var tag in tags)
+            {
+                if(tag.Movie.Id.Equals(data.Id))
+                {
+                    tagResults.Add(new TagDomainModel
+                    {
+                        Id = tag.TagId,
+                        value = tag.Tag.value
+                    });
+                }
+                
             }
 
             MovieDomainModel domainModel = new MovieDomainModel
@@ -68,7 +99,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 Current = data.Current,
                 Rating = data.Rating ?? 0,
                 Title = data.Title,
-                Year = data.Year
+                Year = data.Year,
+                Tags = tagResults
             };
 
             return domainModel;
