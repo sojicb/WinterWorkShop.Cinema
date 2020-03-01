@@ -89,8 +89,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
         public void CinemaService_GetCinemasByName_ReturnNull()
         {
             //Arrange
-            Data.Cinema cinemas = null;
-            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+            _cinema = null;
+            Task<Data.Cinema> responseTask = Task.FromResult(_cinema);
 
             _mockCinemasRepository = new Mock<ICinemasRepository>();
             _mockCinemasRepository.Setup(x => x.GetByCinemaName("")).Returns(responseTask);
@@ -105,7 +105,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(resultAction);
-            Assert.AreEqual(cinemas, resultAction);
+            Assert.AreEqual(_cinema, resultAction);
         }
 
         [TestMethod]
@@ -151,15 +151,15 @@ namespace WinterWorkShop.Cinema.Tests.Services
         public void CinemaService_GetCinemasById_ReturnCinema()
         {
             //Arrange
-            Data.Cinema cinemas = new Data.Cinema()
+            _cinema = new Data.Cinema()
             {
                 Id = 0,
                 Name = "Randomz"
             };
-            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+            Task<Data.Cinema> responseTask = Task.FromResult(_cinema);
 
             _mockCinemasRepository = new Mock<ICinemasRepository>();
-            _mockCinemasRepository.Setup(x => x.GetByIdAsync(cinemas.Id)).Returns(responseTask);
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(_cinema.Id)).Returns(responseTask);
             CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
 
             //Act
@@ -171,7 +171,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNotNull(resultAction);
-            Assert.AreEqual(cinemas.Id, resultAction.Id);
+            Assert.AreEqual(_cinema.Id, resultAction.Id);
             Assert.IsInstanceOfType(resultAction, typeof(CinemaDomainModel));
         }
 
@@ -179,8 +179,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
         public void CinemaService_GetCinemasById_ReturnNull()
         {
             //Arrange
-            Data.Cinema cinemas = null;
-            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+            _cinema = null;
+            Task<Data.Cinema> responseTask = Task.FromResult(_cinema);
 
             _mockCinemasRepository = new Mock<ICinemasRepository>();
             _mockCinemasRepository.Setup(x => x.GetByIdAsync(null)).Returns(responseTask);
@@ -195,7 +195,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNull(resultAction);
-            Assert.AreEqual(cinemas, resultAction);
+            Assert.AreEqual(_cinema, resultAction);
         }
 
         //[TestMethod]
@@ -237,14 +237,14 @@ namespace WinterWorkShop.Cinema.Tests.Services
         public void CinemaService_DeletingCinema_ReturnsACinema()
         {
             //Arrange
-            Data.Cinema cinemas = new Data.Cinema()
+            _cinema = new Data.Cinema()
             {
                 Id = 0,
                 Name = "Randomz"
             };
 
             _mockCinemasRepository = new Mock<ICinemasRepository>();
-            _mockCinemasRepository.Setup(x => x.Delete(cinemas.Id)).Returns(cinemas);
+            _mockCinemasRepository.Setup(x => x.Delete(_cinema.Id)).Returns(_cinema);
             CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
 
             //Act
@@ -256,9 +256,31 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Assert
             Assert.IsNotNull(resultAction);
-            Assert.AreEqual(cinemas.Id, resultAction.Id);
+            Assert.AreEqual(_cinema.Id, resultAction.Id);
             Assert.IsInstanceOfType(resultAction, typeof(CinemaDomainModel));
-            Assert.AreEqual(cinemas.Name, resultAction.Name);
+            Assert.AreEqual(_cinema.Name, resultAction.Name);
+        }
+
+        [TestMethod]
+        public void CinemaService_DeletingCinema_ReturnsANull()
+        {
+            //Arrange
+            Data.Cinema cinemasModelsList = new Data.Cinema();
+            _cinema = new Data.Cinema { };
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.Delete(_cinema.Id)).Returns(cinemasModelsList);
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController
+                .DeleteCinema(1)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
         }
     }
 }
