@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -13,11 +14,15 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 		private readonly IReservationRepository _reservationRepository;
 		private readonly IProjectionService _projectionService;
+		private readonly ISeatReservationService _seatReservationService;
+		private readonly ISeatService _seatService;
 
-		public ReservationService(IReservationRepository reservationRepository, IProjectionService projectionService)
+		public ReservationService(IReservationRepository reservationRepository, IProjectionService projectionService, ISeatReservationService seatReservationService, ISeatService seatService)
 		{
 			_reservationRepository = reservationRepository;
 			_projectionService = projectionService;
+			_seatReservationService = seatReservationService;
+			_seatService = seatService;
 		}
 
 		public Task<ReservationDomainModel> CreateReservation(AuditoriumDomainModel domainModel)
@@ -28,7 +33,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 		public async Task<IEnumerable<ReservationDomainModel>> GetAllAsync()
 		{
 			var data = await _reservationRepository.GetAll();
-			
 
 			if(data == null)
 			{
@@ -36,11 +40,22 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			}
 
 			List<ReservationDomainModel> reservations = new List<ReservationDomainModel>();
-			List<SeatDomainModel> seats = new List<SeatDomainModel>();
+			List<SeatDomainModel> reservedSeats = new List<SeatDomainModel>();
 
 			foreach(var reservation in data)
 			{
 				var projection = await _projectionService.GetProjectionByIdAsync(reservation.ProjectionId);
+				var seatReservations = await _seatReservationService.GetAllAsync();
+				var seats = seatReservations.Select(x => x.Seat).ToList();
+				foreach(var seat in seats)
+				{
+					reservedSeats.Add(new SeatDomainModel
+					{
+					Id = seat.Id,
+					Number = seat.Number,
+					Row = seat.Row
+					});
+				}
 				reservations.Add(new ReservationDomainModel
 				{
 					Id = reservation.Id,
@@ -48,6 +63,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					ProjectionId = reservation.ProjectionId,
 					Username = reservation.User.UserName,
 					ProjectionTime = reservation.Projection.DateTime,
+					Seats = reservedSeats
 				});
 			}
 
