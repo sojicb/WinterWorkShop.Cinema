@@ -80,7 +80,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("current")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesAsync()
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesAsync()
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
 
@@ -100,7 +100,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("all")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetAllMovies()
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetAllMovies()
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
 
