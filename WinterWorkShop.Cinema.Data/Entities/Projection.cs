@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using WinterWorkShop.Cinema.Data.Entities;
 
 namespace WinterWorkShop.Cinema.Data
 {
@@ -18,8 +19,11 @@ namespace WinterWorkShop.Cinema.Data
         [Column("movieId")]
         public Guid MovieId { get; set; }
 
-        public virtual Movie Movie { get; set; }
+		#region[Relationships]
+        public virtual ICollection<Reservation> Reservations { get; set; }
+		public virtual Movie Movie { get; set; }
 
         public virtual Auditorium Auditorium { get; set; }
-    }
+		#endregion
+	}
 }

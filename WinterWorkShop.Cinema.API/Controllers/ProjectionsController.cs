@@ -58,7 +58,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         {
             ProjectionDomainModel projection;
 
-            projection = await _projectionService.GetProjectionById2Async(id);
+            projection = await _projectionService.GetProjectionByIdAsync(id);
 
             if (projection == null)
             {
