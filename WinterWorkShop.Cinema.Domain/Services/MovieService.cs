@@ -225,38 +225,26 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
         
-        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(int id)
+        public IEnumerable<MovieDomainModel> GetMoviesByTag(int id)
         {
             var data = _moviesRepository.GetMoviesByTag(id).ToList();
 
-            List<CreateMovieResultModel> movies = new List<CreateMovieResultModel>();
+            List<MovieDomainModel> movies = new List<MovieDomainModel>();
 
             if (data.Count == 0)
             {
-                movies.Add(new CreateMovieResultModel
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = Messages.MOVIE_INVALID_TAG
-                });
-                return movies;
+                return null;
             }
 
             foreach(var movie in data)
             {
-                
-                movies.Add(new CreateMovieResultModel
+                movies.Add(new MovieDomainModel
                 {
-                    IsSuccessful = true,
-                    ErrorMessage = null,
-                    Movie = new MovieDomainModel
-                    {
-                        Current = movie.Current,
-                        Id = movie.Id,
-                        Rating = movie.Rating ?? 0,
-                        Title = movie.Title,
-                        Year = movie.Year,
-                        
-                    }
+                    Current = movie.Current,
+                    Id = movie.Id,
+                    Rating = movie.Rating ?? 0,
+                    Title = movie.Title,
+                    Year = movie.Year,
                 });
             }
 
