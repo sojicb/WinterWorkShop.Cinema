@@ -83,7 +83,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesAsync()
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
-
+            
             movieDomainModels = _movieService.GetCurrentMovies(true);
 
             if (movieDomainModels == null)
