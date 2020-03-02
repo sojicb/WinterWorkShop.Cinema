@@ -27,12 +27,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<IEnumerable<MovieDomainModel>> GetAllMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
-            var tags = await _movieTagsService.GetAllAsync();
-
-            if(tags == null)
-            {
-                return null;
-            }
 
             if (data == null)
             {
@@ -44,14 +38,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             MovieDomainModel model;
             foreach (var item in data)
             {
-                foreach(var tag in tags)
-                {
-                    tagResults.Add(new TagDomainModel
-                    {
-                        Id = tag.TagId,
-                        value = tag.Tag.value
-                    });
-                }
                 model = new MovieDomainModel
                 {
                     Current = item.Current,
