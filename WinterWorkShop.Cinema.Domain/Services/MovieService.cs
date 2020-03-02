@@ -24,7 +24,33 @@ namespace WinterWorkShop.Cinema.Domain.Services
             _movieTagsService = movieTagsService;
         }
 
-        public async Task<IEnumerable<MovieDomainModel>> GetAllMovies(bool? isCurrent)
+        public async Task<IEnumerable<MovieDomainModel>> GetAll()
+        {
+            var data = await _moviesRepository.GetAll();
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> result = new List<MovieDomainModel>();
+            MovieDomainModel model;
+            foreach (var item in data)
+            {
+                model = new MovieDomainModel
+                {
+                    Current = item.Current,
+                    Id = item.Id,
+                    Rating = item.Rating ?? 0,
+                    Title = item.Title,
+                    Year = item.Year
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
+
+        public IEnumerable<MovieDomainModel> GetCurrentMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
 
@@ -220,38 +246,26 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
         
-        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(string tagValue)
+        public IEnumerable<MovieDomainModel> GetMoviesByTag(int id)
         {
-            var data = _moviesRepository.GetMoviesByTag(tagValue).ToList();
+            var data = _moviesRepository.GetMoviesByTag(id).ToList();
 
-            List<CreateMovieResultModel> movies = new List<CreateMovieResultModel>();
+            List<MovieDomainModel> movies = new List<MovieDomainModel>();
 
             if (data.Count == 0)
             {
-                movies.Add(new CreateMovieResultModel
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = Messages.MOVIE_INVALID_TAG
-                });
-                return movies;
+                return null;
             }
 
             foreach(var movie in data)
             {
-                
-                movies.Add(new CreateMovieResultModel
+                movies.Add(new MovieDomainModel
                 {
-                    IsSuccessful = true,
-                    ErrorMessage = null,
-                    Movie = new MovieDomainModel
-                    {
-                        Current = movie.Current,
-                        Id = movie.Id,
-                        Rating = movie.Rating ?? 0,
-                        Title = movie.Title,
-                        Year = movie.Year,
-                        
-                    }
+                    Current = movie.Current,
+                    Id = movie.Id,
+                    Rating = movie.Rating ?? 0,
+                    Title = movie.Title,
+                    Year = movie.Year,
                 });
             }
 
