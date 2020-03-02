@@ -100,6 +100,54 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo)
+        {
+            var data = await _projectionsRepository.GetAll();
+
+            List<Projection> result = new List<Projection>();
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            if (cinemaId != 0)
+            {
+                result = data.Where(x => x.Auditorium.CinemaId.Equals(cinemaId)).ToList();
+
+                if (auditoriumId != 0)
+                {
+                    result = result.Where(x => x.AuditoriumId.Equals(auditoriumId)).ToList();
+
+                    if (movieId != null)
+                    {
+                        result = result.Where(x => x.MovieId.Equals(movieId)).ToList();
+                    }
+                }
+            }
+
+            if (dateFrom != null && dateTo != null)
+            {
+                result = data.Where(x => x.DateTime >= dateFrom && x.DateTime <= dateTo).ToList();
+            }
+
+            List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
+            foreach (var item in result)
+            {
+                results.Add(new ProjectionDomainModel
+                {
+                    Id = item.Id,
+                    MovieId = item.MovieId,
+                    AuditoriumId = item.AuditoriumId,
+                    ProjectionTime = item.DateTime,
+                    MovieTitle = item.Movie.Title,
+                    AditoriumName = item.Auditorium.Name
+
+                });
+            }
+            return results;
+        }
+
 
         public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
         {
@@ -158,7 +206,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
             return results;
         }
-
 
         public async Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id)
         {

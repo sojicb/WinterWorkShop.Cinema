@@ -268,5 +268,24 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(projectionDomainModels);
         }
 
+        /// <summary>
+        /// Gets all projections
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("filtering")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid ? movieId = null, DateTime ? dateFrom = null, DateTime ? dateTo = null)
+        {
+
+            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjectionsTwo(cinemaId, auditoriumId, movieId, dateFrom, dateTo);
+
+            if (projectionDomainModels == null)
+            {
+                projectionDomainModels = new List<ProjectionDomainModel>();
+            }
+
+            return Ok(projectionDomainModels);
+        }
+
     }
 }
