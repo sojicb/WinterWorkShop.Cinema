@@ -22,7 +22,33 @@ namespace WinterWorkShop.Cinema.Domain.Services
             _moviesRepository = moviesRepository;
         }
 
-        public IEnumerable<MovieDomainModel> GetAllMovies(bool? isCurrent)
+        public async Task<IEnumerable<MovieDomainModel>> GetAll()
+        {
+            var data = await _moviesRepository.GetAll();
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> result = new List<MovieDomainModel>();
+            MovieDomainModel model;
+            foreach (var item in data)
+            {
+                model = new MovieDomainModel
+                {
+                    Current = item.Current,
+                    Id = item.Id,
+                    Rating = item.Rating ?? 0,
+                    Title = item.Title,
+                    Year = item.Year
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
+
+        public IEnumerable<MovieDomainModel> GetCurrentMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
 
@@ -199,9 +225,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
         
-        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(string tagValue)
+        public IEnumerable<CreateMovieResultModel> GetMoviesByTag(int id)
         {
-            var data = _moviesRepository.GetMoviesByTag(tagValue).ToList();
+            var data = _moviesRepository.GetMoviesByTag(id).ToList();
 
             List<CreateMovieResultModel> movies = new List<CreateMovieResultModel>();
 
