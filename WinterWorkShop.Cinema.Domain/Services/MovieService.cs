@@ -282,12 +282,14 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 return null;
             }
+
+            var projections = data.Select(x => x.Movie.Projections.Where(y => y.AuditoriumId.Equals(id))).ToList();
+            var movieIds = projections.SelectMany(x => x.Select(y => y.MovieId));
+            var movies = await _moviesRepository.GetAll();
+            movies = movies.Where(x => movieIds.Contains(x.Id)).ToList();
             
-            var projections = data.Where(x => x.AuditoriumId.Equals(id)).ToList();
-
-            var movies = projections.Select(x => x.Movie).ToList();
-
             List<MovieDomainModel> models = new List<MovieDomainModel>();
+
             foreach(var movie in movies)
             {
                 models.Add(new MovieDomainModel
