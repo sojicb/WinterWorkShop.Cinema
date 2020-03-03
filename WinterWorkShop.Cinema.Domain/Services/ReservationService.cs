@@ -42,12 +42,14 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			List<ReservationDomainModel> reservations = new List<ReservationDomainModel>();
 			List<SeatDomainModel> reservedSeats = new List<SeatDomainModel>();
 
-			foreach(var reservation in data)
+			foreach (var reservation in data)
 			{
+				var seatIds = _seatReservationService.GetAllAsync().Result.Where(x => x.ReservationId.Equals(reservation.Id)).Select(y => y.SeatId).ToList();
 				var projection = await _projectionService.GetProjectionByIdAsync(reservation.ProjectionId);
-				var seatReservations = await _seatReservationService.GetAllAsync();
-				var seats = seatReservations.Select(x => x.Seat).ToList();
-				foreach(var seat in seats)
+				var allSeats = _seatService.GetAllAsync().Result.ToList();
+				var seats = allSeats.Where(y => seatIds.Contains(y.Id)).ToList();
+
+				foreach (var seat in seats)
 				{
 					reservedSeats.Add(new SeatDomainModel
 					{
@@ -56,6 +58,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					Row = seat.Row
 					});
 				}
+
 				reservations.Add(new ReservationDomainModel
 				{
 					Id = reservation.Id,
@@ -65,6 +68,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					ProjectionTime = reservation.Projection.DateTime,
 					Seats = reservedSeats
 				});
+				reservedSeats = new List<SeatDomainModel>();
 			}
 
 			return reservations;
