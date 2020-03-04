@@ -364,5 +364,24 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Ok(movieDomainModels);
         }
+
+        /// <summary>
+        /// Gets movies with projections in the future
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("futureProjections")]
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesWithProjectionsInFuture()
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels = await _movieService.GetMoviesWithProjectionsInFuture();
+
+            if (movieDomainModels == null)
+            {
+                movieDomainModels = new List<MovieDomainModel>();
+            }
+
+            return Ok(movieDomainModels);
+        }
     }
 }
