@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data.Entities;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
@@ -25,9 +26,38 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			_seatService = seatService;
 		}
 
-		public Task<ReservationDomainModel> CreateReservation(AuditoriumDomainModel domainModel)
+		public async Task<ReservationDomainModel> CreateReservation(ReservationDomainModel domainModel)
 		{
-			throw new NotImplementedException();
+			Reservation reservation = new Reservation 
+			{ 
+				//Id = domainModel.Id,
+				ProjectionId = domainModel.ProjectionId,
+				UserId = domainModel.UserId
+			};
+
+			var data = _reservationRepository.Insert(reservation);
+
+			if(data == null) { return null; }
+
+			InsertSeatReservationModel model = new InsertSeatReservationModel
+			{
+				ProjectionTime = domainModel.ProjectionTime,
+				ReservationId = data.Id,
+				Seats = domainModel.Seats
+			};
+
+			var seats = await _seatReservationService.InsertResevedSeats(model);
+
+			_reservationRepository.Save();
+
+			ReservationDomainModel reservationDomain = new ReservationDomainModel()
+			{
+				Id = data.Id,
+				ProjectionId = data.ProjectionId,
+				UserId = data.UserId
+			};
+
+			return reservationDomain;
 		}
 
 		public async Task<IEnumerable<ReservationDomainModel>> GetAllAsync()

@@ -4,12 +4,11 @@ using System.Text;
 
 namespace WinterWorkShop.Cinema.Domain.Models
 {
-	public class SeatReservationDomainModel
+	public class InsertSeatReservationModel
 	{
 		public Guid ReservationId { get; set; }
-		public Guid SeatId { get; set; }
 		public DateTime ProjectionTime { get; set; }
-		public SeatDomainModel Seat { get; set; }
+		public List<SeatDomainModel> Seats { get; set; }
 		public ReservationDomainModel Reservation { get; set; }
 	}
 }

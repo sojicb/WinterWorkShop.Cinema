@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data.Entities;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
@@ -51,6 +52,46 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			return seatReservations;
 		}
 
+		//seats, reservationId, projectiontime
+		public async Task<IEnumerable<SeatReservationDomainModel>> InsertResevedSeats(InsertSeatReservationModel seatReservation)
+		{
+			SeatReservation data = new SeatReservation();
 
+			List<SeatReservation> insertedReservations = new List<SeatReservation>();
+
+			List<SeatReservationDomainModel> seatReservations = new List<SeatReservationDomainModel>();
+
+			foreach (var seat in seatReservation.Seats)
+			{
+				SeatReservation model = new SeatReservation
+				{
+					ReservationId = seatReservation.ReservationId,
+					ProjectionTime = seatReservation.ProjectionTime,
+					SeatId = seat.Id
+				};
+
+				data = _seatReservationRepository.Insert(model);
+				
+				if(data == null)
+				{
+					return null;
+				}
+
+				insertedReservations.Add(data);
+			}
+
+			_seatReservationRepository.Save();
+
+			foreach(var item in insertedReservations)
+			{
+				seatReservations.Add(new SeatReservationDomainModel
+				{
+					ProjectionTime = item.ProjectionTime,
+					ReservationId = item.ReservationId,
+					SeatId = item.SeatId
+				});
+			}
+			return seatReservations;
+		}
 	}
 }

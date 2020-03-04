@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 
@@ -29,6 +30,28 @@ namespace WinterWorkShop.Cinema.API.Controllers
             IEnumerable<ReservationDomainModel> reservations = await _reservationService.GetAllAsync();
 
             if(reservations == null)
+            {
+                return null;
+            }
+
+            return Ok(reservations);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<IEnumerable<ReservationDomainModel>>> GetAsync([FromBody] CreateReservationModel createReservation)
+        {
+            ReservationDomainModel reservationDomain = new ReservationDomainModel()
+            {
+                ProjectionId = createReservation.ProjectionId,
+                ProjectionTime = createReservation.ProjectionTime,
+                UserId = createReservation.UserId,
+                Seats = createReservation.Seats
+            };
+
+            ReservationDomainModel reservations = await _reservationService.CreateReservation(reservationDomain);
+
+            if (reservations == null)
             {
                 return null;
             }

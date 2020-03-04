@@ -9,5 +9,6 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
 	public interface ISeatReservationService
 	{
 		Task<IEnumerable<SeatReservationDomainModel>> GetAllAsync();
+		Task<IEnumerable<SeatReservationDomainModel>> InsertResevedSeats(InsertSeatReservationModel seatReservation);
 	}
 }
