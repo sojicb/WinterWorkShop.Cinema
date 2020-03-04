@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WinterWorkShop.Cinema.API.Models;
@@ -151,9 +147,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             }
 
-            //auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
             auditoriumToUpdate.Name = createAuditoriumModel.Name;
-
 
             AuditoriumDomainModel auditoriumDomainModel;
             try
@@ -184,8 +178,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-
             DeleteAuditoriumDomainModel deleteAuditorium;
+
             try
             {
                 deleteAuditorium = await _auditoriumService.DeleteAuditorium(id);
@@ -201,7 +195,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-
             if (deleteAuditorium == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
@@ -214,7 +207,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("auditroiums//" + deleteAuditorium.Auditorium.Id, deleteAuditorium.Auditorium);
-
         }
 
         /// <summary>

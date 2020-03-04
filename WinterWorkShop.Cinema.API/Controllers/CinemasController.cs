@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -200,9 +197,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             }
 
-            //auditoriumToUpdate.CinemaId = createAuditoriumModel.cinemaId;
             cinemaToUpdate.Name = cinemaModels.Name;
-
 
             CinemaDomainModel cinemaDomainModel;
             try
@@ -222,6 +217,5 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Accepted("cinemas//" + cinemaDomainModel.Id, cinemaDomainModel);
         }
-
     }
 }

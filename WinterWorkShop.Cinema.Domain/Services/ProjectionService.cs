@@ -100,7 +100,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
-        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int? cinemaId, int? auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo)
+        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(int? cinemaId, int? auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo)
         {
             var data = await _projectionsRepository.GetAll();
 
@@ -148,85 +148,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return results;
         }
 
-
-        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
-        {
-            var data = await _projectionsRepository.GetAll();
-
-            List<Projection> result = new List<Projection>();
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            //Filter By CinemaId
-            if (filterModel.CinemaId != null)
-            {
-                result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
-            }
-
-            //Filter By AuditoriumId
-            if (filterModel.AuditoriumId != null)
-            {
-                var projections = filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
-
-                return projections;
-            }
-
-            //Filter ByMovieId
-            if (filterModel.MovieId != null)
-            {
-                var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
-
-                return projections;
-            }
-
-            //Filter by TimeSpan
-            if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
-            {
-                var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
-
-                return projections;
-            }
-
-            List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
-            foreach (var item in result)
-            {
-                results.Add(new ProjectionDomainModel
-                {
-                    Id = item.Id,
-                    MovieId = item.MovieId,
-                    AuditoriumId = item.AuditoriumId,
-                    ProjectionTime = item.DateTime,
-                    MovieTitle = item.Movie.Title,
-                    AditoriumName = item.Auditorium.Name
-
-                });
-            }
-            return results;
-        }
-
-        public async Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id)
-        {
-            var data = await _projectionsRepository.GetByIdAsync(id);
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            ProjectionDomainModel domainModel = new ProjectionDomainModel
-            {
-                Id = data.Id,
-                AuditoriumId = data.AuditoriumId,
-                MovieId = data.MovieId,
-                ProjectionTime = data.DateTime
-            };
-
-            return domainModel;
-        }
-
         public async Task<ProjectionDomainModel> UpdateProjection(ProjectionDomainModel updateProjection)
         {
             Projection projection = new Projection()
@@ -256,7 +177,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
         }
-
         public ProjectionDomainModel DeleteProjection(Guid id)
         {
             var data = _projectionsRepository.Delete(id);
@@ -281,7 +201,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         }
 
-        public async Task<ProjectionDomainModel> GetProjectionById2Async(Guid id)
+        public async Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id)
         {
 
             var data = await _projectionsRepository.GetByIdAsync(id);
@@ -299,8 +219,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 MovieId = data.MovieId,
                 MovieTitle = data.Movie.Title,
                 AditoriumName = data.Auditorium.Name
-
-
             };
 
             return domainModel;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -38,8 +37,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             List<AuditoriumDomainModel> result = new List<AuditoriumDomainModel>();
             List<SeatDomainModel> seats = new List<SeatDomainModel>();
             AuditoriumDomainModel model;
-
-
 
             foreach (var item in data)
             {
