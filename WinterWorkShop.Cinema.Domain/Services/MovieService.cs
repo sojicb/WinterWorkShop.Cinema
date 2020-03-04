@@ -312,16 +312,32 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             List<MovieDomainModel> movies = new List<MovieDomainModel>();
+            List<ProjectionDomainModel> listProjections = new List<ProjectionDomainModel>();
 
             foreach(var movie in result)
             {
-                movies.Add(new MovieDomainModel
+                var projections = movie.Projections.Where(x => x.DateTime > DateTime.UtcNow);
+
+                foreach(var projection in projections)
                 {
+                    listProjections.Add(new ProjectionDomainModel
+                    {
+                        Id = projection.Id,
+                        AuditoriumId = projection.AuditoriumId,
+                        MovieId = projection.MovieId,
+                        ProjectionTime = projection.DateTime,
+                        MovieTitle = projection.Movie.Title
+                    });
+                }
+
+                movies.Add(new MovieDomainModel
+                { 
                     Current = movie.Current,
                     Id = movie.Id,
                     Rating = movie.Rating ?? 0,
                     Title = movie.Title,
                     Year = movie.Year,
+                    Projections = listProjections
                 });
             }
 

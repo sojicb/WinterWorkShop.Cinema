@@ -96,7 +96,10 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Movie>> GetMoviesWithProjectionsInFuture()
         {
-            var movies = await _cinemaContext.Movies.Include(x => x.Projections).Where(x => x.Projections.Any(y => y.DateTime > DateTime.Now)).ToListAsync();
+            var movies = await _cinemaContext.Movies
+                .Include(x => x.Projections)
+                .Where(x => x.Projections.Any(y => y.DateTime > DateTime.Now))
+                .ToListAsync();
 
            // var result = movies.Where(x => x.Projections.Where(y => y.DateTime > DateTime.Now)).ToList();
 
