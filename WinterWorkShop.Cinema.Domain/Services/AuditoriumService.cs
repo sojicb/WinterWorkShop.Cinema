@@ -158,7 +158,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 Id = data.Id,
                 CinemaId = data.CinemaId,
-                Name = data.Name,
+                Name = data.Name
             };
 
             return domainModel;
@@ -172,7 +172,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 Id = auditoriumToUpdate.Id,
                 CinemaId = auditoriumToUpdate.CinemaId,
-                Name = auditoriumToUpdate.Name,
+                Name = auditoriumToUpdate.Name
             };
 
             var data = _auditoriumsRepository.Update(auditroium);
@@ -215,25 +215,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return domainModel;
         }
 
-        public async Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id)
-        {
-            var data = await _auditoriumsRepository.GetByIdAsync(id);
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            AuditoriumDomainModel domainModel = new AuditoriumDomainModel
-            {
-                Id = data.Id,
-                Name = data.Name,
-                CinemaId = data.CinemaId
-
-
-            };
-
-            return domainModel;
-        }
+       
     }
 }

@@ -34,6 +34,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 MovieTitle = "ImeFilma",
                 ProjectionTime = DateTime.Now.AddDays(1)
             };
+            
             projectionsDomainModelsList.Add(projectionDomainModel);
             IEnumerable<ProjectionDomainModel> projectionDomainModels = projectionsDomainModelsList;
             Task<IEnumerable<ProjectionDomainModel>> responseTask = Task.FromResult(projectionDomainModels);

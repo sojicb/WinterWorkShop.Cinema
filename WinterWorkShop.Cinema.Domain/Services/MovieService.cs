@@ -33,8 +33,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             List<MovieDomainModel> result = new List<MovieDomainModel>();
             MovieDomainModel model;
+           
             foreach (var item in data)
             {
+               
+
                 model = new MovieDomainModel
                 {
                     Current = item.Current,
@@ -42,12 +45,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Rating = item.Rating ?? 0,
                     Title = item.Title,
                     Year = item.Year
+                    
                 };
                 result.Add(model);
             }
 
             return result;
-
         }
 
         public async Task<MovieDomainModel> GetMovieByIdAsync(Guid id)
@@ -69,6 +72,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return domainModel;
+           
         }
 
         public async Task<CreateMovieResultModel> AddMovie(MovieDomainModel newMovie)

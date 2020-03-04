@@ -58,7 +58,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         {
             AuditoriumDomainModel auditorium;
 
-            auditorium = await _auditoriumService.GetAuditroiumByIdAsync(id);
+            auditorium = await _auditoriumService.GetAuditoriumByIdAsync(id);
 
             if (auditorium == null)
             {

@@ -42,7 +42,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Movie>> GetAll()
         {
-            return await _cinemaContext.Movies.ToListAsync();
+            return await _cinemaContext.Movies.Include(x => x.MovieTags).ToListAsync();
         }
 
         public async Task<Movie> GetByIdAsync(object id)
@@ -54,7 +54,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public IEnumerable<Movie> GetCurrentMovies()
         {
-            var data = _cinemaContext.Movies.Where(x => x.Current);
+            var data = _cinemaContext.Movies.Where(x => x.Current).Include(x => x.MovieTags);
 
             return data;
         }

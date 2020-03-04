@@ -62,7 +62,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Arrange
             int expectedResultCount = 1;
             ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
-
             //Act
             var resultAction = projectionsController.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             var result = (List<ProjectionDomainModel>)resultAction;
@@ -159,7 +158,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             _mockProjectionsRepository.Setup(x => x.Insert(It.IsAny<Projection>())).Returns(_projection);
             _mockProjectionsRepository.Setup(x => x.Save());
             ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
-
+                    
             //Act
             var resultAction = projectionsController.CreateProjection(_projectionDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -167,7 +166,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsNotNull(resultAction);
             Assert.AreEqual(_projection.Id, resultAction.Projection.Id);
             Assert.IsNull(resultAction.ErrorMessage);
-            Assert.IsTrue(resultAction.IsSuccessful);
+            Assert.IsTrue(resultAction.IsSuccessful);   
         }
 
         [TestMethod]
