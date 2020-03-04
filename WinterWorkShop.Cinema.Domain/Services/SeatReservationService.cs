@@ -50,5 +50,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 			return seatReservations;
 		}
+
+
 	}
 }
