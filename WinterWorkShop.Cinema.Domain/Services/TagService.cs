@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data.Entities;
 using WinterWorkShop.Cinema.Domain.Common;
@@ -12,15 +10,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
 {
     public class TagService : ITagService
     {
-
         private readonly ITagRepository _tagRepository;
 
         public TagService(ITagRepository tagsRepository)
         {
             _tagRepository = tagsRepository;
         }
-
-
 
         public async Task<IEnumerable<TagDomainModel>> GetAllAsync()
         {
@@ -47,8 +42,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
-
-        
         public async Task<TagDomainModel> GetTagByIdAsync(int id)
         {
             var data = await _tagRepository.GetByIdAsync(id);
@@ -66,7 +59,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
         }
-
 
         public async Task<CreateTagResultModel> AddTag(TagDomainModel newTag)
         {
@@ -91,7 +83,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             _tagRepository.Save();
 
-
             CreateTagResultModel resultModel = new CreateTagResultModel
             {
                 IsSuccessful = true,
@@ -105,8 +96,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return resultModel;
-
-
         }
 
         public async Task<TagDomainModel> UpdateTag(TagDomainModel tagToUpdate)
