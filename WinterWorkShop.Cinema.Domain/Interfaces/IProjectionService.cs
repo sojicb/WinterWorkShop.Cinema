@@ -15,6 +15,6 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         ProjectionDomainModel DeleteProjection(Guid id);
         Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel);
         Task<ProjectionDomainModel> GetProjectionById2Async(Guid id);
-        Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo);
+        Task<IEnumerable<ProjectionDomainModel>> FilterProjectionsTwo(int? cinemaId, int? auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo);
     }
 }

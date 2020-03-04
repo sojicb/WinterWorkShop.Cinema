@@ -277,5 +277,29 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
         }
+
+        public async Task<IEnumerable<AuditoriumDomainModel>> GetAllByCinemaId(int id)
+        {
+            var data = await _auditoriumsRepository.GetAll();
+
+            if(data == null)
+            {
+                return null;
+            }
+            var audits = data.Where(x => x.CinemaId.Equals(id));
+
+            List<AuditoriumDomainModel> models = new List<AuditoriumDomainModel>();
+
+            foreach(var audit in audits)
+            {
+                models.Add(new AuditoriumDomainModel
+                {
+                    Id = audit.Id,
+                    CinemaId = audit.CinemaId,
+                    Name = audit.Name
+                });
+            }
+            return models;
+        }
     }
 }

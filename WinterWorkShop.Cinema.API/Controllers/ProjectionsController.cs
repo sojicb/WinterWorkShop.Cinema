@@ -274,7 +274,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("filtering")]
-        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjectionsTwo(int cinemaId, int auditoriumId, Guid ? movieId = null, DateTime ? dateFrom = null, DateTime ? dateTo = null)
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjectionsTwo(int ? cinemaId = null, int ? auditoriumId = null, Guid ? movieId = null, DateTime ? dateFrom = null, DateTime ? dateTo = null)
         {
 
             IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjectionsTwo(cinemaId, auditoriumId, movieId, dateFrom, dateTo);

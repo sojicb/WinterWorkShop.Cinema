@@ -216,5 +216,26 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Accepted("auditroiums//" + deleteAuditorium.Auditorium.Id, deleteAuditorium.Auditorium);
 
         }
+
+        /// <summary>
+        /// Gets all auditoriums
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        [Route("filter/{id}")]
+        public async Task<ActionResult<IEnumerable<AuditoriumDomainModel>>> GetAllByCinemaId(int id)
+        {
+            IEnumerable<AuditoriumDomainModel> auditoriumDomainModels;
+
+            auditoriumDomainModels = await _auditoriumService.GetAllByCinemaId(id);
+
+            if (auditoriumDomainModels == null)
+            {
+                auditoriumDomainModels = new List<AuditoriumDomainModel>();
+            }
+
+            return Ok(auditoriumDomainModels);
+        }
     }
 }

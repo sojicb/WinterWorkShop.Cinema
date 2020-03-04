@@ -17,11 +17,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IMoviesRepository _moviesRepository;
         private readonly IMovieTagsService _movieTagsService;
+        private readonly IProjectionsRepository _projectionsRepository;
 
-        public MovieService(IMoviesRepository moviesRepository, IMovieTagsService movieTagsService)
+        public MovieService(IMoviesRepository moviesRepository, IMovieTagsService movieTagsService, IProjectionsRepository projectionsRepository)
         {
             _moviesRepository = moviesRepository;
             _movieTagsService = movieTagsService;
+            _projectionsRepository = projectionsRepository;
         }
 
         public async Task<IEnumerable<MovieDomainModel>> GetAll()
@@ -270,6 +272,37 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             return movies;
+        }
+
+        public async Task<IEnumerable<MovieDomainModel>> GetMoviesByAuditId(int id)
+        {
+            var data = await _projectionsRepository.GetAll();
+
+            if(data == null)
+            {
+                return null;
+            }
+
+            var projections = data.Select(x => x.Movie.Projections.Where(y => y.AuditoriumId.Equals(id))).ToList();
+            var movieIds = projections.SelectMany(x => x.Select(y => y.MovieId));
+            var movies = await _moviesRepository.GetAll();
+            movies = movies.Where(x => movieIds.Contains(x.Id)).ToList();
+            
+            List<MovieDomainModel> models = new List<MovieDomainModel>();
+
+            foreach(var movie in movies)
+            {
+                models.Add(new MovieDomainModel
+                {
+                    Current = movie.Current,
+                    Id = movie.Id,
+                    Rating = movie.Rating ?? 0,
+                    Title = movie.Title,
+                    Year = movie.Year
+                });
+            }
+
+            return models;
         }
     }   
 }   
