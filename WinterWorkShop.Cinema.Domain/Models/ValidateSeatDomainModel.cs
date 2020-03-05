@@ -8,6 +8,6 @@ namespace WinterWorkShop.Cinema.Domain.Models
 	{
 		public string ErrorMessage { get; set; }
 		public bool IsSuccessful { get; set; }
-		public SeatValidationDomainModel SeatValidation { get; set; }
+		public SeatDomainModel Seat { get; set; }
 	}
 }

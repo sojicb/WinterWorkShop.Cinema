@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data.Entities;
@@ -13,10 +14,12 @@ namespace WinterWorkShop.Cinema.Domain.Services
 	public class SeatReservationService : ISeatReservationService
 	{
 		private readonly ISeatReservationRepository _seatReservationRepository;
+		private readonly IAuditoriumsRepository _auditoriumsRepository;
 
-		public SeatReservationService(ISeatReservationRepository seatReservationRepository)
+		public SeatReservationService(ISeatReservationRepository seatReservationRepository, IAuditoriumsRepository auditoriumsRepository)
 		{
 			_seatReservationRepository = seatReservationRepository;
+			_auditoriumsRepository = auditoriumsRepository;
 		}
 
 		public async Task<IEnumerable<SeatReservationDomainModel>> GetAllAsync()
@@ -120,6 +123,72 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			}
 
 			return new SeatReservationValidationDomainModel
+			{
+				IsSuccessful = true,
+				ErrorMessage = null
+			};
+		}
+
+		public async Task<ValidateSeatDomainModel> HandleSeatReservation(SeatValidationDomainModel model)
+		{
+			var audit = await _auditoriumsRepository.GetByIdAsync(model.AuditoriumId);
+
+			if (audit == null)
+			{
+				return null;
+			}
+
+			//All Audit Seats
+			List<SeatDomainModel> seats = new List<SeatDomainModel>();
+
+			SeatReservationDomainModel domainModel = new SeatReservationDomainModel();
+
+			foreach (var seat in audit.Seats)
+			{
+				seats.Add(new SeatDomainModel
+				{
+					Id = seat.Id,
+					AuditoriumId = seat.AuditoriumId,
+					Number = seat.Number,
+					Row = seat.Row
+				});
+			}
+
+			foreach (var seat in model.Seats)
+			{
+				domainModel = new SeatReservationDomainModel
+				{
+					SeatId = seat.Id,
+					ProjectionTime = model.ProjectionTime
+				};
+
+				var data = await ValidateSeat(domainModel);
+
+				if (!data.IsSuccessful)
+				{
+					return new ValidateSeatDomainModel
+					{
+						IsSuccessful = false,
+						ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
+						Seat = seat
+					};
+				}
+			}
+
+
+			for (int i = 0; i < model.Seats.Count - 1; i++)
+			{
+				if(!model.Seats.ElementAt(i).Row.Equals(model.Seats.ElementAt(i + 1).Row))
+				{
+					return new ValidateSeatDomainModel
+					{
+						IsSuccessful = false,
+						ErrorMessage = Messages.SEAT_IN_WRONG_ROW
+					};
+				}
+			}
+
+			return new ValidateSeatDomainModel
 			{
 				IsSuccessful = true,
 				ErrorMessage = null

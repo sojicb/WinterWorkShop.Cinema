@@ -41,7 +41,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult<IEnumerable<ReservationDomainModel>>> GetAsync([FromBody] CreateReservationModel createReservation)
+        public async Task<ActionResult<IEnumerable<ReservationDomainModel>>> CreateReservation([FromBody] CreateReservationModel createReservation)
         {
             if (!ModelState.IsValid)
             {
@@ -50,11 +50,27 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             ReservationDomainModel reservationDomain = new ReservationDomainModel()
             {
+                AuditoriumId = createReservation.AuditoriumId,
                 ProjectionId = createReservation.ProjectionId,
                 ProjectionTime = createReservation.ProjectionTime,
                 UserId = createReservation.UserId,
                 Seats = createReservation.Seats
             };
+
+            var reservations = await _reservationService.HandleSeatValidation(reservationDomain);
+
+           
+             if(!reservations.IsSuccessful)
+             {
+                ErrorResponseModel errorResponseModel = new ErrorResponseModel
+                {
+                    ErrorMessage = reservations.ErrorMessage,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+                return BadRequest(errorResponseModel);
+             }
+            
+            
 
             CreateReservationResultModel reservation;
 
@@ -87,37 +103,37 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("reservations//" + reservation.Reservation.Id, reservation.Reservation);
         }
 
-        /// <summary>
-        /// Validates Seats
-        /// </summary>
-        /// <param name="seatValidation"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize(Roles = "admin")]
-        [Route("validate")]
-        public async Task<ActionResult<SeatValidationDomainModel>> ValidateSeats([FromBody] SeatValidationModel seatValidation)
-        {
-            SeatValidationDomainModel seatValidationDomain = new SeatValidationDomainModel()
-            {
-                AuditoriumId = seatValidation.AuditoriumId,
-                ProjectionTime = seatValidation.ProjectionTime,
-                Seats = seatValidation.Seats
-            };
+        ///// <summary>
+        ///// Validates Seats
+        ///// </summary>
+        ///// <param name="seatValidation"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Authorize(Roles = "admin")]
+        //[Route("validate")]
+        //public async Task<ActionResult<SeatValidationDomainModel>> ValidateSeats([FromBody] SeatValidationModel seatValidation)
+        //{
+        //    SeatValidationDomainModel seatValidationDomain = new SeatValidationDomainModel()
+        //    {
+        //        AuditoriumId = seatValidation.AuditoriumId,
+        //        ProjectionTime = seatValidation.ProjectionTime,
+        //        Seats = seatValidation.Seats
+        //    };
 
-            ValidateSeatDomainModel reservations = await _reservationService.ValidateSeats(seatValidationDomain);
+        //    ValidateSeatDomainModel reservations = await _reservationService.ValidateSeats(seatValidationDomain);
 
-            if (!reservations.IsSuccessful)
-            {
-                ErrorResponseModel errorResponseModel = new ErrorResponseModel
-                {
-                    ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
-                    StatusCode = System.Net.HttpStatusCode.BadRequest
-                };
+        //    if (!reservations.IsSuccessful)
+        //    {
+        //        ErrorResponseModel errorResponseModel = new ErrorResponseModel
+        //        {
+        //            ErrorMessage = Messages.SEAT_ALREADY_RESERVED + " " + reservations.SeatValidation.Seats.Select(x => x.Id),
+        //            StatusCode = System.Net.HttpStatusCode.BadRequest
+        //        };
 
-                return BadRequest(errorResponseModel);
-            }
+        //        return BadRequest(errorResponseModel);
+        //    }
 
-            return Ok(reservations);
-        }
+        //    return Ok(reservations);
+        //}
     }
 }

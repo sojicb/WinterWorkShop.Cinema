@@ -11,6 +11,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
 		Task<IEnumerable<ReservationDomainModel>> GetAllAsync();
 		Task<CreateReservationResultModel> CreateReservation(ReservationDomainModel domainModel);
 		Task<ReservationDomainModel> GetByIdAsync(Guid id);
-		Task<ValidateSeatDomainModel> ValidateSeats(SeatValidationDomainModel model);
+		//Task<ValidateSeatDomainModel> ValidateSeats(ReservationDomainModel model);
+		Task<ValidateSeatDomainModel> HandleSeatValidation(ReservationDomainModel reservationDomain);
 	}
 }

@@ -130,27 +130,25 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			throw new NotImplementedException();
 		}
 
-		public async Task<ValidateSeatDomainModel> ValidateSeats(SeatValidationDomainModel model)
+		public async Task<ValidateSeatDomainModel> HandleSeatValidation(ReservationDomainModel reservationDomain)
 		{
-			SeatReservationDomainModel domainModel = new SeatReservationDomainModel();
-			foreach(var seat in model.Seats)
+			SeatValidationDomainModel model = new SeatValidationDomainModel
 			{
-				domainModel = new SeatReservationDomainModel
-				{
-					SeatId = seat.Id,
-					ProjectionTime = model.ProjectionTime
-				};
+				AuditoriumId = reservationDomain.AuditoriumId,
+				ProjectionTime = reservationDomain.ProjectionTime,
+				Seats = reservationDomain.Seats
+			};
 
-				var data = await _seatReservationService.ValidateSeat(domainModel);
+			var data = await _seatReservationService.HandleSeatReservation(model);
 
-				if (!data.IsSuccessful)
-				{
-					return new ValidateSeatDomainModel
+			if (!data.IsSuccessful)
+			{
+				return new ValidateSeatDomainModel
 					{
+						ErrorMessage = data.ErrorMessage,
 						IsSuccessful = false,
-						ErrorMessage = Messages.SEAT_ALREADY_RESERVED
+						Seat = data.Seat
 					};
-				}
 			}
 
 			return new ValidateSeatDomainModel
@@ -159,5 +157,36 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				ErrorMessage = null
 			};
 		}
+
+		//public async Task<ValidateSeatDomainModel> ValidateSeats(ReservationDomainModel model)
+		//{
+		//	SeatReservationDomainModel domainModel = new SeatReservationDomainModel();
+
+		//	foreach(var seat in model.Seats)
+		//	{
+		//		domainModel = new SeatReservationDomainModel
+		//		{
+		//			SeatId = seat.Id,
+		//			ProjectionTime = model.ProjectionTime
+		//		};
+
+		//		var data = await _seatReservationService.ValidateSeat(domainModel);
+
+		//		if (!data.IsSuccessful)
+		//		{
+		//			return new ValidateSeatDomainModel
+		//			{
+		//				IsSuccessful = false,
+		//				ErrorMessage = Messages.SEAT_ALREADY_RESERVED
+		//			};
+		//		}
+		//	}
+
+		//	return new ValidateSeatDomainModel
+		//	{
+		//		IsSuccessful = true,
+		//		ErrorMessage = null
+		//	};
+		//}
 	}
 }
