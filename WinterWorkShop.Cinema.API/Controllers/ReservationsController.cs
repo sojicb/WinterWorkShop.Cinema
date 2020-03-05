@@ -89,7 +89,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-            if (reservation.IsSuccessful)
+            if (!reservation.IsSuccessful)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel()
                 {
