@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WinterWorkShop.Cinema.API.Models;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 
@@ -41,6 +43,11 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<ReservationDomainModel>>> GetAsync([FromBody] CreateReservationModel createReservation)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             ReservationDomainModel reservationDomain = new ReservationDomainModel()
             {
                 ProjectionId = createReservation.ProjectionId,
@@ -49,11 +56,65 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 Seats = createReservation.Seats
             };
 
-            ReservationDomainModel reservations = await _reservationService.CreateReservation(reservationDomain);
+            CreateReservationResultModel reservation;
 
-            if (reservations == null)
+            try
             {
-                return null;
+                reservation = await _reservationService.CreateReservation(reservationDomain);
+            }
+            catch (DbUpdateException e)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel()
+                {
+                    ErrorMessage = e.InnerException.Message ?? e.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            if (reservation.IsSuccessful)
+            {
+                ErrorResponseModel errorResponse = new ErrorResponseModel()
+                {
+                    ErrorMessage = reservation.ErrorMessage,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            return Created("reservations//" + reservation.Reservation.Id, reservation.Reservation);
+        }
+
+        /// <summary>
+        /// Validates Seats
+        /// </summary>
+        /// <param name="seatValidation"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        [Route("validate")]
+        public async Task<ActionResult<SeatValidationDomainModel>> ValidateSeats([FromBody] SeatValidationModel seatValidation)
+        {
+            SeatValidationDomainModel seatValidationDomain = new SeatValidationDomainModel()
+            {
+                AuditoriumId = seatValidation.AuditoriumId,
+                ProjectionTime = seatValidation.ProjectionTime,
+                Seats = seatValidation.Seats
+            };
+
+            ValidateSeatDomainModel reservations = await _reservationService.ValidateSeats(seatValidationDomain);
+
+            if (!reservations.IsSuccessful)
+            {
+                ErrorResponseModel errorResponseModel = new ErrorResponseModel
+                {
+                    ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+
+                return BadRequest(errorResponseModel);
             }
 
             return Ok(reservations);

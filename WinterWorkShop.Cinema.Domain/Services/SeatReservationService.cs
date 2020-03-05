@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data.Entities;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
@@ -52,7 +53,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			return seatReservations;
 		}
 
-		//seats, reservationId, projectiontime
 		public async Task<IEnumerable<SeatReservationDomainModel>> InsertResevedSeats(InsertSeatReservationModel seatReservation)
 		{
 			SeatReservation data = new SeatReservation();
@@ -92,6 +92,38 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				});
 			}
 			return seatReservations;
+		}
+
+		public async Task<SeatReservationValidationDomainModel> ValidateSeat(SeatReservationDomainModel model)
+		{
+			var seatReservations = await _seatReservationRepository.GetAll();
+
+			if(seatReservations == null)
+			{
+				return null;
+			}
+
+			foreach(var seat in seatReservations)
+			{
+				if(seat.ProjectionTime.Equals(model.ProjectionTime) && seat.SeatId.Equals(model.SeatId))
+				{
+					return new SeatReservationValidationDomainModel
+					{
+						IsSuccessful = false,
+						ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
+						SeatReservation = new SeatReservationDomainModel
+						{
+							SeatId = seat.SeatId
+						}
+					};
+				}
+			}
+
+			return new SeatReservationValidationDomainModel
+			{
+				IsSuccessful = true,
+				ErrorMessage = null
+			};
 		}
 	}
 }

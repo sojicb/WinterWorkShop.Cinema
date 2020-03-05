@@ -101,63 +101,63 @@ namespace WinterWorkShop.Cinema.Domain.Services
         }
 
 
-        public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
-        {
-            var data = await _projectionsRepository.GetAll();
+        //public async Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel)
+        //{
+        //    var data = await _projectionsRepository.GetAll();
 
-            List<Projection> result = new List<Projection>();
+        //    List<Projection> result = new List<Projection>();
 
-            if (data == null)
-            {
-                return null;
-            }
+        //    if (data == null)
+        //    {
+        //        return null;
+        //    }
 
-            //Filter By CinemaId
-            if (filterModel.CinemaId != null)
-            {
-                result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
-            }
+        //    //Filter By CinemaId
+        //    if (filterModel.CinemaId != null)
+        //    {
+        //        result = data.Where(x => x.Auditorium.CinemaId.Equals(filterModel.CinemaId)).ToList();
+        //    }
 
-            //Filter By AuditoriumId
-            if (filterModel.AuditoriumId != null)
-            {
-                var projections = filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
+        //    //Filter By AuditoriumId
+        //    if (filterModel.AuditoriumId != null)
+        //    {
+        //        var projections = filterModel.Projections.Where(x => x.AuditoriumId.Equals(filterModel.AuditoriumId)).ToList();
 
-                return projections;
-            }
+        //        return projections;
+        //    }
 
-            //Filter ByMovieId
-            if (filterModel.MovieId != null)
-            {
-                var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
+        //    //Filter ByMovieId
+        //    if (filterModel.MovieId != null)
+        //    {
+        //        var projections = filterModel.Projections.Where(x => x.MovieId.Equals(filterModel.MovieId)).ToList();
 
-                return projections;
-            }
+        //        return projections;
+        //    }
 
-            //Filter by TimeSpan
-            if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
-            {
-                var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
+        //    //Filter by TimeSpan
+        //    if (filterModel.ProjectionDateFrom != null && filterModel.ProjectionDateTo != null)
+        //    {
+        //        var projections = filterModel.Projections.Where(x => x.ProjectionTime >= filterModel.ProjectionDateFrom && x.ProjectionTime <= filterModel.ProjectionDateTo).ToList();
 
-                return projections;
-            }
+        //        return projections;
+        //    }
 
-            List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
-            foreach (var item in result)
-            {
-                results.Add(new ProjectionDomainModel
-                {
-                    Id = item.Id,
-                    MovieId = item.MovieId,
-                    AuditoriumId = item.AuditoriumId,
-                    ProjectionTime = item.DateTime,
-                    MovieTitle = item.Movie.Title,
-                    AditoriumName = item.Auditorium.Name
+        //    List<ProjectionDomainModel> results = new List<ProjectionDomainModel>();
+        //    foreach (var item in result)
+        //    {
+        //        results.Add(new ProjectionDomainModel
+        //        {
+        //            Id = item.Id,
+        //            MovieId = item.MovieId,
+        //            AuditoriumId = item.AuditoriumId,
+        //            ProjectionTime = item.DateTime,
+        //            MovieTitle = item.Movie.Title,
+        //            AditoriumName = item.Auditorium.Name
 
-                });
-            }
-            return results;
-        }
+        //        });
+        //    }
+        //    return results;
+        //}
 
 
         //public async Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id)

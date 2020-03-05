@@ -221,52 +221,52 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Accepted("projections//" + deleteProjection.Id, deleteProjection);
         }
 
-        /// <summary>
-        /// Gets all projections
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("filter")]
-        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
-        {
+        ///// <summary>
+        ///// Gets all projections
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("filter")]
+        //public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
+        //{
 
-            List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
-            if (filter.Projections != null)
-            {
-                foreach (var projection in filter.Projections)
-                {
-                    projections.Add(new ProjectionDomainModel
-                    {
-                        Id = projection.Id,
-                        AditoriumName = projection.AditoriumName,
-                        AuditoriumId = projection.AuditoriumId,
-                        MovieId = projection.MovieId,
-                        MovieTitle = projection.MovieTitle,
-                        ProjectionTime = projection.ProjectionTime
-                    });
-                }
-            }
+        //    List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
+        //    if (filter.Projections != null)
+        //    {
+        //        foreach (var projection in filter.Projections)
+        //        {
+        //            projections.Add(new ProjectionDomainModel
+        //            {
+        //                Id = projection.Id,
+        //                AditoriumName = projection.AditoriumName,
+        //                AuditoriumId = projection.AuditoriumId,
+        //                MovieId = projection.MovieId,
+        //                MovieTitle = projection.MovieTitle,
+        //                ProjectionTime = projection.ProjectionTime
+        //            });
+        //        }
+        //    }
 
-            FilterDomainModel filterDomain = new FilterDomainModel
-            {
-                AuditoriumId = filter.AuditoriumId,
-                CinemaId = filter.CinemaId,
-                MovieId = filter.MovieId,
-                ProjectionDateFrom = filter.ProjectionDateFrom,
-                ProjectionDateTo = filter.ProjectionDateTo,
-                Projections = projections
-            };
+        //    FilterDomainModel filterDomain = new FilterDomainModel
+        //    {
+        //        AuditoriumId = filter.AuditoriumId,
+        //        CinemaId = filter.CinemaId,
+        //        MovieId = filter.MovieId,
+        //        ProjectionDateFrom = filter.ProjectionDateFrom,
+        //        ProjectionDateTo = filter.ProjectionDateTo,
+        //        Projections = projections
+        //    };
 
-            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
+        //    IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
 
-            if (projectionDomainModels == null)
-            {
-                projectionDomainModels = new List<ProjectionDomainModel>();
-            }
+        //    if (projectionDomainModels == null)
+        //    {
+        //        projectionDomainModels = new List<ProjectionDomainModel>();
+        //    }
 
 
-            return Ok(projectionDomainModels);
-        }
+        //    return Ok(projectionDomainModels);
+        //}
 
     }
 }
