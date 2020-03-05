@@ -339,6 +339,8 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Year = movie.Year,
                     Projections = listProjections
                 });
+
+                listProjections = new List<ProjectionDomainModel>();
             }
 
             return movies;
