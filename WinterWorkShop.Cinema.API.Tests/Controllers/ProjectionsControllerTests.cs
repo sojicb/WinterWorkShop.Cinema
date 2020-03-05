@@ -76,7 +76,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             var resultList = ((OkObjectResult)result).Value;
             var projectionDomainModelResultList = (List<ProjectionDomainModel>)resultList;
 
-            //Assert
+            //Assert    
             Assert.IsNotNull(projectionDomainModelResultList);
             Assert.AreEqual(expectedResultCount, projectionDomainModelResultList.Count);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
