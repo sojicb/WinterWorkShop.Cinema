@@ -102,38 +102,5 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Created("reservations//" + reservation.Reservation.Id, reservation.Reservation);
         }
-
-        ///// <summary>
-        ///// Validates Seats
-        ///// </summary>
-        ///// <param name="seatValidation"></param>
-        ///// <returns></returns>
-        //[HttpGet]
-        //[Authorize(Roles = "admin")]
-        //[Route("validate")]
-        //public async Task<ActionResult<SeatValidationDomainModel>> ValidateSeats([FromBody] SeatValidationModel seatValidation)
-        //{
-        //    SeatValidationDomainModel seatValidationDomain = new SeatValidationDomainModel()
-        //    {
-        //        AuditoriumId = seatValidation.AuditoriumId,
-        //        ProjectionTime = seatValidation.ProjectionTime,
-        //        Seats = seatValidation.Seats
-        //    };
-
-        //    ValidateSeatDomainModel reservations = await _reservationService.ValidateSeats(seatValidationDomain);
-
-        //    if (!reservations.IsSuccessful)
-        //    {
-        //        ErrorResponseModel errorResponseModel = new ErrorResponseModel
-        //        {
-        //            ErrorMessage = Messages.SEAT_ALREADY_RESERVED + " " + reservations.SeatValidation.Seats.Select(x => x.Id),
-        //            StatusCode = System.Net.HttpStatusCode.BadRequest
-        //        };
-
-        //        return BadRequest(errorResponseModel);
-        //    }
-
-        //    return Ok(reservations);
-        //}
     }
 }

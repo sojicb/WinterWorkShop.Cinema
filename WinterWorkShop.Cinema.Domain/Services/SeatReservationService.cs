@@ -131,28 +131,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 		public async Task<ValidateSeatDomainModel> HandleSeatReservation(SeatValidationDomainModel model)
 		{
-			var audit = await _auditoriumsRepository.GetByIdAsync(model.AuditoriumId);
-
-			if (audit == null)
-			{
-				return null;
-			}
-
-			//All Audit Seats
 			List<SeatDomainModel> seats = new List<SeatDomainModel>();
 
 			SeatReservationDomainModel domainModel = new SeatReservationDomainModel();
-
-			foreach (var seat in audit.Seats)
-			{
-				seats.Add(new SeatDomainModel
-				{
-					Id = seat.Id,
-					AuditoriumId = seat.AuditoriumId,
-					Number = seat.Number,
-					Row = seat.Row
-				});
-			}
 
 			foreach (var seat in model.Seats)
 			{
@@ -175,10 +156,21 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				}
 			}
 
+			seats = model.Seats.OrderBy(x => x.Number).ToList();
+
+			if (seats.Select((x, y) => x.Number - y).Distinct().Skip(1).Any())
+			{
+				return new ValidateSeatDomainModel
+				{
+					IsSuccessful = false,
+					ErrorMessage = Messages.SEATS_NOT_CONSECUTIVE
+				};
+			}
+
 
 			for (int i = 0; i < model.Seats.Count - 1; i++)
 			{
-				if(!model.Seats.ElementAt(i).Row.Equals(model.Seats.ElementAt(i + 1).Row))
+				if (!model.Seats.ElementAt(i).Row.Equals(model.Seats.ElementAt(i + 1).Row))
 				{
 					return new ValidateSeatDomainModel
 					{

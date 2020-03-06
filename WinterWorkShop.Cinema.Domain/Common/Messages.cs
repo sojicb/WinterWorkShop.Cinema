@@ -69,7 +69,8 @@
         public const string SEAT_IN_WRONG_ROW = "Seats arent in the same row, please choose consecutive seats.";
         public const string RESERVATION_CREATION_ERROR = "Error occurred while creating new reservation, please try again.";
         public const string SEAT_RESERVATION_ERROR = "Error occurred while reserving seats, please try again.";
-        public const string SEAT_ALREADY_RESERVED= "This seat is already reserved, please choose another";
+        public const string SEAT_ALREADY_RESERVED = "This seat is already reserved, please choose another.";
+        public const string SEATS_NOT_CONSECUTIVE = "Seats that you have chosen are not consecutive, please try again.";
         #endregion
     }
 }

@@ -157,36 +157,5 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				ErrorMessage = null
 			};
 		}
-
-		//public async Task<ValidateSeatDomainModel> ValidateSeats(ReservationDomainModel model)
-		//{
-		//	SeatReservationDomainModel domainModel = new SeatReservationDomainModel();
-
-		//	foreach(var seat in model.Seats)
-		//	{
-		//		domainModel = new SeatReservationDomainModel
-		//		{
-		//			SeatId = seat.Id,
-		//			ProjectionTime = model.ProjectionTime
-		//		};
-
-		//		var data = await _seatReservationService.ValidateSeat(domainModel);
-
-		//		if (!data.IsSuccessful)
-		//		{
-		//			return new ValidateSeatDomainModel
-		//			{
-		//				IsSuccessful = false,
-		//				ErrorMessage = Messages.SEAT_ALREADY_RESERVED
-		//			};
-		//		}
-		//	}
-
-		//	return new ValidateSeatDomainModel
-		//	{
-		//		IsSuccessful = true,
-		//		ErrorMessage = null
-		//	};
-		//}
 	}
 }
