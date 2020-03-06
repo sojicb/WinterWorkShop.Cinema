@@ -12,5 +12,6 @@ namespace WinterWorkShop.Cinema.Domain.Models
         public double Rating { get; set; }
         public int Year { get; set; }
         public List<TagDomainModel> Tags { get; set; }
+        public List<ProjectionDomainModel> Projections { get; set; }
     }
 }

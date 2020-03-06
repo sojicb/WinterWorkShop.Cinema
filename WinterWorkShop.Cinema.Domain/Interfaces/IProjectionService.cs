@@ -13,7 +13,7 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         //Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id);
         Task<ProjectionDomainModel> UpdateProjection(ProjectionDomainModel movieToUpdate);
         ProjectionDomainModel DeleteProjection(Guid id);
-        //Task<IEnumerable<ProjectionDomainModel>> FilterProjections(FilterDomainModel filterModel);
         Task<ProjectionDomainModel> GetProjectionByIdAsync(Guid id);
+        Task<IEnumerable<ProjectionDomainModel>> FilterProjections(int? cinemaId, int? auditoriumId, Guid? movieId, DateTime? dateFrom, DateTime? dateTo);
     }
 }

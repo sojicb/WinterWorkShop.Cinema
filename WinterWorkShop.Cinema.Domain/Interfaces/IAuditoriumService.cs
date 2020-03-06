@@ -16,5 +16,6 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
         Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumToUpdate);
         Task<DeleteAuditoriumDomainModel> DeleteAuditorium(int id);
         Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id);
+        Task<IEnumerable<AuditoriumDomainModel>> GetAllByCinemaId(int id);
     }
 }

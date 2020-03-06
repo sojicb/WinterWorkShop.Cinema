@@ -47,5 +47,8 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
 
         Task<IEnumerable<MovieDomainModel>> MovieTopList();
         IEnumerable<MovieDomainModel> GetMoviesByTag(int id);
+        Task<IEnumerable<MovieDomainModel>> GetMoviesByAuditId(int id);
+
+        Task<IEnumerable<MovieDomainModel>> GetMoviesWithProjectionsInFuture();
     }
 }

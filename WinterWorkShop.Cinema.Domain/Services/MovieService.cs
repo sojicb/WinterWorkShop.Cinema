@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
@@ -17,11 +14,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
     {
         private readonly IMoviesRepository _moviesRepository;
         private readonly IMovieTagsService _movieTagsService;
+        private readonly IProjectionsRepository _projectionsRepository;
 
-        public MovieService(IMoviesRepository moviesRepository, IMovieTagsService movieTagsService)
+        public MovieService(IMoviesRepository moviesRepository, IMovieTagsService movieTagsService, IProjectionsRepository projectionsRepository)
         {
             _moviesRepository = moviesRepository;
             _movieTagsService = movieTagsService;
+            _projectionsRepository = projectionsRepository;
         }
 
         public async Task<IEnumerable<MovieDomainModel>> GetAll()
@@ -267,6 +266,81 @@ namespace WinterWorkShop.Cinema.Domain.Services
                     Title = movie.Title,
                     Year = movie.Year,
                 });
+            }
+
+            return movies;
+        }
+
+        public async Task<IEnumerable<MovieDomainModel>> GetMoviesByAuditId(int id)
+        {
+            var data = await _projectionsRepository.GetAll();
+
+            if(data == null)
+            {
+                return null;
+            }
+
+            var projections = data.Select(x => x.Movie.Projections.Where(y => y.AuditoriumId.Equals(id))).ToList();
+            var movieIds = projections.SelectMany(x => x.Select(y => y.MovieId));
+            var movies = await _moviesRepository.GetAll();
+            movies = movies.Where(x => movieIds.Contains(x.Id)).ToList();
+            
+            List<MovieDomainModel> models = new List<MovieDomainModel>();
+
+            foreach(var movie in movies)
+            {
+                models.Add(new MovieDomainModel
+                {
+                    Current = movie.Current,
+                    Id = movie.Id,
+                    Rating = movie.Rating ?? 0,
+                    Title = movie.Title,
+                    Year = movie.Year
+                });
+            }
+
+            return models;
+        }
+
+        public async Task<IEnumerable<MovieDomainModel>> GetMoviesWithProjectionsInFuture()
+        {
+            var result = await _moviesRepository.GetMoviesWithProjectionsInFuture();
+
+            if(result == null)
+            {
+                return null;
+            }
+
+            List<MovieDomainModel> movies = new List<MovieDomainModel>();
+            List<ProjectionDomainModel> listProjections = new List<ProjectionDomainModel>();
+
+            foreach(var movie in result)
+            {
+                var projections = movie.Projections.Where(x => x.DateTime > DateTime.UtcNow);
+
+                foreach(var projection in projections)
+                {
+                    listProjections.Add(new ProjectionDomainModel
+                    {
+                        Id = projection.Id,
+                        AuditoriumId = projection.AuditoriumId,
+                        MovieId = projection.MovieId,
+                        ProjectionTime = projection.DateTime,
+                        MovieTitle = projection.Movie.Title
+                    });
+                }
+
+                movies.Add(new MovieDomainModel
+                { 
+                    Current = movie.Current,
+                    Id = movie.Id,
+                    Rating = movie.Rating ?? 0,
+                    Title = movie.Title,
+                    Year = movie.Year,
+                    Projections = listProjections
+                });
+
+                listProjections = new List<ProjectionDomainModel>();
             }
 
             return movies;
