@@ -241,6 +241,5 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Ok(projectionDomainModels);
         }
-
     }
 }

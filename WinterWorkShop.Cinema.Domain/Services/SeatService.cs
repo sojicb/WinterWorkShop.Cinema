@@ -40,5 +40,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
+
     }
 }

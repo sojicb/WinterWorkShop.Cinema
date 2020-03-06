@@ -148,6 +148,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return results;
         }
 
+
         public async Task<ProjectionDomainModel> UpdateProjection(ProjectionDomainModel updateProjection)
         {
             Projection projection = new Projection()
