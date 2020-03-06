@@ -146,7 +146,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return resultModel;
         }
 
-        public async Task<AuditoriumDomainModel> GetAuditoriumByIdAsync(int id)
+        public async Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id)
         {
             var data = await _auditoriumsRepository.GetByIdAsync(id);
 
@@ -155,11 +155,25 @@ namespace WinterWorkShop.Cinema.Domain.Services
                 return null;
             }
 
+            List<SeatDomainModel> seats = new List<SeatDomainModel>();
+
+            foreach (var seat in data.Seats)
+            {
+                seats.Add(new SeatDomainModel
+                {
+                    Id = seat.Id,
+                    AuditoriumId = seat.AuditoriumId,
+                    Number = seat.Number,
+                    Row = seat.Row
+                });
+            }
+
             AuditoriumDomainModel domainModel = new AuditoriumDomainModel
             {
                 Id = data.Id,
                 CinemaId = data.CinemaId,
                 Name = data.Name,
+                SeatsList = seats
             };
 
             return domainModel;
@@ -249,27 +263,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
                    Name = data.Name,
                    CinemaId = data.CinemaId,
                }
-            };
-
-            return domainModel;
-        }
-
-        public async Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id)
-        {
-            var data = await _auditoriumsRepository.GetByIdAsync(id);
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            AuditoriumDomainModel domainModel = new AuditoriumDomainModel
-            {
-                Id = data.Id,
-                Name = data.Name,
-                CinemaId = data.CinemaId
-
-
             };
 
             return domainModel;
