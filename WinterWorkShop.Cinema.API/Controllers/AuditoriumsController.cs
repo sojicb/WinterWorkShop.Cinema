@@ -133,7 +133,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             AuditoriumDomainModel auditoriumToUpdate;
 
-            auditoriumToUpdate = await _auditoriumService.GetAuditoriumByIdAsync(id);
+            auditoriumToUpdate = await _auditoriumService.GetAuditroiumByIdAsync(id);
 
             if (auditoriumToUpdate == null)
             {
