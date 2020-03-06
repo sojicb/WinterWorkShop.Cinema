@@ -63,6 +63,24 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsInstanceOfType(result[0], typeof(CinemaDomainModel));
         }
 
+       [TestMethod]
+       public void CinemaService_GetCinemaById_ReturnCinema()
+        {
+            //Arrange
+            IEnumerable<WinterWorkShop.Cinema.Data.Cinema> cinemas = null;
+            Task<IEnumerable<WinterWorkShop.Cinema.Data.Cinema>> responseTask = Task.FromResult(cinemas);
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(It.IsAny<WinterWorkShop.Cinema.Data.Cinema>()));
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController.GetCinemaByIdAsync(responseTask.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+        }
+
         [TestMethod]
         public void CinemaService_GetAllAsync_ReturnNull()
         {
@@ -80,6 +98,91 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Assert
             Assert.IsNull(resultAction);
         }
+
+
+        [TestMethod]
+        public void CinemaService_DeleteCinema_ReturnNull()
+        {
+            //Arrange
+            IEnumerable<WinterWorkShop.Cinema.Data.Cinema> cinemas = null;
+            Task<IEnumerable<WinterWorkShop.Cinema.Data.Cinema>> responseTask = Task.FromResult(cinemas);
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.Delete(It.IsAny<WinterWorkShop.Cinema.Data.Cinema>()));
+            CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemasController.DeleteCinema(responseTask.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+
+        }
+
+        [TestMethod]
+        public void CinemaService_UpdateCinema_Cinema()
+        {
+            List<WinterWorkShop.Cinema.Data.Cinema> cinemaModelsList = new List<WinterWorkShop.Cinema.Data.Cinema>();
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()));
+            _mockCinemasRepository.Setup(x => x.Update(It.IsAny<WinterWorkShop.Cinema.Data.Cinema>())).Returns(_cinema);
+            _mockCinemasRepository.Setup(x => x.Save());
+            CinemaService cinemaService = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemaService.UpdateCinema(_cinemaDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+
+        }
+
+
+
+        [TestMethod]
+        public void CinemaService_CreationCinema_InsertMockedNull_ReturnErrorMessage()
+        {
+            
+            List<WinterWorkShop.Cinema.Data.Cinema> cinemaModelsList = new List<WinterWorkShop.Cinema.Data.Cinema>();
+            _cinema = null;
+            string expectedMessage = "Error occured while creating a new cinema, please try again.";
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(It.IsAny<WinterWorkShop.Cinema.Data.Cinema>()));
+            _mockCinemasRepository.Setup(x => x.Insert(It.IsAny<WinterWorkShop.Cinema.Data.Cinema>())).Returns(_cinema);
+            CinemaService cinemaService = new CinemaService(_mockCinemasRepository.Object);
+
+            var resultAction = cinemaService.AddCinema(_cinemaDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(expectedMessage, resultAction.ErrorMessage);
+            Assert.IsFalse(resultAction.IsSuccessful);
+        }
+
+
+        [TestMethod]
+        public void CinemaService_CreateCinema_InsertMocked_ReturnCinema()
+        {
+            //Arrange
+            List<WinterWorkShop.Cinema.Data.Cinema> cinemaModelsList = new List<WinterWorkShop.Cinema.Data.Cinema>();
+
+            _mockCinemasRepository = new Mock<ICinemasRepository>();
+            _mockCinemasRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()));
+            _mockCinemasRepository.Setup(x => x.Insert(It.IsAny<WinterWorkShop.Cinema.Data.Cinema>())).Returns(_cinema);
+            _mockCinemasRepository.Setup(x => x.Save());
+            CinemaService cinemaService = new CinemaService(_mockCinemasRepository.Object);
+
+            //Act
+            var resultAction = cinemaService.AddCinema(_cinemaDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(_cinema.Id, resultAction.Cinema.Id);
+            Assert.IsNull(resultAction.ErrorMessage);
+            Assert.IsTrue(resultAction.IsSuccessful);
+        }
+
 
 
     }

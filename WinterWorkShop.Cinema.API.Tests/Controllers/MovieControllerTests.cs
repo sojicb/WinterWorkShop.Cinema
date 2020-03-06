@@ -19,10 +19,10 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
     {
         private Mock<IMovieService> _movieService;
         private Mock<IProjectionService> _projectionService;
-        private Mock<ILogger<MoviesController>> _logger;
+        private Mock<ILogger<IMovieService>> _logger;
 
-/*
-        [TestMethod]
+
+      /*  [TestMethod]
         public void GetAsync_Return_All_Movies()
         {
 
@@ -72,9 +72,9 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }
+        }*/
 
-        [TestMethod]
+       /* [TestMethod]
         public void GetAsync_Return_All_MoviesByTag()
         {
 
@@ -92,7 +92,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             List<MovieDomainModel> movieDomainModelList = new List<MovieDomainModel>();
             MovieDomainModel movieDomainModel = new MovieDomainModel
             {
-              
+
                 Tags = tags
             };
 
@@ -120,9 +120,9 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }
-        
-        [TestMethod]
+        }*/
+
+       /* [TestMethod]
         public void GetAsync_Return_NewList()
         {
             //Arrange
@@ -133,7 +133,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             _movieService = new Mock<IMovieService>();
             _movieService.Setup(x => x.GetAllMovies(true));
-            MoviesController moviesController = new MoviesController(_logger.Object, _movieService.Object, _projectionService.Object);
+            MoviesController moviesController = new MoviesController( _movieService.Object, _projectionService.Object);
 
             //Act
             var result = moviesController.GetMoviesAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -145,11 +145,11 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedResultCount, projectionDomainModelResultList.Count);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }
+        }*/
 
 
 
-        [TestMethod]
+       /* [TestMethod]
         public void PostAsync_Create_Throw_DbException_Projection()
         {
             List<TagDomainModel> tags = new List<TagDomainModel>();
@@ -168,21 +168,21 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             MovieModel movieModel = new MovieModel()
             {
-               Title = "Movie title",
-               Rating = 8,
-               Current = true,
-               Year = 1997
+                Title = "Movie title",
+                Rating = 8,
+                Current = true,
+                Year = 1997
             };
             CreateMovieResultModel createMovieResultModel = new CreateMovieResultModel
             {
                 Movie = new MovieDomainModel
                 {
-                   Id = Guid.NewGuid(),
-                   Current = true,
-                   Rating = 8,
-                   Title = "Movie title",
-                   Year = 1997,
-                   Tags = tags
+                    Id = Guid.NewGuid(),
+                    Current = true,
+                    Rating = 8,
+                    Title = "Movie title",
+                    Year = 1997,
+                    Tags = tags
 
                 },
                 IsSuccessful = true
@@ -193,7 +193,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             _movieService = new Mock<IMovieService>();
             _movieService.Setup(x => x.AddMovie(It.IsAny<MovieDomainModel>())).Throws(dbUpdateException);
-            MoviesController moviesController = new MoviesController(_logger.Object, _movieService.Object, _projectionService.Object);
+            MoviesController moviesController = new MoviesController( _movieService.Object, _projectionService.Object);
 
             //Act
             var result = moviesController.Post(movieModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
