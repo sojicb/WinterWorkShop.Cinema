@@ -295,9 +295,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
         }
 
-
-
-
         /// <summary>
         /// Delete a movie by id
         /// </summary>

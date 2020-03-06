@@ -40,12 +40,14 @@ namespace WinterWorkShop.Cinema.Repositories
 
 		public SeatReservation Insert(SeatReservation obj)
 		{
-			throw new NotImplementedException();
+			var data = _cinemaContext.SeatReservations.Add(obj).Entity;
+
+			return data;
 		}
 
 		public void Save()
 		{
-			throw new NotImplementedException();
+			_cinemaContext.SaveChanges();
 		}
 
 		public SeatReservation Update(SeatReservation obj)

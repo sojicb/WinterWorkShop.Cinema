@@ -9,7 +9,8 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
 	public interface IReservationService
 	{
 		Task<IEnumerable<ReservationDomainModel>> GetAllAsync();
-		Task<ReservationDomainModel> CreateReservation(AuditoriumDomainModel domainModel);
+		Task<CreateReservationResultModel> CreateReservation(ReservationDomainModel domainModel);
 		Task<ReservationDomainModel> GetByIdAsync(Guid id);
+		Task<ValidateSeatDomainModel> HandleSeatValidation(ReservationDomainModel reservationDomain);
 	}
 }

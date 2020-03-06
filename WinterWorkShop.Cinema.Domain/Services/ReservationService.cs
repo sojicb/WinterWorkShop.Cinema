@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data.Entities;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Repositories;
@@ -25,9 +27,58 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			_seatService = seatService;
 		}
 
-		public Task<ReservationDomainModel> CreateReservation(AuditoriumDomainModel domainModel)
+		public async Task<CreateReservationResultModel> CreateReservation(ReservationDomainModel domainModel)
 		{
-			throw new NotImplementedException();
+			Reservation reservation = new Reservation 
+			{ 
+				ProjectionId = domainModel.ProjectionId,
+				UserId = domainModel.UserId
+			};
+
+			var data = _reservationRepository.Insert(reservation);
+
+			if(data == null)
+			{
+				return new CreateReservationResultModel
+				{
+					IsSuccessful = false,
+					ErrorMessage = Messages.RESERVATION_CREATION_ERROR
+				};
+			}
+
+			InsertSeatReservationModel model = new InsertSeatReservationModel
+			{
+				ProjectionTime = domainModel.ProjectionTime,
+				ReservationId = data.Id,
+				Seats = domainModel.Seats
+			};
+
+			var seats = await _seatReservationService.InsertResevedSeats(model);
+
+			if (seats == null)
+			{
+				return new CreateReservationResultModel
+				{
+					IsSuccessful = false,
+					ErrorMessage = Messages.SEAT_RESERVATION_ERROR
+				};
+			}
+
+			_reservationRepository.Save();
+
+			CreateReservationResultModel reservationDomain = new CreateReservationResultModel()
+			{
+				IsSuccessful = true,
+				ErrorMessage = null,
+				Reservation = new ReservationDomainModel
+				{
+					Id = data.Id,
+					ProjectionId = data.ProjectionId,
+					UserId = data.UserId
+				}
+			};
+
+			return reservationDomain;
 		}
 
 		public async Task<IEnumerable<ReservationDomainModel>> GetAllAsync()
@@ -77,6 +128,34 @@ namespace WinterWorkShop.Cinema.Domain.Services
 		public Task<ReservationDomainModel> GetByIdAsync(Guid id)
 		{
 			throw new NotImplementedException();
+		}
+
+		public async Task<ValidateSeatDomainModel> HandleSeatValidation(ReservationDomainModel reservationDomain)
+		{
+			SeatValidationDomainModel model = new SeatValidationDomainModel
+			{
+				AuditoriumId = reservationDomain.AuditoriumId,
+				ProjectionTime = reservationDomain.ProjectionTime,
+				Seats = reservationDomain.Seats
+			};
+
+			var data = await _seatReservationService.HandleSeatReservation(model);
+
+			if (!data.IsSuccessful)
+			{
+				return new ValidateSeatDomainModel
+					{
+						ErrorMessage = data.ErrorMessage,
+						IsSuccessful = false,
+						Seat = data.Seat
+					};
+			}
+
+			return new ValidateSeatDomainModel
+			{
+				IsSuccessful = true,
+				ErrorMessage = null
+			};
 		}
 	}
 }

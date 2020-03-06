@@ -17,7 +17,7 @@
         public const string AUDITORIUM_PROPERTIE_SEATROWSNUMBER_NOT_VALID = "The auditorium number of seats rows must be between 1-20.";
         public const string AUDITORIUM_PROPERTIE_SEATNUMBER_NOT_VALID = "The auditorium number of seats number must be between 1-20.";
         public const string AUDITORIUM_CREATION_ERROR = "Error occured while creating new auditorium, please try again.";
-        public const string AUDITORIUM_SEATS_CREATION_ERROR = "Error occured while creating seats for auditorium, please try again.";
+        public const string AUDITORIUM_SEATS_CREATION_ERROR = "Error occurred while creating seats for auditorium, please try again.";
         public const string AUDITORIUM_SAME_NAME = "Cannot create new auditorium, auditorium with same name alredy exist.";
         public const string AUDITORIUM_UNVALID_CINEMAID = "Cannot create new auditorium, auditorium with given cinemaId does not exist.";
         #endregion
@@ -63,6 +63,14 @@
         public const string TAG_DOES_NOT_EXIST = "Tag does not exist.";
         public const string TAG_CREATION_ERROR = "Error occured while creating new tag, please try again.";
 
+        #endregion
+
+        #region Reservation
+        public const string SEAT_IN_WRONG_ROW = "Seats arent in the same row, please choose consecutive seats.";
+        public const string RESERVATION_CREATION_ERROR = "Error occurred while creating new reservation, please try again.";
+        public const string SEAT_RESERVATION_ERROR = "Error occurred while reserving seats, please try again.";
+        public const string SEAT_ALREADY_RESERVED = "This seat is already reserved, please choose another.";
+        public const string SEATS_NOT_CONSECUTIVE = "Seats that you have chosen are not consecutive, please try again.";
         #endregion
     }
 }
