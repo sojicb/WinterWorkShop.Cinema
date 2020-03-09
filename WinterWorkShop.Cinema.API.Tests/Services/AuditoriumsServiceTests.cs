@@ -17,6 +17,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
     {
         private Mock<IAuditoriumsRepository> _mockAuditoriumsRepository;
         private Mock<ICinemasRepository> _mockCinemasRepository;
+        private Mock<ISeatsRepository> _seatsRepository;
+        private Mock<IProjectionsRepository> _projectionsRepository;
 
         private Auditorium _auditorium;
         private WinterWorkShop.Cinema.Data.Cinema _cinema;
@@ -87,6 +89,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             _mockAuditoriumsRepository = new Mock<IAuditoriumsRepository>();
             _mockCinemasRepository = new Mock<ICinemasRepository>();
 
+
             _mockAuditoriumsRepository.Setup(x => x.GetAll()).Returns(responseTask);
             _mockCinemasRepository.Setup(x => x.GetAll()).Returns(responseTask1);
 
@@ -130,7 +133,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             _mockAuditoriumsRepository = new Mock<IAuditoriumsRepository>();
             _mockAuditoriumsRepository.Setup(x => x.GetAll()).Returns(responseTask);
-            AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object);
+            AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object, _seatsRepository.Object, _projectionsRepository.Object);
 
             var resultAction = auditoriumController.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -152,7 +155,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             _mockAuditoriumsRepository.Setup(x => x.GetByIdAsync (It.IsAny<int>()));
             _mockAuditoriumsRepository.Setup(x => x.Insert(It.IsAny<Auditorium>())).Returns(_auditorium);
 
-            AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object);
+            AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object, _seatsRepository.Object, _projectionsRepository.Object);
 
             //Act
             var resultAction = auditoriumController.CreateAuditorium(_auditoriumDomainModel, 1, 1).ConfigureAwait(false).GetAwaiter().GetResult();

@@ -146,7 +146,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return resultModel;
         }
 
-        public async Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id)
+        public async Task<AuditoriumDomainModel> GetAuditoriumByIdAsync(int id)
         {
             var data = await _auditoriumsRepository.GetByIdAsync(id);
 
