@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -203,6 +204,28 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				IsSuccessful = true,
 				ErrorMessage = null
 			};
+		}
+
+		public async Task<IEnumerable<SeatDomainModel>> GetReservedSeats(int auditoriumId)
+		{
+			var reserved = _seatReservationRepository.GetAll().Result.Select(x => x.SeatId).ToList();
+
+			var data = _seatRepository.GetSeatsByAuditoriumId(auditoriumId).Result.Where(x => reserved.Contains(x.Id));
+
+			List<SeatDomainModel> seats = new List<SeatDomainModel>();
+
+			foreach (var seat in data)
+			{
+				seats.Add(new SeatDomainModel
+				{
+					Id = seat.Id,
+					AuditoriumId = seat.AuditoriumId,
+					Number = seat.Number,
+					Row = seat.Row
+				});
+			}
+
+			return seats;
 		}
 	}
 }
