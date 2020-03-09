@@ -61,8 +61,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
             List<MovieDomainModel> result = new List<MovieDomainModel>();
             List<TagDomainModel> tagResults = new List<TagDomainModel>();
             MovieDomainModel model;
+           
             foreach (var item in data)
             {
+               
+
                 model = new MovieDomainModel
                 {
                     Current = item.Current,
@@ -76,7 +79,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
             }
 
             return result;
-
         }
 
         public async Task<MovieDomainModel> GetMovieByIdAsync(Guid id)
@@ -115,6 +117,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             };
 
             return domainModel;
+           
         }
 
         public async Task<CreateMovieResultModel> AddMovie(MovieDomainModel newMovie)

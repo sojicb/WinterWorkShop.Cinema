@@ -187,7 +187,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             {
                 Id = auditoriumToUpdate.Id,
                 CinemaId = auditoriumToUpdate.CinemaId,
-                Name = auditoriumToUpdate.Name,
+                Name = auditoriumToUpdate.Name
             };
 
             var data = _auditoriumsRepository.Update(auditroium);
