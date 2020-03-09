@@ -16,7 +16,7 @@ namespace WinterWorkShop.Cinema.API.Models
         [Required]
         public DateTime ProjectionTime { get; set; }
         [Required]
-        public List<SeatDomainModel> Seats { get; set; }
+        public List<Guid> SeatIds { get; set; }
         [Required]
         public int AuditoriumId { get; set; }
     }

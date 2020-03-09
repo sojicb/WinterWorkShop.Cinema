@@ -54,7 +54,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 ProjectionId = createReservation.ProjectionId,
                 ProjectionTime = createReservation.ProjectionTime,
                 UserId = createReservation.UserId,
-                Seats = createReservation.Seats
+                SeatIds = createReservation.SeatIds
             };
 
             var reservations = await _reservationService.HandleSeatValidation(reservationDomain);
@@ -70,8 +70,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponseModel);
              }
             
-            
-
             CreateReservationResultModel reservation;
 
             try

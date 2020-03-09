@@ -8,7 +8,7 @@ namespace WinterWorkShop.Cinema.Domain.Models
 	{
 		public Guid ReservationId { get; set; }
 		public DateTime ProjectionTime { get; set; }
-		public List<SeatDomainModel> Seats { get; set; }
+		public List<Guid> SeatIds { get; set; }
 		public ReservationDomainModel Reservation { get; set; }
 	}
 }

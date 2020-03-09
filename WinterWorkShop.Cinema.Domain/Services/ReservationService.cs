@@ -50,7 +50,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			{
 				ProjectionTime = domainModel.ProjectionTime,
 				ReservationId = data.Id,
-				Seats = domainModel.Seats
+				SeatIds = domainModel.SeatIds
 			};
 
 			var seats = await _seatReservationService.InsertResevedSeats(model);
@@ -64,7 +64,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				};
 			}
 
-			_reservationRepository.Save();
+			//_reservationRepository.Save();
 
 			CreateReservationResultModel reservationDomain = new CreateReservationResultModel()
 			{
@@ -117,7 +117,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					ProjectionId = reservation.ProjectionId,
 					Username = reservation.User.UserName,
 					ProjectionTime = reservation.Projection.DateTime,
-					Seats = reservedSeats
+					SeatIds = seatIds
 				});
 				reservedSeats = new List<SeatDomainModel>();
 			}
@@ -136,7 +136,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			{
 				AuditoriumId = reservationDomain.AuditoriumId,
 				ProjectionTime = reservationDomain.ProjectionTime,
-				Seats = reservationDomain.Seats
+				SeatIds = reservationDomain.SeatIds
 			};
 
 			var data = await _seatReservationService.HandleSeatReservation(model);
