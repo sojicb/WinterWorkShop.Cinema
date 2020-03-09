@@ -8,7 +8,7 @@ namespace WinterWorkShop.Cinema.API.Models
 {
 	public class SeatValidationModel
 	{
-		public List<SeatDomainModel> Seats { get; set; }
+		public List<Guid> SeatIds { get; set; }
 		public int AuditoriumId { get; set; }
 		public DateTime ProjectionTime { get; set; }
 	}

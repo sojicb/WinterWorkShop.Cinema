@@ -15,11 +15,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
 	{
 		private readonly ISeatReservationRepository _seatReservationRepository;
 		private readonly IAuditoriumsRepository _auditoriumsRepository;
+		private readonly ISeatsRepository _seatRepository;
 
-		public SeatReservationService(ISeatReservationRepository seatReservationRepository, IAuditoriumsRepository auditoriumsRepository)
+		public SeatReservationService(ISeatReservationRepository seatReservationRepository, IAuditoriumsRepository auditoriumsRepository, ISeatsRepository seatRepository)
 		{
 			_seatReservationRepository = seatReservationRepository;
 			_auditoriumsRepository = auditoriumsRepository;
+			_seatRepository = seatRepository;
 		}
 
 		public async Task<IEnumerable<SeatReservationDomainModel>> GetAllAsync()
@@ -64,13 +66,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 			List<SeatReservationDomainModel> seatReservations = new List<SeatReservationDomainModel>();
 
-			foreach (var seat in seatReservation.Seats)
+			foreach (var seat in seatReservation.SeatIds)
 			{
 				SeatReservation model = new SeatReservation
 				{
 					ReservationId = seatReservation.ReservationId,
 					ProjectionTime = seatReservation.ProjectionTime,
-					SeatId = seat.Id
+					SeatId = seat
 				};
 
 				data = _seatReservationRepository.Insert(model);
@@ -83,7 +85,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				insertedReservations.Add(data);
 			}
 
-			_seatReservationRepository.Save();
+			//_seatReservationRepository.Save();
 
 			foreach(var item in insertedReservations)
 			{
@@ -135,11 +137,24 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 			SeatReservationDomainModel domainModel = new SeatReservationDomainModel();
 
-			foreach (var seat in model.Seats)
+			var seatsData = _seatRepository.GetAll().Result.Where(x => model.SeatIds.Contains(x.Id)).ToList();
+
+			foreach(var seat in seatsData)
+			{
+				seats.Add(new SeatDomainModel
+				{
+					Id = seat.Id,
+					AuditoriumId = seat.AuditoriumId,
+					Number = seat.Number,
+					Row = seat.Row
+				});
+			}
+
+			foreach (var seat in model.SeatIds)
 			{
 				domainModel = new SeatReservationDomainModel
 				{
-					SeatId = seat.Id,
+					SeatId = seat,
 					ProjectionTime = model.ProjectionTime
 				};
 
@@ -151,12 +166,15 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					{
 						IsSuccessful = false,
 						ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
-						Seat = seat
+						Seat = new SeatDomainModel
+						{
+							Id = seat
+						}
 					};
 				}
 			}
 
-			seats = model.Seats.OrderBy(x => x.Number).ToList();
+			seats = seats.OrderBy(x => x.Number).ToList();
 
 			if (seats.Select((x, y) => x.Number - y).Distinct().Skip(1).Any())
 			{
@@ -168,9 +186,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			}
 
 
-			for (int i = 0; i < model.Seats.Count - 1; i++)
+			for (int i = 0; i < seats.Count - 1; i++)
 			{
-				if (!model.Seats.ElementAt(i).Row.Equals(model.Seats.ElementAt(i + 1).Row))
+				if (!seats.ElementAt(i).Row.Equals(seats.ElementAt(i + 1).Row))
 				{
 					return new ValidateSeatDomainModel
 					{

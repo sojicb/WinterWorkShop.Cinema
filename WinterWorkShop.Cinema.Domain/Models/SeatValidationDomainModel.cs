@@ -6,7 +6,7 @@ namespace WinterWorkShop.Cinema.Domain.Models
 {
 	public class SeatValidationDomainModel
 	{
-		public List<SeatDomainModel> Seats { get; set; }
+		public List<Guid> SeatIds { get; set; }
 		public int AuditoriumId { get; set; }
 		public DateTime ProjectionTime { get; set; }
 	}
