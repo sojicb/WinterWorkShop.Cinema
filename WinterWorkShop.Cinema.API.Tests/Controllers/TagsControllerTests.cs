@@ -53,6 +53,39 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
+        [TestMethod]
+        public void GetAsync_Return_TagById()
+        {
+            //Arrange
+            List<TagDomainModel> tagDomainModelsList = new List<TagDomainModel>();
+            TagDomainModel tagDomainModel = new TagDomainModel
+            {
+                Id = 1,
+                value = "naziv taga"
+            };
+
+            tagDomainModelsList.Add(tagDomainModel);
+            IEnumerable<TagDomainModel> tagDomainModels = tagDomainModelsList;
+            Task<IEnumerable<TagDomainModel>> responseTask = Task.FromResult(tagDomainModels);
+            int expectedResultCount = 1;
+            int expectedStatusCode = 200;
+
+            _tagService = new Mock<ITagService>();
+            _tagService.Setup(x => x.GetTagByIdAsync(tagDomainModel.Id));
+            TagsController tagsController = new TagsController(_tagService.Object);
+
+            //Act
+            var result = tagsController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var tagDomainModelResultList = (List<TagDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(tagDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, tagDomainModelResultList.Count);
+            Assert.AreEqual(tagDomainModel.Id, tagDomainModelResultList[0].Id);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
 
         [TestMethod]
         public void GetAsync_Return_NewList()
