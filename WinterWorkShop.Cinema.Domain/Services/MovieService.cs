@@ -49,7 +49,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
 
-        public IEnumerable<MovieDomainModel> GetCurrentMovies(bool? isCurrent)
+        public async Task<IEnumerable<MovieDomainModel>> GetCurrentMovies(bool? isCurrent)
         {
             var data = _moviesRepository.GetCurrentMovies();
 
@@ -219,7 +219,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
         public async Task<IEnumerable<MovieDomainModel>> MovieTopList()
         {
-            var data = _moviesRepository.GetTopMovies();
+            var data = await _moviesRepository.GetTopMovies();
 
             if (data == null)
             {
@@ -248,13 +248,13 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return result;
         }
         
-        public IEnumerable<MovieDomainModel> GetMoviesByTag(int id)
+        public async Task<IEnumerable<MovieDomainModel>> GetMoviesByTag(int id)
         {
-            var data = _moviesRepository.GetMoviesByTag(id).ToList();
+            var data = await _moviesRepository.GetMoviesByTag(id);
 
             List<MovieDomainModel> movies = new List<MovieDomainModel>();
 
-            if (data.Count == 0)
+            if (data == null)
             {
                 return null;
             }
