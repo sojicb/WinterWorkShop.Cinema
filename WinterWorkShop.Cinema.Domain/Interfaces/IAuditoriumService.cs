@@ -9,12 +9,10 @@ namespace WinterWorkShop.Cinema.Domain.Interfaces
     public interface IAuditoriumService
     {
         Task<IEnumerable<AuditoriumDomainModel>> GetAllAsync();
-
-        Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfSeats, int numberOfRows);
-        Task<AuditoriumDomainModel> GetAuditoriumByIdAsync(int id);
-
+        Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfRows, int numberOfSeats);
+        Task<AuditoriumDomainModel> GetAuditroiumByIdAsync(int id);
         Task<AuditoriumDomainModel> UpdateAuditorium(AuditoriumDomainModel auditoriumToUpdate);
-        Task<AuditoriumDomainModel> deleteAuditorium(Guid id);
-        
+        Task<DeleteAuditoriumDomainModel> DeleteAuditorium(int id);
+        Task<IEnumerable<AuditoriumDomainModel>> GetAllByCinemaId(int id);
     }
 }

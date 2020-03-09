@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
@@ -29,7 +30,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Data.Cinema>> GetAll()
         {
-            var data = await _cinemaContext.Cinemas.ToListAsync();
+            var data = await _cinemaContext.Cinemas.Include(x => x.Auditoriums).ToListAsync();
 
             return data;
         }

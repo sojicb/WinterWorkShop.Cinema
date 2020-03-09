@@ -16,6 +16,8 @@ namespace WinterWorkShop.Cinema.Data
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<MovieTags> MovieTags { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<SeatReservation> SeatReservations { get; set; }
 
         public CinemaContext(DbContextOptions options)
             : base(options)
@@ -27,11 +29,18 @@ namespace WinterWorkShop.Cinema.Data
             base.OnModelCreating(modelBuilder);
 
             /// <summary>
-            /// Initializing a multy-part primary key
+            /// Initializing a multy-part primary key for MovieTag
             /// </summary>
             /// <returns></returns>
             modelBuilder.Entity<MovieTags>()
                 .HasKey(x => new { x.MovieId, x.TagId });
+
+            /// <summary>
+            /// Initializing a multy-part primary key for SeatReservation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<SeatReservation>()
+                .HasKey(x => new { x.ReservationId, x.SeatId });
 
             /// <summary>
             /// Seat -> Auditorium relation
@@ -148,6 +157,82 @@ namespace WinterWorkShop.Cinema.Data
             modelBuilder.Entity<Tag>()
                 .HasMany(x => x.MovieTags)
                 .WithOne(x => x.Tag)
+                .IsRequired();
+
+            /// <summary>
+            /// User -> Reservation relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Reservations)
+                .WithOne(x => x.User)
+                .IsRequired();
+
+            /// <summary>
+            /// Reservation -> User relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Reservation>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Reservations)
+                .HasForeignKey(x => x.UserId)
+                .IsRequired();
+
+            /// <summary>
+            /// Projection -> Reservation relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Projection>()
+                .HasMany(x => x.Reservations)
+                .WithOne(x => x.Projection)
+                .IsRequired();
+
+            /// <summary>
+            /// Reservation -> Projection relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Reservation>()
+                .HasOne(x => x.Projection)
+                .WithMany(x => x.Reservations)
+                .HasForeignKey(x => x.ProjectionId)
+                .IsRequired();
+
+            /// <summary>
+            /// Reservation -> SeatReservation relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Reservation>()
+                .HasMany(x => x.SeatReservation)
+                .WithOne(x => x.Reservation)
+                .IsRequired();
+
+            /// <summary>
+            /// SeatReservation -> Reservation relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<SeatReservation>()
+                .HasOne(x => x.Reservation)
+                .WithMany(x => x.SeatReservation)
+                .HasForeignKey(x => x.ReservationId)
+                .IsRequired();
+
+            /// <summary>
+            /// Seat -> SeatReservation relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<Seat>()
+                .HasMany(x => x.SeatReservations)
+                .WithOne(x => x.Seat)
+                .IsRequired();
+
+            /// <summary>
+            /// SeatReservation -> Seat relation
+            /// </summary>
+            /// <returns></returns>
+            modelBuilder.Entity<SeatReservation>()
+                .HasOne(x => x.Seat)
+                .WithMany(x => x.SeatReservations)
+                .HasForeignKey(x => x.SeatId)
                 .IsRequired();
         }
     }

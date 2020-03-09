@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WinterWorkShop.Cinema.API.Models;
-using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
-using WinterWorkShop.Cinema.Repositories;
 
 namespace WinterWorkShop.Cinema.API.Controllers
 {
@@ -43,9 +39,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("{id}")]
         public async Task<ActionResult<MovieDomainModel>> GetAsync(Guid id)
         {
-            MovieDomainModel movie;
-
-            movie = await _movieService.GetMovieByIdAsync(id);
+            MovieDomainModel movie = await _movieService.GetMovieByIdAsync(id);
 
             if (movie == null)
             {
@@ -61,10 +55,10 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("tag/{tagValue}")]
-        public async Task<ActionResult<IEnumerable<CreateMovieResultModel>>> GetMoviesByTag(string tagValue)
+        [Route("tag/{id}")]
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesByTag(int id)
         {
-            List<CreateMovieResultModel> movies = _movieService.GetMoviesByTag(tagValue).ToList();
+            List<MovieDomainModel> movies = _movieService.GetMoviesByTag(id).ToList();
 
             if (movies == null)
             {
@@ -80,11 +74,11 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("current")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesAsync()
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesAsync()
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
-
-            movieDomainModels = _movieService.GetAllMovies(true);
+            
+            movieDomainModels = _movieService.GetCurrentMovies(true);
 
             if (movieDomainModels == null)
             {
@@ -94,12 +88,30 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Ok(movieDomainModels);
         }
 
+        /// <summary>
+        /// Gets all movies
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("all")]
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetAllMovies()
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels;
 
-        //Dodato za deaktivaciju
+            movieDomainModels = await _movieService.GetAll();
+
+            if (movieDomainModels == null)
+            {
+                movieDomainModels = new List<MovieDomainModel>();
+            }
+
+            return Ok(movieDomainModels);
+        }
+
         /// <summary>
         /// Adds a new movie
         /// </summary>
-        /// <param name="movieModel"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [Authorize(Roles = "admin")]
         [HttpPut]
@@ -164,7 +176,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Accepted("movies//" + movieDomainModel.Id, movieDomainModel);
         }
-          
 
         /// <summary>
         /// Adds a new movie
@@ -272,11 +283,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("movies//" + movieDomainModel.Id, movieDomainModel);
-
         }
-
-
-
 
         /// <summary>
         /// Delete a movie by id
@@ -318,6 +325,11 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Accepted("movies//" + deletedMovie.Id, deletedMovie);
         }
 
+        /// <summary>
+        /// Gets top 10 movies
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("topmovies")]
         public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetTopMovies()
@@ -325,6 +337,44 @@ namespace WinterWorkShop.Cinema.API.Controllers
             IEnumerable<MovieDomainModel> movieDomainModels;
 
             movieDomainModels = await _movieService.MovieTopList();
+
+            if (movieDomainModels == null)
+            {
+                movieDomainModels = new List<MovieDomainModel>();
+            }
+
+            return Ok(movieDomainModels);
+        }
+
+        /// <summary>
+        /// Returns all movies by auditorium id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("filterMovies/{id}")]
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesByAuditId(int id)
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels = await _movieService.GetMoviesByAuditId(id);
+
+            if(movieDomainModels == null)
+            {
+                movieDomainModels = new List<MovieDomainModel>();
+            }
+
+            return Ok(movieDomainModels);
+        }
+
+        /// <summary>
+        /// Gets movies with projections in the future
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("futureProjections")]
+        public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesWithProjectionsInFuture()
+        {
+            IEnumerable<MovieDomainModel> movieDomainModels = await _movieService.GetMoviesWithProjectionsInFuture();
 
             if (movieDomainModels == null)
             {

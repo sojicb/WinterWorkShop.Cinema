@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WinterWorkShop.Cinema.API.Models;
-using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -48,7 +45,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
         /// <summary>
-        /// Gets Movie by Id
+        /// Gets Projection by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -76,7 +73,6 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
-        [Route("create")]
         public async Task<ActionResult<ProjectionDomainModel>> PostAsync(CreateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
@@ -133,11 +129,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// Updates a projection
         /// </summary>
         /// <param name="projectionModel"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
         [Authorize(Roles = "admin")]
         [Route("update/{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] CreateProjectionModel projectionModel)
+        public async Task<ActionResult> Put(Guid id, [FromBody] UpdateProjectionModel projectionModel)
         {
             if (!ModelState.IsValid)
             {
@@ -159,12 +156,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return BadRequest(errorResponse);
             }
 
-
             projectionToUpdate.AuditoriumId = projectionModel.AuditoriumId;
-            projectionToUpdate.MovieId = projectionModel.MovieId;
             projectionToUpdate.ProjectionTime = projectionModel.ProjectionTime;
-
-
 
             ProjectionDomainModel projectionDomainModel;
             try
@@ -183,10 +176,13 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("projections//" + projectionDomainModel.Id, projectionDomainModel);
-
         }
 
-
+        /// <summary>
+        /// Deletes a projection by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("delete/{id}")]
         [Authorize(Roles = "admin")]
@@ -223,51 +219,27 @@ namespace WinterWorkShop.Cinema.API.Controllers
         }
 
         /// <summary>
-        /// Gets all projections
+        /// Filters projection
         /// </summary>
+        /// <param name="auditoriumId"></param>
+        /// <param name="cinemaId"></param>
+        /// <param name="dateFrom"></param>
+        /// <param name="dateTo"></param>
+        /// <param name="movieId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("filter")]
-        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections([FromBody]FilterModel filter)
+        [Route("filtering")]
+        public async Task<ActionResult<IEnumerable<ProjectionDomainModel>>> FilterProjections(int ? cinemaId = null, int ? auditoriumId = null, Guid ? movieId = null, DateTime ? dateFrom = null, DateTime ? dateTo = null)
         {
 
-            List<ProjectionDomainModel> projections = new List<ProjectionDomainModel>();
-            if (filter.Projections != null)
-            {
-                foreach (var projection in filter.Projections)
-                {
-                    projections.Add(new ProjectionDomainModel
-                    {
-                        Id = projection.Id,
-                        AditoriumName = projection.AditoriumName,
-                        AuditoriumId = projection.AuditoriumId,
-                        MovieId = projection.MovieId,
-                        MovieTitle = projection.MovieTitle,
-                        ProjectionTime = projection.ProjectionTime
-                    });
-                }
-            }
-
-            FilterDomainModel filterDomain = new FilterDomainModel
-            {
-                AuditoriumId = filter.AuditoriumId,
-                CinemaId = filter.CinemaId,
-                MovieId = filter.MovieId,
-                ProjectionDateFrom = filter.ProjectionDateFrom,
-                ProjectionDateTo = filter.ProjectionDateTo,
-                Projections = projections
-            };
-
-            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(filterDomain);
+            IEnumerable<ProjectionDomainModel> projectionDomainModels = await _projectionService.FilterProjections(cinemaId, auditoriumId, movieId, dateFrom, dateTo);
 
             if (projectionDomainModels == null)
             {
                 projectionDomainModels = new List<ProjectionDomainModel>();
             }
 
-
             return Ok(projectionDomainModels);
         }
-
     }
 }

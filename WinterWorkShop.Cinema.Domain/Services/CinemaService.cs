@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Data;
@@ -13,10 +14,14 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class CinemaService : ICinemaService
     {
         private readonly ICinemasRepository _cinemasRepository;
+        private readonly IAuditoriumsRepository _auditoriumsRepository;
+        private readonly IAuditoriumService _auditoriumService;
 
-        public CinemaService(ICinemasRepository cinemasRepository)
+        public CinemaService(ICinemasRepository cinemasRepository, IAuditoriumsRepository auditoriumsRepository, IAuditoriumService auditoriumService)
         {
             _cinemasRepository = cinemasRepository;
+            _auditoriumsRepository = auditoriumsRepository;
+            _auditoriumService = auditoriumService;
         }
 
         public async Task<CreateCinemaResultModel> AddCinema(CinemaDomainModel newCinema)
@@ -52,8 +57,31 @@ namespace WinterWorkShop.Cinema.Domain.Services
             return resultModel;
         }
 
-        public async Task<CinemaDomainModel> DeleteCinema(int id)
+        public async Task<DeleteCinemaDomainModel> DeleteCinema(int id)
         {
+            var cinema = await _cinemasRepository.GetAll();
+
+            var auditoriums = cinema.SelectMany(x => x.Auditoriums.Where(x => x.CinemaId.Equals(id))).ToList();
+
+            if(auditoriums == null)
+            {
+                return null;
+            }
+
+            foreach (var audit in auditoriums)
+            {
+                var auditorium = await _auditoriumService.DeleteAuditorium(audit.Id);
+
+                if (!auditorium.IsSuccessful)
+                {
+                    return new DeleteCinemaDomainModel
+                    {
+                        IsSuccessful = false,
+                        ErrorMessage = Messages.PROJECTION_IN_FUTURE_ON_CINEMA_DELETE
+                    };
+                }
+            }
+
             var data = _cinemasRepository.Delete(id);
 
             if (data == null)
@@ -63,10 +91,15 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             _cinemasRepository.Save();
 
-            CinemaDomainModel domainModel = new CinemaDomainModel
+            DeleteCinemaDomainModel domainModel = new DeleteCinemaDomainModel
             {
-                Id = data.Id,
-                Name = data.Name
+                IsSuccessful = true,
+                ErrorMessage = null,
+                Cinema = new CinemaDomainModel
+                {
+                    Id = data.Id,
+                    Name = data.Name
+                }
             };
 
             return domainModel;

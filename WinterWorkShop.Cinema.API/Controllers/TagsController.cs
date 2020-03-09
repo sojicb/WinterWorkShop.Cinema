@@ -26,7 +26,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
         /// <summary>
-        /// Gets all projections
+        /// Gets all tags
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -47,7 +47,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
         /// <summary>
-        /// Gets Movie by Id
+        /// Gets tag by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -69,7 +69,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
 
         /// <summary>
-        /// Adds a new movie
+        /// Adds a new tag
         /// </summary>
         /// <param name="movieModel"></param>
         /// <returns></returns>
@@ -120,10 +120,8 @@ namespace WinterWorkShop.Cinema.API.Controllers
             return Created("movies//" + createTag.Tag.Id, createTag.Tag);
         }
 
-
-
         /// <summary>
-        /// Updates a movie
+        /// Updates a tag
         /// </summary>
         /// <param name="id"></param>
         /// <param name="tagModel"></param>
@@ -174,12 +172,10 @@ namespace WinterWorkShop.Cinema.API.Controllers
             }
 
             return Accepted("tags//" + tagDomainModel.Id, tagDomainModel);
-
         }
 
-
         /// <summary>
-        /// Delete a movie by id
+        /// Delete a tag by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -217,6 +213,5 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
             return Accepted("tags//" + deletedTag.Id, deletedTag);
         }
-
     }
 }

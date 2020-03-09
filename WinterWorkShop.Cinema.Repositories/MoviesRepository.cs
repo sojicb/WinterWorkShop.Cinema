@@ -14,7 +14,8 @@ namespace WinterWorkShop.Cinema.Repositories
     {
         IEnumerable<Movie> GetCurrentMovies();
         IEnumerable<Movie> GetTopMovies();
-        IEnumerable<Movie> GetMoviesByTag(string tagValue);
+        IEnumerable<Movie> GetMoviesByTag(int id);
+        Task<IEnumerable<Movie>> GetMoviesWithProjectionsInFuture();
     }
 
     public class MoviesRepository : IMoviesRepository
@@ -42,7 +43,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public async Task<IEnumerable<Movie>> GetAll()
         {
-            return await _cinemaContext.Movies.Include(x => x.MovieTags).ToListAsync();
+            return await _cinemaContext.Movies.Include(x => x.Projections).ToListAsync();
         }
 
         public async Task<Movie> GetByIdAsync(object id)
@@ -54,14 +55,14 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public IEnumerable<Movie> GetCurrentMovies()
         {
-            var data = _cinemaContext.Movies.Where(x => x.Current).Include(x => x.MovieTags);
+            var data = _cinemaContext.Movies.Where(x => x.Current).Include(x => x.Projections);
 
             return data;
         }
 
-        public IEnumerable<Movie> GetMoviesByTag(string tagValue)
+        public IEnumerable<Movie> GetMoviesByTag(int id)
         {
-            var data = _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Value.Equals(tagValue))).ToList();
+            var data = _cinemaContext.Movies.Where(x => x.MovieTags != null && x.MovieTags.Any(t => t.Tag.Id.Equals(id))).ToList();
             
             return data;
         }
@@ -91,6 +92,18 @@ namespace WinterWorkShop.Cinema.Repositories
             var result = _cinemaContext.Movies.OrderByDescending(x => x.Rating);
 
             return result;
+        }
+
+        public async Task<IEnumerable<Movie>> GetMoviesWithProjectionsInFuture()
+        {
+            var movies = await _cinemaContext.Movies
+                .Include(x => x.Projections)
+                .Where(x => x.Projections.Any(y => y.DateTime > DateTime.Now))
+                .ToListAsync();
+
+           // var result = movies.Where(x => x.Projections.Where(y => y.DateTime > DateTime.Now)).ToList();
+
+            return movies;
         }
     }
 }
