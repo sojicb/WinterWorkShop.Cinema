@@ -220,6 +220,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<IEnumerable<MovieDomainModel>> MovieTopList()
         {
             var data = _moviesRepository.GetTopMovies();
+            var tags = await _movieTagsService.GetAllAsync();
 
             if (data == null)
             {
@@ -230,20 +231,44 @@ namespace WinterWorkShop.Cinema.Domain.Services
             MovieDomainModel model;
                 foreach (var item in data)
                 {
-                if (result.Count == 10)
-                {
-                    break;
-                }
-                    model = new MovieDomainModel
+                    if (result.Count == 10)
                     {
-                        Current = item.Current,
-                        Id = item.Id,
-                        Rating = item.Rating ?? 0,
-                        Title = item.Title,
-                        Year = item.Year
-                    };
-                    result.Add(model);
+                        break;
+                    }
+                        model = new MovieDomainModel
+                        {
+                            Current = item.Current,
+                            Id = item.Id,
+                            Rating = item.Rating ?? 0,
+                            Title = item.Title,
+                            Year = item.Year
+                        };
+                     result.Add(model);
                 }
+
+            //for(int i = 0; i < data.Count(); i++)
+            //{
+            //    foreach (var tag in tags)
+            //    {
+            //        if (tag.MovieId.Equals(data.ElementAt(i).Id) && tag.Tag.value.Equals("Oscar"))
+            //        {
+
+            //        }
+            //    }
+            //    if (result.Count == 10)
+            //    {
+            //        break;
+            //    }
+            //    model = new MovieDomainModel
+            //    {
+            //        Current = item.Current,
+            //        Id = item.Id,
+            //        Rating = item.Rating ?? 0,
+            //        Title = item.Title,
+            //        Year = item.Year
+            //    };
+            //    result.Add(model);
+            //}
 
             return result;
         }

@@ -89,7 +89,7 @@ namespace WinterWorkShop.Cinema.Repositories
 
         public IEnumerable<Movie> GetTopMovies()
         {
-            var result = _cinemaContext.Movies.OrderByDescending(x => x.Rating);
+            var result = _cinemaContext.Movies.Include(x => x.MovieTags).OrderByDescending(x => x.Rating);
 
             return result;
         }
@@ -100,8 +100,6 @@ namespace WinterWorkShop.Cinema.Repositories
                 .Include(x => x.Projections)
                 .Where(x => x.Projections.Any(y => y.DateTime > DateTime.Now))
                 .ToListAsync();
-
-           // var result = movies.Where(x => x.Projections.Where(y => y.DateTime > DateTime.Now)).ToList();
 
             return movies;
         }
