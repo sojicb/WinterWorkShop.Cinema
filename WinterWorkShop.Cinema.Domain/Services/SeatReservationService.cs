@@ -86,7 +86,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				insertedReservations.Add(data);
 			}
 
-			//_seatReservationRepository.Save();
+			_seatReservationRepository.Save();
 
 			foreach(var item in insertedReservations)
 			{
