@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -46,12 +47,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("reserved/{id}")]
-        public async Task<ActionResult<IEnumerable<SeatDomainModel>>> GetReservedSeats(int id)
+        [Route("reserved/")]
+        public async Task<ActionResult<IEnumerable<SeatDomainModel>>> GetReservedSeats(int id, DateTime projectionTime)
         {
             IEnumerable<SeatDomainModel> seatDomainModels;
 
-            seatDomainModels = await _seatReservationService.GetReservedSeats(id);
+            seatDomainModels = await _seatReservationService.GetReservedSeats(id, projectionTime);
 
             if (seatDomainModels == null)
             {

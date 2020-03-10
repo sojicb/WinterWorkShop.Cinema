@@ -206,9 +206,9 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			};
 		}
 
-		public async Task<IEnumerable<SeatDomainModel>> GetReservedSeats(int auditoriumId)
+		public async Task<IEnumerable<SeatDomainModel>> GetReservedSeats(int auditoriumId, DateTime projectionTime)
 		{
-			var reserved = _seatReservationRepository.GetAll().Result.Select(x => x.SeatId).ToList();
+			var reserved = _seatReservationRepository.GetAll().Result.Where(x => x.ProjectionTime.Equals(projectionTime)).Select(x => x.SeatId).ToList();
 
 			var data = _seatRepository.GetSeatsByAuditoriumId(auditoriumId).Result.Where(x => reserved.Contains(x.Id));
 
