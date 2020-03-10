@@ -85,14 +85,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 				Title = "Proba"
 			};
 
-			List<Movie> movieModelsList = new List<Movie>();
-
-			movieModelsList.Add(_movie);
-			IEnumerable<Movie> movies = movieModelsList;
-			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
-
-			_mockMoviesRepository = new Mock<IMoviesRepository>();
-			_mockMoviesRepository.Setup(x => x.GetCurrentMovies()).Returns(responseTask.Result);
+			
 		}
 
 		[TestMethod]
@@ -288,6 +281,26 @@ namespace WinterWorkShop.Cinema.Tests.Services
 		}
 
 		[TestMethod]
+		public void MovieService_DeleteMovie_InsertedMockedNull_ReturnsNull()
+		{
+			//Arrange
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_movieTagsService = new Mock<IMovieTagsService>();
+			_projectionsRepository = new Mock<IProjectionsRepository>();
+			_movie = null;
+			Guid movieId = new Guid();
+
+			_mockMoviesRepository.Setup(x => x.Delete(It.IsAny<Movie>())).Returns(_movie);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object, _movieTagsService.Object, _projectionsRepository.Object);
+
+			//Act
+			var resultAction = movieService.DeleteMovie(movieId).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
+		}
+
+		[TestMethod]
 		public void MovieService_MovieTopList_ReturnListOfTopMovies()
 		{
 			//Arrange
@@ -371,7 +384,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			_mockMoviesRepository = new Mock<IMoviesRepository>();
 			_movieTagsService = new Mock<IMovieTagsService>();
 			_projectionsRepository = new Mock<IProjectionsRepository>();
-			string ErrorMessage = "There are no Movies under this tag, please try again with another tag.";
 			int id = 20;
 			IEnumerable<Movie> movies = null;
 			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
@@ -393,17 +405,17 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			_mockMoviesRepository = new Mock<IMoviesRepository>();
 			_movieTagsService = new Mock<IMovieTagsService>();
 			_projectionsRepository = new Mock<IProjectionsRepository>();
-			Projection projection = new Projection
+			
+			List<Projection> projections = new List<Projection>();
+			projections.Add(new Projection
 			{
 				Id = new Guid(),
 				MovieId = new Guid("09796BF4-D4B3-D0F5-0B69-006A5A9AD16B"),
 				DateTime = DateTime.Parse("2023 - 10 - 20 00:07:57.590")
-			};
-
-			List<Projection> projections = new List<Projection>();
-			projections.Add(projection);
-
-			Movie movie = new Movie
+			});
+			
+			List<Movie> movies = new List<Movie>();
+			movies.Add(new Movie
 			{
 				Current = true,
 				Id = new Guid("09796BF4-D4B3-D0F5-0B69-006A5A9AD16B"),
@@ -411,10 +423,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
 				Title = "Proba",
 				Year = 2022,
 				Projections = projections
-			};
-			
-			List<Movie> movies = new List<Movie>();
-			movies.Add(movie);
+			});
+
 			IEnumerable<Movie> MoviesInFuture = movies;
 			Task<IEnumerable<Movie>> responseTask = Task.FromResult(MoviesInFuture);
 
@@ -426,6 +436,74 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
 			//Assert
 			Assert.IsNotNull(resultAction);
+		}
+
+		[TestMethod]
+		public void MovieService_GetMoviesWithProjectionsInFuture_ReturnsNull()
+		{
+			//Arrange
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_movieTagsService = new Mock<IMovieTagsService>();
+			_projectionsRepository = new Mock<IProjectionsRepository>();
+			
+			IEnumerable<Movie> MoviesInFuture = null;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(MoviesInFuture);
+
+			_mockMoviesRepository.Setup(x => x.GetMoviesWithProjectionsInFuture()).Returns(responseTask);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object, _movieTagsService.Object, _projectionsRepository.Object);
+
+			//Act
+			var resultAction = movieService.GetMoviesWithProjectionsInFuture().ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
+		}
+
+		[TestMethod]
+		public void MoviesService_GetAll_ReturnsMovies()
+		{
+			//Arrange
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_movieTagsService = new Mock<IMovieTagsService>();
+			_projectionsRepository = new Mock<IProjectionsRepository>();
+			List<Movie> allMovies = new List<Movie>();
+			int expectedResult = 4;
+			allMovies.Add(_movie);
+			allMovies.Add(_movieTwo);
+			allMovies.Add(_movieThree);
+			allMovies.Add(_movieFour);
+			IEnumerable<Movie> movies = allMovies;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
+
+			_mockMoviesRepository.Setup(x => x.GetAll()).Returns(responseTask);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object, _movieTagsService.Object, _projectionsRepository.Object);
+
+			//Act
+			var resultAction = movieService.GetAll().ConfigureAwait(false).GetAwaiter().GetResult().ToList();
+
+			//Assert
+			Assert.IsNotNull(resultAction);
+			Assert.AreEqual(resultAction.Count, expectedResult);
+		}
+
+		[TestMethod]
+		public void MoviesService_GetAll_ReturnsNull()
+		{
+			//Arrange
+			_mockMoviesRepository = new Mock<IMoviesRepository>();
+			_movieTagsService = new Mock<IMovieTagsService>();
+			_projectionsRepository = new Mock<IProjectionsRepository>();
+			IEnumerable<Movie> movies = null;
+			Task<IEnumerable<Movie>> responseTask = Task.FromResult(movies);
+
+			_mockMoviesRepository.Setup(x => x.GetCurrentMovies()).Returns(responseTask.Result);
+			MovieService movieService = new MovieService(_mockMoviesRepository.Object, _movieTagsService.Object, _projectionsRepository.Object);
+
+			//Act
+			var resultAction = movieService.GetCurrentMovies(true).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsNull(resultAction);
 		}
 	}
 }
