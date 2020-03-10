@@ -47,7 +47,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("reserved")]
+        [Route("reserved/")]
         public async Task<ActionResult<IEnumerable<SeatDomainModel>>> GetReservedSeats(int id, DateTime projectionTime)
         {
             IEnumerable<SeatDomainModel> seatDomainModels;
