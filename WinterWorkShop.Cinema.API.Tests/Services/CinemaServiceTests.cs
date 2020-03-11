@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Domain.Services;
@@ -38,13 +39,19 @@ namespace WinterWorkShop.Cinema.Tests.Services
             };
 
             List<WinterWorkShop.Cinema.Data.Cinema> cinemasModelsList = new List<WinterWorkShop.Cinema.Data.Cinema>();
-            
+            List<Auditorium> auditoriumModelsList = new List<Auditorium>();
+            List<AuditoriumService> auditoriumServicesList = new List<AuditoriumService>();
+
             cinemasModelsList.Add(_cinema);
             IEnumerable<WinterWorkShop.Cinema.Data.Cinema> cinemas = cinemasModelsList;
             Task<IEnumerable<WinterWorkShop.Cinema.Data.Cinema>> responseTask = Task.FromResult(cinemas);
+            IEnumerable<Auditorium> auditoriums = auditoriumModelsList;
+            IEnumerable<AuditoriumService> auditoriumServices = auditoriumServicesList;
 
             _mockCinemasRepository = new Mock<ICinemasRepository>();
             _mockCinemasRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            _mockAduitoriumsRepository = new Mock<IAuditoriumsRepository>();
+            _mockAuditoriumService = new Mock<IAuditoriumService>();
         }
 
 

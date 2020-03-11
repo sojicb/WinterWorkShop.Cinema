@@ -65,24 +65,21 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             };
 
             tagDomainModelsList.Add(tagDomainModel);
-            IEnumerable<TagDomainModel> tagDomainModels = tagDomainModelsList;
-            Task<IEnumerable<TagDomainModel>> responseTask = Task.FromResult(tagDomainModels);
-            int expectedResultCount = 1;
+            Task<TagDomainModel> responseTask = Task.FromResult(tagDomainModel);
             int expectedStatusCode = 200;
 
             _tagService = new Mock<ITagService>();
-            _tagService.Setup(x => x.GetTagByIdAsync(tagDomainModel.Id));
+            _tagService.Setup(x => x.GetTagByIdAsync(tagDomainModel.Id)).Returns(responseTask);
             TagsController tagsController = new TagsController(_tagService.Object);
 
             //Act
-            var result = tagsController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = tagsController.GetAsync(tagDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultList = ((OkObjectResult)result).Value;
-            var tagDomainModelResultList = (List<TagDomainModel>)resultList;
+            var tagDomainModelResultList = (TagDomainModel)resultList;
 
             //Assert
             Assert.IsNotNull(tagDomainModelResultList);
-            Assert.AreEqual(expectedResultCount, tagDomainModelResultList.Count);
-            Assert.AreEqual(tagDomainModel.Id, tagDomainModelResultList[0].Id);
+            Assert.AreEqual(tagDomainModel.Id, tagDomainModelResultList.Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
@@ -194,17 +191,15 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-
         }
 
 
-       /* [TestMethod]
+        [TestMethod]
         public void PostAsync_Create_crateTagResultModel_IsSuccessful_False_Return_BadRequest()
         {
             //Arrange
             string expectedMessage = "Error occured while creating new tag, please try again";
             int expectedStatusCode = 400;
-
 
             TagModel tagModel = new TagModel()
             {
@@ -216,10 +211,10 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             {
                 Tag = new TagDomainModel
                 {
-                    Id = 1,
-                    value = "Naziv taga"
+                    Id = tagModel.Id,
+                    value = tagModel.Value
                 },
-                IsSuccessful = true,
+                IsSuccessful = false,
                 ErrorMessage = Messages.TAG_CREATION_ERROR,
             };
 
@@ -229,23 +224,18 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             _tagService.Setup(x => x.AddTag(It.IsAny<TagDomainModel>())).Returns(responseTask);
             TagsController tagsController = new TagsController(_tagService.Object);
 
-
             //Act
             var result = tagsController.Post(tagModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultResponse = (BadRequestObjectResult)result;
             var badObjectResult = ((BadRequestObjectResult)result).Value;
             var errorResult = (ErrorResponseModel)badObjectResult;
 
-
-
             //Assert
             Assert.IsNotNull(resultResponse);
             Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-
-
-        }*/
+        }
 
 
         [TestMethod]

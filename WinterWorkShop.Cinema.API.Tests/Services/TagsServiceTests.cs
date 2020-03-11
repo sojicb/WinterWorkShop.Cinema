@@ -105,7 +105,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
         }
 
 
-       /* [TestMethod]
+        [TestMethod]
         public void TagService_CreateTag_InsertMocked_ReturnTags()
         {
             //Arrange
@@ -113,7 +113,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             _mockTagsRepository = new Mock<ITagRepository>();
             _mockTagsRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()));
-            _mockTagsRepository.Setup(x => x.Insert(It.IsAny<Tag>()));
+            _mockTagsRepository.Setup(x => x.Insert(It.IsAny<Tag>())).Returns(_tag);
             _mockTagsRepository.Setup(x => x.Save());
             TagService tagService = new TagService(_mockTagsRepository.Object);
 
@@ -125,7 +125,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.AreEqual(_tag.Id, resultAction.Tag.Id);
             Assert.IsNull(resultAction.ErrorMessage);
             Assert.IsTrue(resultAction.IsSuccessful);
-        }*/
+        }
 
 
         [TestMethod]

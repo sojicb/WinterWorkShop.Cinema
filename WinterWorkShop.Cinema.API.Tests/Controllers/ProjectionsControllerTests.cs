@@ -58,45 +58,41 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
-       /* [TestMethod]
+        [TestMethod]
         public void GetAsyncById_Return_ProjectionById()
         {
-            List<ProjectionDomainModel> projectionsDomainModelsList = new List<ProjectionDomainModel>();
+            //Arrange
+            //List<ProjectionDomainModel> projectionsDomainModelsList = new List<ProjectionDomainModel>();
             ProjectionDomainModel projectionDomainModel = new ProjectionDomainModel
             {
                 Id = Guid.NewGuid(),
-               
             };
 
-            projectionsDomainModelsList.Add(projectionDomainModel);
-            IEnumerable<ProjectionDomainModel> projectionDomainModels = projectionsDomainModelsList;
-            Task<IEnumerable<ProjectionDomainModel>> responseTask = Task.FromResult(projectionDomainModels);
-            int expectedResultCount = 1;
+            Task<ProjectionDomainModel> responseTask = Task.FromResult(projectionDomainModel);
             int expectedStatusCode = 200;
 
             _projectionService = new Mock<IProjectionService>();
-            _projectionService.Setup(x => x.GetProjectionByIdAsync(projectionDomainModel.Id));
+            _projectionService.Setup(x => x.GetProjectionByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
             ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
 
             //Act
             var result = projectionsController.GetAsyncById(projectionDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultList = ((OkObjectResult)result).Value;
-            var projectionDomainModelResultList = (List<ProjectionDomainModel>)resultList;
+            var projectionDomainModelResult = (ProjectionDomainModel)resultList;
 
             //Assert
-            Assert.IsNotNull(projectionDomainModelResultList);
-            Assert.AreEqual(expectedResultCount, projectionDomainModelResultList.Count);
-            Assert.AreEqual(projectionDomainModel.Id, projectionDomainModelResultList[0].Id);
+            Assert.IsNotNull(projectionDomainModelResult);
+            Assert.AreEqual(projectionDomainModel.Id, projectionDomainModelResult.Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }*/
+        }
 
 
         [TestMethod]
         public void PutAsync_GetProjectionById_Return_UpdatedProjection()
         {
             //Arrange
-            List<ProjectionDomainModel> projectionsDomainModelsList = new List<ProjectionDomainModel>();
+            //List<ProjectionDomainModel> projectionsDomainModelsList = new List<ProjectionDomainModel>();
             ProjectionDomainModel projectionDomainModel = new ProjectionDomainModel
             {
                 Id = Guid.NewGuid(),
@@ -107,18 +103,26 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 ProjectionTime = DateTime.Now.AddDays(1)
             };
 
-            projectionsDomainModelsList.Add(projectionDomainModel);
-            IEnumerable<ProjectionDomainModel> projectionDomainModels = projectionsDomainModelsList;
-            Task<IEnumerable<ProjectionDomainModel>> responseTask = Task.FromResult(projectionDomainModels);
+            UpdateProjectionModel updateProjectionModel = new UpdateProjectionModel
+            {
+                AuditoriumId = projectionDomainModel.AuditoriumId,
+                MovieId = projectionDomainModel.MovieId,
+                ProjectionTime = projectionDomainModel.ProjectionTime
+            };
+
+           // projectionsDomainModelsList.Add(projectionDomainModel);
+            //IEnumerable<ProjectionDomainModel> projectionDomainModels = projectionsDomainModelsList;
+            Task<ProjectionDomainModel> responseTask = Task.FromResult(projectionDomainModel);
             int expectedResultCount = 1;
             int expectedStatusCode = 200;
 
             _projectionService = new Mock<IProjectionService>();
-            _projectionService.Setup(x => x.UpdateProjection(projectionDomainModel));
+            _projectionService.Setup(x => x.GetProjectionByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            _projectionService.Setup(x => x.UpdateProjection(projectionDomainModel)).Returns(responseTask);
             ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
 
             //Act
-            var result = projectionsController.GetAsyncById(projectionDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = projectionsController.Put(projectionDomainModel.Id, updateProjectionModel).ConfigureAwait(false).GetAwaiter().GetResult();
             var resultList = ((OkObjectResult)result).Value;
             var projectionDomainModelResultList = (List<ProjectionDomainModel>)resultList;
 
@@ -290,7 +294,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 ErrorMessage = Messages.PROJECTION_CREATION_ERROR,
             };
             Task<CreateProjectionResultModel> responseTask = Task.FromResult(createProjectionResultModel);
-
 
             _projectionService = new Mock<IProjectionService>();
             _projectionService.Setup(x => x.CreateProjection(It.IsAny<ProjectionDomainModel>())).Returns(responseTask);

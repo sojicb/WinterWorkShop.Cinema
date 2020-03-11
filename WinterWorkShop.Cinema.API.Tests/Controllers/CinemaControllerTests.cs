@@ -52,6 +52,38 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
+
+        [TestMethod]
+        public void GetAsyncById_Return_CinemaById()
+        {
+            //Arrange
+            CinemaDomainModel cinemaDomainModel = new CinemaDomainModel
+            {
+                Id = 1,
+                Name = "Cinema name"
+            };
+
+
+            Task<CinemaDomainModel> responseTask = Task.FromResult(cinemaDomainModel);
+            int expectedStatusCode = 200;
+
+            _cinemaService = new Mock<ICinemaService>();
+            _cinemaService.Setup(x => x.GetCinemaByIdAsync(It.IsAny<int>())).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.GetAsyncById(cinemaDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var cinemaDomainModelResultList = (CinemaDomainModel)resultList;
+
+            //Assert
+            Assert.IsNotNull(cinemaDomainModelResultList);
+            Assert.AreEqual(cinemaDomainModel.Id, cinemaDomainModelResultList.Id);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
+
+
         [TestMethod]
         public void GetAsync_Return_NewList()
         {

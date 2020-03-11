@@ -11,6 +11,7 @@ using WinterWorkShop.Cinema.API.Models;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
+using WinterWorkShop.Cinema.Domain.Services;
 
 namespace WinterWorkShop.Cinema.Tests.Controllers
 {
@@ -74,23 +75,35 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
 
-      /*  [TestMethod]
+        [TestMethod]
         public void GetAsyncById_Return_Auditorium()
         {
+            List<SeatDomainModel> seats = new List<SeatDomainModel>();
+            foreach (var item in seats)
+            {
+                seats.Add(new SeatDomainModel
+                {
+                    Number = item.Number,
+                    Row = item.Row,
+                    Id = item.Id,
+                    AuditoriumId = item.AuditoriumId
+                });
+            }
+
             //Arange
             AuditoriumDomainModel auditoriumDomainModel = new AuditoriumDomainModel
             {
                 Id = 1,
                 CinemaId = 1,
                 Name = "Audit name",
-                
+                SeatsList = seats
             };
-           
+
             Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
             int expectedStatusCode = 200;
 
             _auditoriumService = new Mock<IAuditoriumService>();
-            _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(auditoriumDomainModel.Id));
+            _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(It.IsAny<int>())).Returns(responseTask);
             AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
 
             //Act
@@ -104,7 +117,88 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
 
         }
-*/
+
+        [TestMethod]
+        public void Put_UpdateAuditorium_Return_UpdatedAuditorium()
+        {
+            //Arange
+            List<SeatDomainModel> seats = new List<SeatDomainModel>();
+            foreach (var item in seats)
+            {
+                seats.Add(new SeatDomainModel
+                {
+                    Number = item.Number,
+                    Row = item.Row,
+                    Id = item.Id,
+                    AuditoriumId = item.AuditoriumId
+                });
+            }
+
+            AuditoriumDomainModel auditoriumDomainModel = new AuditoriumDomainModel
+            {
+                Id = 1,
+                CinemaId = 1,
+                Name = "Audit name",
+                SeatsList = seats
+            };
+
+            UpdateAuditoriumModel updateAuditoriumModel = new UpdateAuditoriumModel 
+            {
+               cinemaId = 2,
+               Name = "Updated name"
+            };
+
+            Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
+            int expectedResultCount = 1;
+            int expectedStatusCode = 200;
+
+            _auditoriumService = new Mock<IAuditoriumService>();
+            _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(It.IsAny<int>())).Returns(responseTask);
+            _auditoriumService.Setup(x => x.UpdateAuditorium(auditoriumDomainModel)).Returns(responseTask);
+            AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
+
+            //Act
+            var result = auditoriumsController.Put(auditoriumDomainModel.Id, updateAuditoriumModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            var resultList = ((OkObjectResult)result).Value;
+            var auditoriumsDomainModelResultList = (List<AuditoriumDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(auditoriumsDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, auditoriumsDomainModelResultList.Count);
+            Assert.AreEqual(auditoriumDomainModel.Id, auditoriumsDomainModelResultList[0].Id);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }   
+
+
+        [TestMethod]
+        public void GetAllByCinemaId_Return_AuditoirumsByCinemaId()
+        {
+            AuditoriumDomainModel auditoriumDomainModel = new AuditoriumDomainModel
+            {
+                Id = 1,
+                CinemaId = 1,
+                Name = "Audit name",
+                
+            };
+
+            Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
+            int expectedStatusCode = 200;
+
+            _auditoriumService = new Mock<IAuditoriumService>();
+            _auditoriumService.Setup(x => x.GetAllByCinemaId(auditoriumDomainModel.CinemaId));
+            AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
+
+            //Act
+            var result = auditoriumsController.GetAllByCinemaId(auditoriumDomainModel.CinemaId).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+           
+
+            //Assert
+            Assert.IsNotNull(auditoriumDomainModel);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
 
         [TestMethod]
         public void GetAsync_Return_NewList()
@@ -132,8 +226,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
-       
-      /*  [TestMethod]
+
+        [TestMethod]
         public void PostAsync_Create_createAuditoriumResultModel_IsSuccessful_True_Auditoriums()
         {
             List<SeatDomainModel> seats = new List<SeatDomainModel>();
@@ -153,7 +247,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             CreateAuditoriumModel createAuditoriumModel = new CreateAuditoriumModel()
             {
-                cinemaId  = 1,
+                cinemaId = 1,
                 auditName = "Ime auditoriuma",
                 seatRows = 2,
                 numberOfSeats = 2
@@ -175,22 +269,21 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Task<CreateAuditoriumResultModel> responseTask = Task.FromResult(createAuditoriumResultModel);
 
             _auditoriumService = new Mock<IAuditoriumService>();
-            _auditoriumService.Setup(x => x.CreateAuditorium(It.IsAny<AuditoriumDomainModel>(),It.IsAny<int>(),It.IsAny<int>())).Returns(responseTask);
+            _auditoriumService.Setup(x => x.CreateAuditorium(It.IsAny<AuditoriumDomainModel>(), It.IsAny<int>(), It.IsAny<int>())).Returns(responseTask);
             AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
-                
+
             //Act
             var result = auditoriumsController.PostAsync(createAuditoriumModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var createResult = ((CreatedResult)result).Value;
-            var auditoriumDomainModel = (AuditoriumDomainModel)createResult;
-           
-            
+            var auditoriumDomainModel = (CreateAuditoriumResultModel)createResult;
+
             //Assert
             Assert.IsNotNull(auditoriumDomainModel);
-            Assert.AreEqual(createAuditoriumModel.cinemaId, auditoriumDomainModel.CinemaId);
+            Assert.AreEqual(createAuditoriumModel.cinemaId, auditoriumDomainModel.Auditorium.CinemaId);
             Assert.IsInstanceOfType(result, typeof(CreatedResult));
             Assert.AreEqual(expectedStatusCode, ((CreatedResult)result).StatusCode);
 
-        }*/
+        }
 
 
         [TestMethod]
@@ -258,11 +351,9 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
 
 
-       /* [TestMethod]
+        [TestMethod]
         public void PostAsync_Create_createAuditoriumResultModel_IsSuccessful_False_Return_BadRequest()
         {
-
-
             List<SeatDomainModel> seats = new List<SeatDomainModel>();
             foreach (var item in seats)
             {
@@ -276,7 +367,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             }
 
             //Arrange
-            string expectedMessage = "Error occured while creating new auditorium, please try agen.";
+            string expectedMessage = "Error occured while creating new auditorium, please try again.";
             int expectedStatusCode = 400;
 
             CreateAuditoriumModel createAuditoriumModel = new CreateAuditoriumModel()
@@ -291,12 +382,12 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             {
                 Auditorium = new AuditoriumDomainModel
                 {
-                    Id = 1,
-                    Name = "Ime auditoriuma",
+                    Id = 5,
+                    Name = "neko ime auditoriuma",
                     CinemaId = createAuditoriumModel.cinemaId,
                     SeatsList = seats
                 },
-                IsSuccessful = true,
+                IsSuccessful = false,
                 ErrorMessage = Messages.AUDITORIUM_CREATION_ERROR,
             };
 
@@ -317,7 +408,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-        }*/
+        }
 
 
         [TestMethod]
@@ -353,7 +444,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
         }
 
-       /* [TestMethod]
+        [TestMethod]
         public void Delete_DeleteAuditorium_Return_Null()
         {
             //Arange
@@ -365,16 +456,19 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             auditoriumDomainModelsList.Add(auditoriumDomainModel);
             IEnumerable<AuditoriumDomainModel> auditoriumDomainModels = auditoriumDomainModelsList;
-            Task<IEnumerable<AuditoriumDomainModel>> responseTask = Task.FromResult(auditoriumDomainModels);
+            Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
+
             int expectedResultCount = 1;
             int expectedStatusCode = 200;
 
             _auditoriumService = new Mock<IAuditoriumService>();
-            _auditoriumService.Setup(x => x.deleteAuditorium(auditoriumDomainModel.Id)).Returns(responseTask);
+
+            //Proveri DeleteAuditorium u linq
+            _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(It.IsAny<int>())).Returns(responseTask);
             AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
 
             //Act
-            var result = auditoriumsController.Delete(auditoriumDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = auditoriumsController.Delete(auditoriumDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult();
             var resultList = ((OkObjectResult)result).Value;
             var auditoriumsDomainModelResultList = (List<AuditoriumDomainModel>)resultList;
 
@@ -384,6 +478,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(auditoriumDomainModel.Id, auditoriumDomainModelsList[0].Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }*/
+        }
     }
 }
