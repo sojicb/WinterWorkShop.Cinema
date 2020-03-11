@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -13,10 +14,12 @@ namespace WinterWorkShop.Cinema.API.Controllers
     public class SeatsController : ControllerBase
     {
         private readonly ISeatService _seatService;
+        private readonly ISeatReservationService _seatReservationService;
 
-        public SeatsController(ISeatService seatService)
+        public SeatsController(ISeatService seatService, ISeatReservationService seat)
         {
             _seatService = seatService;
+            _seatReservationService = seat;
         }
 
         /// <summary>
@@ -30,6 +33,26 @@ namespace WinterWorkShop.Cinema.API.Controllers
             IEnumerable<SeatDomainModel> seatDomainModels;
             
             seatDomainModels = await _seatService.GetAllAsync();
+
+            if (seatDomainModels == null)
+            {
+                seatDomainModels = new List<SeatDomainModel>();
+            }
+
+            return Ok(seatDomainModels);
+        }
+
+        /// <summary>
+        /// Gets all reserved seats
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("reserved/")]
+        public async Task<ActionResult<IEnumerable<SeatDomainModel>>> GetReservedSeats(int id, DateTime projectionTime)
+        {
+            IEnumerable<SeatDomainModel> seatDomainModels;
+
+            seatDomainModels = await _seatReservationService.GetReservedSeats(id, projectionTime);
 
             if (seatDomainModels == null)
             {

@@ -15,6 +15,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
     public class SeatControllerTests
     {
         private Mock<ISeatService> _seatService;
+        private Mock<ISeatReservationService> _seatReservationService = new Mock<ISeatReservationService>();
 
         [TestMethod]
         public void GetAsync_Return_All_Seats()
@@ -37,7 +38,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             _seatService = new Mock<ISeatService>();
             _seatService.Setup(x => x.GetAllAsync()).Returns(responseTask);
-            SeatsController seatsController = new SeatsController(_seatService.Object);
+            SeatsController seatsController = new SeatsController(_seatService.Object, _seatReservationService.Object);
 
             //Act
             var result = seatsController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
@@ -64,7 +65,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             _seatService = new Mock<ISeatService>();
             _seatService.Setup(x => x.GetAllAsync()).Returns(responseTask);
-            SeatsController seatsController = new SeatsController(_seatService.Object);
+            SeatsController seatsController = new SeatsController(_seatService.Object, _seatReservationService.Object);
 
             //Act
             var result = seatsController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;

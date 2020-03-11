@@ -14,13 +14,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
     public class CinemaService : ICinemaService
     {
         private readonly ICinemasRepository _cinemasRepository;
-        private readonly IAuditoriumsRepository _auditoriumsRepository;
         private readonly IAuditoriumService _auditoriumService;
 
-        public CinemaService(ICinemasRepository cinemasRepository, IAuditoriumsRepository auditoriumsRepository, IAuditoriumService auditoriumService)
+        public CinemaService(ICinemasRepository cinemasRepository, IAuditoriumService auditoriumService)
         {
             _cinemasRepository = cinemasRepository;
-            _auditoriumsRepository = auditoriumsRepository;
             _auditoriumService = auditoriumService;
         }
 

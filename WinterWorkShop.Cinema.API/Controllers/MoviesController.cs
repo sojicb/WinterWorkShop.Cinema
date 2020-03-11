@@ -56,7 +56,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         [Route("tag/{id}")]
         public async Task<ActionResult<IEnumerable<MovieDomainModel>>> GetMoviesByTag(int id)
         {
-            List<MovieDomainModel> movies = _movieService.GetMoviesByTag(id).ToList();
+            var movies = await _movieService.GetMoviesByTag(id);
 
             if (movies == null)
             {
@@ -76,7 +76,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         {
             IEnumerable<MovieDomainModel> movieDomainModels;
             
-            movieDomainModels = _movieService.GetCurrentMovies(true);
+            movieDomainModels = await _movieService.GetCurrentMovies(true);
 
             if (movieDomainModels == null)
             {

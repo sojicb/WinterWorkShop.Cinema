@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
@@ -40,6 +41,5 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return result;
         }
-
     }
 }

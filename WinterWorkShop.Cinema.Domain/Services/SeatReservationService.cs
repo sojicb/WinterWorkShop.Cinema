@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -85,7 +86,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				insertedReservations.Add(data);
 			}
 
-			//_seatReservationRepository.Save();
+			_seatReservationRepository.Save();
 
 			foreach(var item in insertedReservations)
 			{
@@ -165,7 +166,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					return new ValidateSeatDomainModel
 					{
 						IsSuccessful = false,
-						ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
+						ErrorMessage = data.ErrorMessage,
 						Seat = new SeatDomainModel
 						{
 							Id = seat
@@ -203,6 +204,28 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				IsSuccessful = true,
 				ErrorMessage = null
 			};
+		}
+
+		public async Task<IEnumerable<SeatDomainModel>> GetReservedSeats(int auditoriumId, DateTime projectionTime)
+		{
+			var reserved = _seatReservationRepository.GetAll().Result.Where(x => x.ProjectionTime.Equals(projectionTime)).Select(x => x.SeatId).ToList();
+
+			var data = _seatRepository.GetSeatsByAuditoriumId(auditoriumId).Result.Where(x => reserved.Contains(x.Id));
+
+			List<SeatDomainModel> seats = new List<SeatDomainModel>();
+
+			foreach (var seat in data)
+			{
+				seats.Add(new SeatDomainModel
+				{
+					Id = seat.Id,
+					AuditoriumId = seat.AuditoriumId,
+					Number = seat.Number,
+					Row = seat.Row
+				});
+			}
+
+			return seats;
 		}
 	}
 }

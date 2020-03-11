@@ -64,7 +64,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 				};
 			}
 
-			//_reservationRepository.Save();
+			_reservationRepository.Save();
 
 			CreateReservationResultModel reservationDomain = new CreateReservationResultModel()
 			{
