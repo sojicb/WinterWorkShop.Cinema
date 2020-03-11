@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 using WinterWorkShop.Cinema.Domain.Services;
@@ -17,17 +18,33 @@ namespace WinterWorkShop.Cinema.Tests.Services
         private Mock<ICinemasRepository> _mockCinemasRepository;
         private Mock<IAuditoriumService> _mockAuditoriumService;
         private Data.Cinema _cinema;
+        private Auditorium _auditorium;
         private CinemaDomainModel _cinemaDomainModel;
+        private DeleteAuditoriumDomainModel _auditoriumDomainModel;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            _auditoriumDomainModel = new DeleteAuditoriumDomainModel
+            {
+                IsSuccessful = true,
+                ErrorMessage = null
+             };
 
+            _auditorium = new Auditorium
+            {
+                Id = 1,
+                CinemaId = 1
+            };
+            
             _cinema = new Data.Cinema
             {
                 Id = 1,
                 Name = "Cinema name",
-
+                Auditoriums = new List<Auditorium>
+                {
+                    _auditorium
+                }
             };
 
             _cinemaDomainModel = new CinemaDomainModel
@@ -35,6 +52,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 Id = 1,
                 Name = "Cinema name"
             };
+
         }
 
 
@@ -149,10 +167,18 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Arrange
             _mockCinemasRepository = new Mock<ICinemasRepository>();
             _mockAuditoriumService = new Mock<IAuditoriumService>();
-            Data.Cinema cinemas = _cinema;
-            Task<Data.Cinema> responseTask = Task.FromResult(cinemas);
+            List<Data.Cinema> mockedCinemas = new List<Data.Cinema>();
+            mockedCinemas.Add(_cinema);
+            IEnumerable<Data.Cinema> cinemas = mockedCinemas;
+            Task<IEnumerable<Data.Cinema>> response = Task.FromResult(cinemas);
+            Data.Cinema cinema = _cinema;
+            Task<Data.Cinema> responseTask = Task.FromResult(cinema);
+            DeleteAuditoriumDomainModel deleteAudit = _auditoriumDomainModel;
+            Task<DeleteAuditoriumDomainModel> deleteResponse = Task.FromResult(deleteAudit);
 
-            _mockCinemasRepository.Setup(x => x.Delete(It.IsAny<Data.Cinema>())).Returns(responseTask.Result);
+            _mockCinemasRepository.Setup(x => x.GetAll()).Returns(response);
+            _mockAuditoriumService.Setup(x => x.DeleteAuditorium(_auditorium.Id)).Returns(deleteResponse);
+            _mockCinemasRepository.Setup(x => x.Delete(responseTask.Result.Id)).Returns(responseTask.Result);
             CinemaService cinemasController = new CinemaService(_mockCinemasRepository.Object, _mockAuditoriumService.Object);
 
             //Act

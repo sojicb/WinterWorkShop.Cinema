@@ -191,7 +191,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
             ProjectionDomainModel deleteProjection;
             try
             {
-                deleteProjection = _projectionService.DeleteProjection(id);
+                deleteProjection = await _projectionService.DeleteProjection(id);
             }
             catch (DbUpdateException e)
             {
