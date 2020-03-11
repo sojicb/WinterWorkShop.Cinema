@@ -178,7 +178,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             return domainModel;
         }
-        public ProjectionDomainModel DeleteProjection(Guid id)
+        public async Task<ProjectionDomainModel> DeleteProjection(Guid id)
         {
             var data = _projectionsRepository.Delete(id);
 
@@ -191,7 +191,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             ProjectionDomainModel domainModel = new ProjectionDomainModel
             {
-                Id = data.MovieId,
+                Id = data.Id,
                 AuditoriumId = data.AuditoriumId,
                 ProjectionTime = data.DateTime,
                 MovieId = data.MovieId,

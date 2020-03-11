@@ -67,6 +67,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfRows, int numberOfSeats)
         {
             var cinema = await _cinemasRepository.GetByIdAsync(domainModel.CinemaId);
+
             if (cinema == null)
             {
                 return new CreateAuditoriumResultModel
@@ -212,6 +213,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
         {
             var audit = await _auditoriumsRepository.GetByIdAsync(id);
 
+            if (audit == null)
+            {
+                return null;
+            }
+
             var seats = audit.Seats.ToList();
 
             var projections = audit.Projections.ToList();
@@ -248,7 +254,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
             if (data == null)
             {
-                return null;
+                return new DeleteAuditoriumDomainModel
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = Messages.AUDITORIUM_CREATION_ERROR
+                };
             }
 
             _auditoriumsRepository.Save();

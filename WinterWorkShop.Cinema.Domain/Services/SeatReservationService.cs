@@ -166,7 +166,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
 					return new ValidateSeatDomainModel
 					{
 						IsSuccessful = false,
-						ErrorMessage = Messages.SEAT_ALREADY_RESERVED,
+						ErrorMessage = data.ErrorMessage,
 						Seat = new SeatDomainModel
 						{
 							Id = seat

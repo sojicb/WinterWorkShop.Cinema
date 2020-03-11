@@ -19,7 +19,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
     [TestClass]
     public class ProjectionsServiceTests
     {
-        private Mock<IProjectionsRepository> _mockProjectionsRepository;
+        private Mock<IProjectionsRepository> _mockProjectionsRepository = new Mock<IProjectionsRepository>();
         private Projection _projection;
         private ProjectionDomainModel _projectionDomainModel;
 
@@ -28,7 +28,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
         {
             _projection = new Projection
             {
-                Id = Guid.NewGuid(),
+                Id = new Guid("A3DB9208-FC16-4FF2-8489-0214E4EF512B"),
                 Auditorium = new Auditorium { Name = "ImeSale" },
                 Movie = new Movie { Title = "ImeFilma" },
                 MovieId = Guid.NewGuid(),
@@ -46,14 +46,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 ProjectionTime = DateTime.Now.AddDays(1)
             };
 
-            List<Projection> projectionsModelsList = new List<Projection>();
-
-            projectionsModelsList.Add(_projection);
-            IEnumerable<Projection> projections = projectionsModelsList;
-            Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
-
-            _mockProjectionsRepository = new Mock<IProjectionsRepository>();
-            _mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            
         }
 
         [TestMethod]
@@ -61,9 +54,15 @@ namespace WinterWorkShop.Cinema.Tests.Services
         {
             //Arrange
             int expectedResultCount = 1;
+            List<Projection> mockedProjections = new List<Projection>();
+            mockedProjections.Add(_projection);
+            IEnumerable<Projection> projections = mockedProjections;
+            Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
             ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
             //Act
-            var resultAction = projectionsController.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var resultAction = projectionsController.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult().ToList();
             var result = (List<ProjectionDomainModel>)resultAction;
 
             //Assert
@@ -80,7 +79,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
             IEnumerable<Projection> projections = null;
             Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
 
-            _mockProjectionsRepository = new Mock<IProjectionsRepository>();
             _mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
             ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
 
@@ -183,6 +181,164 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
             //Act
             var resultAction = projectionsController.CreateProjection(_projectionDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
+        public void ProjectionService_UpdateProjection_InsertedNull_ReturnNull()
+        {
+            //Arrange
+
+            Projection projections = null;
+            Task<Projection> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.Update(It.IsAny<Projection>())).Returns(responseTask.Result);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+            //Act
+            var resultAction = projectionsController.UpdateProjection(_projectionDomainModel).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+        }
+        
+
+       [TestMethod]
+        public void ProjectionService_UpdateProjection_ReturnUpdatedProjection()
+        {
+            //Arrange
+            Projection projections = _projection;
+            Task<Projection> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.Update(It.IsAny<Projection>())).Returns(responseTask.Result);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+
+            //Act
+            var resultAction = projectionsController.UpdateProjection(_projectionDomainModel)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(resultAction.Id, responseTask.Result.Id);
+        }
+
+        [TestMethod]
+        public void ProjectionService_DeleteProjection_ReturnDeletedProjection()
+        {
+            //Arrange
+
+            Projection projections = _projection;
+            Task<Projection> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.Delete(responseTask.Result.Id)).Returns(responseTask.Result);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+            //Act
+            var resultAction = projectionsController.DeleteProjection(responseTask.Result.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(responseTask.Result.Id, resultAction.Id);
+        }
+
+
+        [TestMethod]
+        public void ProjectionService_DeleteProjection_InsertNull_ReturnNull()
+        {
+            //Arrange
+            Projection projections = null;
+            Task<Projection> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.Delete(It.IsAny<Guid>())).Returns(responseTask.Result);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+
+            //Act
+            var resultAction = projectionsController.DeleteProjection(new Guid())
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+        }
+
+        [TestMethod]
+        public void ProjectionService_GetProjectionsById_ReturnProjections()
+        {
+            //Arrange
+            Projection projections = _projection;
+            Task<Projection> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.GetByIdAsync(responseTask.Result.Id)).Returns(responseTask);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+            //Act
+            var resultAction = projectionsController.GetProjectionByIdAsync(responseTask.Result.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(responseTask.Result.Id, resultAction.Id);
+        }
+
+
+        [TestMethod]
+        public void ProjectionService_GetProjectionsById_InsertedMockedNull_ReturnsNull()
+        {
+            //Arrange
+            Projection projections = null;
+            Task<Projection> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+
+            //Act
+            var resultAction = projectionsController.GetProjectionByIdAsync(new Guid())
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+        }
+
+        [TestMethod]
+        public void ProjectionService_FilterProjections_ReturnFilteredProjections()
+        {
+            //Arrange
+            int expectedResultCount = 1;
+            List<Projection> mockedProjections = new List<Projection>();
+            mockedProjections.Add(_projection);
+            IEnumerable<Projection> projections = mockedProjections;
+            Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+            //Act
+            var resultAction = projectionsController.FilterProjections(1, 1, new Guid("A3DB9208-FC16-4FF2-8489-0214E4EF512B"), DateTime.Parse("1993-09-20 00:07:57.590"), DateTime.Parse("2022-09-20 00:07:57.590")).ConfigureAwait(false).GetAwaiter().GetResult().ToList();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(expectedResultCount, resultAction.Count);
+            Assert.IsTrue(resultAction.Any(x => x.Id.Equals(responseTask.Result.ElementAt(0).Id)));
+        }
+
+
+        [TestMethod]
+        public void ProjectionService_FilterProjectionsInsertMockedNull_ReturnNull()
+        {
+            //Arrange 
+            IEnumerable<Projection> projections = null;
+            Task<IEnumerable<Projection>> responseTask = Task.FromResult(projections);
+
+            _mockProjectionsRepository.Setup(x => x.GetAll()).Returns(responseTask);
+            ProjectionService projectionsController = new ProjectionService(_mockProjectionsRepository.Object);
+
+            //Act
+            var resultAction = projectionsController.GetProjectionByIdAsync(new Guid())
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
         }
     }
 }
