@@ -67,6 +67,7 @@ namespace WinterWorkShop.Cinema.Domain.Services
         public async Task<CreateAuditoriumResultModel> CreateAuditorium(AuditoriumDomainModel domainModel, int numberOfRows, int numberOfSeats)
         {
             var cinema = await _cinemasRepository.GetByIdAsync(domainModel.CinemaId);
+
             if (cinema == null)
             {
                 return new CreateAuditoriumResultModel
