@@ -52,7 +52,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 Id = 1,
                 Name = "Cinema name"
             };
-
         }
 
 

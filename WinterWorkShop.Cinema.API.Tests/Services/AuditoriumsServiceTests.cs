@@ -27,6 +27,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
 
         private AuditoriumDomainModel _auditoriumDomainModel;
         private CinemaDomainModel _cinemaDomainModel;
+        private SeatDomainModel _seatDomainModel;
+        private ProjectionDomainModel _projectionDomainModel;
 
         [TestInitialize]
         public void TestInitialize()
@@ -52,6 +54,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 CinemaId = 1,
                 Name = "Naziv auditoriuma",
                 Cinema = new Data.Cinema { Name = "imeBioskopa" },
+              
                 Seats = new List<Seat>
                 {
                     new Seat
@@ -280,7 +283,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             _mockAuditoriumsRepository.Setup(x => x.GetByAuditName(It.IsAny<string>(), It.IsAny<int>()));
             _mockAuditoriumsRepository.Setup(x => x.Insert(It.IsAny<Auditorium>())).Returns(_auditorium);
 
-            AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object, _seatsRepository.Object, _projectionsRepository.Object);
+            AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object, _mockSeatsRepository.Object, _mockProjectionsRepository.Object);
 
             //Act
             var resultAction = auditoriumController.CreateAuditorium(_auditoriumDomainModel, 1, 1).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -297,7 +300,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
             //Arrange
             Auditorium auditorium = _auditorium;
             Task<Auditorium> responseTask = Task.FromResult(auditorium);
-
+          
             _mockAuditoriumsRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(responseTask);
 
             AuditoriumService auditoriumController = new AuditoriumService(_mockAuditoriumsRepository.Object, _mockCinemasRepository.Object, _seatsRepository.Object, _projectionsRepository.Object);

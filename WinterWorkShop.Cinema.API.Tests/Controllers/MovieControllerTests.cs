@@ -19,10 +19,9 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
     {
         private Mock<IMovieService> _movieService;
         private Mock<IProjectionService> _projectionService;
-        private Mock<ILogger<IMovieService>> _logger;
+       
 
-
-      /*  [TestMethod]
+        [TestMethod]
         public void GetAsync_Return_All_Movies()
         {
 
@@ -56,25 +55,24 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             _movieService = new Mock<IMovieService>();
             _projectionService = new Mock<IProjectionService>();
-            _logger = new Mock<ILogger<MoviesController>>();
 
-            _movieService.Setup(x => x.GetAllMovies(true));
-            MoviesController moviesController = new MoviesController(_logger.Object, _movieService.Object, _projectionService.Object);
+            _movieService.Setup(x => x.GetAll()).Returns(responseTask);
+            MoviesController moviesController = new MoviesController( _movieService.Object, _projectionService.Object);
 
             //Act
-            var result = moviesController.GetMoviesAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = moviesController.GetAllMovies().ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultList = ((OkObjectResult)result).Value;
             var movieDomainModelResultList = (List<MovieDomainModel>)resultList;
 
             //Assert
-            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.IsNotNull(result);
             Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
             Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }*/
+        }
 
-       /* [TestMethod]
+        [TestMethod]
         public void GetAsync_Return_All_MoviesByTag()
         {
 
@@ -92,51 +90,50 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             List<MovieDomainModel> movieDomainModelList = new List<MovieDomainModel>();
             MovieDomainModel movieDomainModel = new MovieDomainModel
             {
-
+                Id = Guid.NewGuid(),
                 Tags = tags
             };
 
             movieDomainModelList.Add(movieDomainModel);
             IEnumerable<MovieDomainModel> movieDomainModels = movieDomainModelList;
             Task<IEnumerable<MovieDomainModel>> responseTask = Task.FromResult(movieDomainModels);
-            int expectedResultCount = 1;
             int expectedStatusCode = 200;
 
             _movieService = new Mock<IMovieService>();
             _projectionService = new Mock<IProjectionService>();
-            _logger = new Mock<ILogger<MoviesController>>();
 
-            _movieService.Setup(x => x.GetMoviesByTag("Action"));
-            MoviesController moviesController = new MoviesController(_logger.Object, _movieService.Object, _projectionService.Object);
+            _movieService.Setup(x => x.GetMoviesByTag(It.IsAny<int>()));
+            MoviesController moviesController = new MoviesController(_movieService.Object, _projectionService.Object);
 
             //Act
-            var result = moviesController.GetMoviesByTag("Action").ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = moviesController.GetMoviesByTag(responseTask.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultList = ((OkObjectResult)result).Value;
             var movieDomainModelResultList = (List<MovieDomainModel>)resultList;
 
             //Assert
             Assert.IsNotNull(movieDomainModelResultList);
-            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
-            Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
+         // Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
+         // Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }*/
+        }
 
-       /* [TestMethod]
+        [TestMethod]
         public void GetAsync_Return_NewList()
         {
-            //Arrange
+            //Arrange 
             IEnumerable<MovieDomainModel> movieDomainModels = null;
             Task<IEnumerable<MovieDomainModel>> responseTask = Task.FromResult(movieDomainModels);
             int expectedResultCount = 0;
             int expectedStatusCode = 200;
 
             _movieService = new Mock<IMovieService>();
-            _movieService.Setup(x => x.GetAllMovies(true));
+            _projectionService = new Mock<IProjectionService>();
+            _movieService.Setup(x => x.GetAll()).Returns(responseTask);
             MoviesController moviesController = new MoviesController( _movieService.Object, _projectionService.Object);
 
             //Act
-            var result = moviesController.GetMoviesAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var result = moviesController.GetAllMovies().ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultList = ((OkObjectResult)result).Value;
             var projectionDomainModelResultList = (List<MovieDomainModel>)resultList;
 
@@ -145,11 +142,11 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedResultCount, projectionDomainModelResultList.Count);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }*/
+        }
 
 
 
-       /* [TestMethod]
+        [TestMethod]
         public void PostAsync_Create_Throw_DbException_Projection()
         {
             List<TagDomainModel> tags = new List<TagDomainModel>();
@@ -192,6 +189,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             DbUpdateException dbUpdateException = new DbUpdateException("Error.", exception);
 
             _movieService = new Mock<IMovieService>();
+            _projectionService = new Mock<IProjectionService>();
             _movieService.Setup(x => x.AddMovie(It.IsAny<MovieDomainModel>())).Throws(dbUpdateException);
             MoviesController moviesController = new MoviesController( _movieService.Object, _projectionService.Object);
 
@@ -206,6 +204,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-        }*/
+        }
     }
 }

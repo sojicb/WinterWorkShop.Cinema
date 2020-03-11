@@ -21,11 +21,9 @@ namespace WinterWorkShop.Cinema.API.Controllers
         private readonly IMovieService _movieService;
         private readonly IProjectionService _projectionService;
 
-        private readonly ILogger<MoviesController> _logger;
-
-        public MoviesController(ILogger<MoviesController> logger, IMovieService movieService, IProjectionService projectionService)
+        public MoviesController( IMovieService movieService, IProjectionService projectionService)
         {
-            _logger = logger;
+            
             _movieService = movieService;
             _projectionService = projectionService;
         }
