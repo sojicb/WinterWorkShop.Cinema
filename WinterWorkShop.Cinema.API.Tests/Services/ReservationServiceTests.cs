@@ -157,17 +157,18 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			_seatReservationService = new Mock<ISeatReservationService>();
 			_seatService = new Mock<ISeatService>();
 
-			IEnumerable<Reservation> allReservations = null;
-			Task<IEnumerable<Reservation>> responseTask = Task.FromResult(allReservations);
+			ReservationDomainModel reservationDomain = null;
+			Reservation reservation = null;
+			Task<Reservation> responseTask = Task.FromResult(reservation);
 
-			_reservationRepository.Setup(x => x.GetAll()).Returns(responseTask);
+			_reservationRepository.Setup(x => x.Insert(It.IsAny<Reservation>())).Returns(responseTask.Result);
 			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
 
 			//Act
-			var resultAction = reservationService.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			var resultAction = reservationService.CreateReservation(reservationDomain).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			//Assert
-			Assert.IsNull(resultAction);
+			Assert.IsFalse(resultAction.IsSuccessful);
 		}
 
 		[TestMethod]

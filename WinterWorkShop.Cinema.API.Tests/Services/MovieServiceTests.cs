@@ -392,7 +392,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			MovieService movieService = new MovieService(_mockMoviesRepository.Object, _movieTagsService.Object, _projectionsRepository.Object);
 
 			//Act
-			var resultAction = movieService.GetMoviesByTag(id).ConfigureAwait(false).GetAwaiter().GetResult();
+			var resultAction = movieService.GetMoviesByTag(id)
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult();
 
 			//Assert
 			Assert.IsNull(resultAction);
@@ -411,7 +414,8 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			{
 				Id = new Guid(),
 				MovieId = new Guid("09796BF4-D4B3-D0F5-0B69-006A5A9AD16B"),
-				DateTime = DateTime.Parse("2023 - 10 - 20 00:07:57.590")
+				DateTime = DateTime.Parse("2023 - 10 - 20 00:07:57.590"),
+				Movie = _movie
 			});
 			
 			List<Movie> movies = new List<Movie>();
@@ -432,7 +436,11 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			MovieService movieService = new MovieService(_mockMoviesRepository.Object, _movieTagsService.Object, _projectionsRepository.Object);
 
 			//Act
-			var resultAction = movieService.GetMoviesWithProjectionsInFuture().ConfigureAwait(false).GetAwaiter().GetResult().ToList();
+			var resultAction = movieService.GetMoviesWithProjectionsInFuture()
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult()
+				.ToList();
 
 			//Assert
 			Assert.IsNotNull(resultAction);
