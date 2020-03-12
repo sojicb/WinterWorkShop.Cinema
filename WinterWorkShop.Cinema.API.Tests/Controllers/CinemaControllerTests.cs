@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WinterWorkShop.Cinema.API.Controllers;
 using WinterWorkShop.Cinema.API.Models;
+using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
 using WinterWorkShop.Cinema.Domain.Models;
 
@@ -186,6 +187,83 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
         }
 
-       
+        //Doradi
+        [TestMethod]
+        public void PutAsync_GetCinemaByIdAsync_Return_UpdatedCinema()
+        {
+            //Arrange
+            CinemaDomainModel cinemaDomainModel = new CinemaDomainModel
+            {
+                Id = 1,
+                Name = "Cinema name"
+            };
+
+            CinemaModels cinemaModels = new CinemaModels
+            {
+                Name = cinemaDomainModel.Name
+            };
+
+            Task<CinemaDomainModel> responseTask = Task.FromResult(cinemaDomainModel);
+            int expectedStatusCode = 202;
+
+            _cinemaService = new Mock<ICinemaService>();
+            _cinemaService.Setup(x => x.GetCinemaByIdAsync(It.IsAny<int>())).Returns(responseTask);
+            _cinemaService.Setup(x => x.UpdateCinema(cinemaDomainModel)).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.Put(cinemaDomainModel.Id, cinemaModels).ConfigureAwait(false).GetAwaiter().GetResult();
+            var resultList = ((AcceptedResult)result).Value;
+            var cinemaDomainModelResultList = (CinemaDomainModel)resultList;
+
+            //Assert
+            Assert.IsNotNull(cinemaDomainModelResultList);
+            Assert.AreEqual(cinemaDomainModel.Id, cinemaDomainModelResultList.Id);
+            Assert.IsInstanceOfType(result, typeof(AcceptedResult));
+            Assert.AreEqual(expectedStatusCode, ((AcceptedResult)result).StatusCode);
+        }
+
+
+        [TestMethod]
+        public void PostAsync_Create_createCinemaResultModel_IsSuccessful_True_Cinema()
+        {
+
+            //Arrange
+            int expectedStatusCode = 201;
+
+            CinemaModels cinemaModel = new CinemaModels()
+            {
+                Name = "Cinema name"
+            };
+
+            CreateCinemaResultModel createCinemaResultModel = new CreateCinemaResultModel()
+            {
+                Cinema = new CinemaDomainModel
+                {
+                   Id = 1,
+                   Name = "Cinema name"
+                },
+
+                IsSuccessful = true
+            };
+
+            Task<CreateCinemaResultModel> responseTask = Task.FromResult(createCinemaResultModel);
+
+            _cinemaService = new Mock<ICinemaService>();
+            _cinemaService.Setup(x => x.AddCinema(It.IsAny<CinemaDomainModel>())).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.Post(cinemaModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            var createResult = ((CreatedResult)result).Value;
+            var auditoriumDomainModel = (CinemaDomainModel)createResult;
+
+            //Assert
+            Assert.IsNotNull(cinemaModel);
+            Assert.AreEqual(cinemaModel.Name, auditoriumDomainModel.Name);
+            Assert.IsInstanceOfType(result, typeof(CreatedResult));
+            Assert.AreEqual(expectedStatusCode, ((CreatedResult)result).StatusCode);
+        }
+
     }
 }

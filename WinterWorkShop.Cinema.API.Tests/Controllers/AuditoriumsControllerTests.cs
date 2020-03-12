@@ -71,7 +71,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(auditoriumDomainModel.Id, auditoriumDomainModelsList[0].Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-
         }
 
 
@@ -119,6 +118,30 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
         [TestMethod]
+        public void GetAsyncById_Return_AuditoriumDoesNotExist()
+        {
+            //Arange
+            int id = 0;
+
+            AuditoriumDomainModel auditoriumDomainModel = null;
+            Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
+            int expectedStatusCode = 404;
+
+            _auditoriumService = new Mock<IAuditoriumService>();
+            _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(id)).Returns(responseTask);
+            AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
+
+            //Act
+            var result = auditoriumsController.GetAsyncById(id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((NotFoundObjectResult)result).StatusCode);
+
+        }
+
+        [TestMethod]
         public void Put_UpdateAuditorium_Return_UpdatedAuditorium()
         {
             //Arange
@@ -149,8 +172,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             };
 
             Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
-            int expectedResultCount = 1;
-            int expectedStatusCode = 200;
+            int expectedStatusCode = 202;
 
             _auditoriumService = new Mock<IAuditoriumService>();
             _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(It.IsAny<int>())).Returns(responseTask);
@@ -159,15 +181,14 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             //Act
             var result = auditoriumsController.Put(auditoriumDomainModel.Id, updateAuditoriumModel).ConfigureAwait(false).GetAwaiter().GetResult();
-            var resultList = ((OkObjectResult)result).Value;
-            var auditoriumsDomainModelResultList = (List<AuditoriumDomainModel>)resultList;
+            var resultList = ((AcceptedResult)result).Value;
+            var auditoriumsDomainModelResultList = (AuditoriumDomainModel)resultList;
 
             //Assert
             Assert.IsNotNull(auditoriumsDomainModelResultList);
-            Assert.AreEqual(expectedResultCount, auditoriumsDomainModelResultList.Count);
-            Assert.AreEqual(auditoriumDomainModel.Id, auditoriumsDomainModelResultList[0].Id);
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+            Assert.AreEqual(auditoriumDomainModel.Id, auditoriumsDomainModelResultList.Id);
+            Assert.IsInstanceOfType(result, typeof(AcceptedResult));
+            Assert.AreEqual(expectedStatusCode, ((AcceptedResult)result).StatusCode);
         }   
 
 
@@ -179,7 +200,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 Id = 1,
                 CinemaId = 1,
                 Name = "Audit name",
-                
             };
 
             Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
@@ -282,7 +302,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(createAuditoriumModel.cinemaId, auditoriumDomainModel.Auditorium.CinemaId);
             Assert.IsInstanceOfType(result, typeof(CreatedResult));
             Assert.AreEqual(expectedStatusCode, ((CreatedResult)result).StatusCode);
-
         }
 
 
@@ -364,8 +383,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                     Id = item.Id,
                     AuditoriumId = item.AuditoriumId
                 });
-            }
-
+            }   
+                
             //Arrange
             string expectedMessage = "Error occured while creating new auditorium, please try again.";
             int expectedStatusCode = 400;
@@ -444,40 +463,5 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
         }
 
-        [TestMethod]
-        public void Delete_DeleteAuditorium_Return_Null()
-        {
-            //Arange
-            List<AuditoriumDomainModel> auditoriumDomainModelsList = new List<AuditoriumDomainModel>();
-            AuditoriumDomainModel auditoriumDomainModel = new AuditoriumDomainModel
-            {
-                Id = 1,
-            };
-
-            auditoriumDomainModelsList.Add(auditoriumDomainModel);
-            IEnumerable<AuditoriumDomainModel> auditoriumDomainModels = auditoriumDomainModelsList;
-            Task<AuditoriumDomainModel> responseTask = Task.FromResult(auditoriumDomainModel);
-
-            int expectedResultCount = 1;
-            int expectedStatusCode = 200;
-
-            _auditoriumService = new Mock<IAuditoriumService>();
-
-            //Proveri DeleteAuditorium u linq
-            _auditoriumService.Setup(x => x.GetAuditoriumByIdAsync(It.IsAny<int>())).Returns(responseTask);
-            AuditoriumsController auditoriumsController = new AuditoriumsController(_auditoriumService.Object);
-
-            //Act
-            var result = auditoriumsController.Delete(auditoriumDomainModel.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-            var resultList = ((OkObjectResult)result).Value;
-            var auditoriumsDomainModelResultList = (List<AuditoriumDomainModel>)resultList;
-
-            //Assert
-            Assert.IsNotNull(auditoriumDomainModelsList);
-            Assert.AreEqual(expectedResultCount, auditoriumDomainModelsList.Count);
-            Assert.AreEqual(auditoriumDomainModel.Id, auditoriumDomainModelsList[0].Id);
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }
     }
 }

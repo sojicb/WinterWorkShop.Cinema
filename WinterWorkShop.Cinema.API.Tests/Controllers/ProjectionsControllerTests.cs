@@ -92,7 +92,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         public void PutAsync_GetProjectionById_Return_UpdatedProjection()
         {
             //Arrange
-            //List<ProjectionDomainModel> projectionsDomainModelsList = new List<ProjectionDomainModel>();
             ProjectionDomainModel projectionDomainModel = new ProjectionDomainModel
             {
                 Id = Guid.NewGuid(),
@@ -110,11 +109,8 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
                 ProjectionTime = projectionDomainModel.ProjectionTime
             };
 
-           // projectionsDomainModelsList.Add(projectionDomainModel);
-            //IEnumerable<ProjectionDomainModel> projectionDomainModels = projectionsDomainModelsList;
             Task<ProjectionDomainModel> responseTask = Task.FromResult(projectionDomainModel);
-            int expectedResultCount = 1;
-            int expectedStatusCode = 200;
+            int expectedStatusCode = 202;
 
             _projectionService = new Mock<IProjectionService>();
             _projectionService.Setup(x => x.GetProjectionByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
@@ -123,15 +119,14 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
             //Act
             var result = projectionsController.Put(projectionDomainModel.Id, updateProjectionModel).ConfigureAwait(false).GetAwaiter().GetResult();
-            var resultList = ((OkObjectResult)result).Value;
-            var projectionDomainModelResultList = (List<ProjectionDomainModel>)resultList;
+            var resultList = ((AcceptedResult)result).Value;
+            var projectionDomainModelResultList = (ProjectionDomainModel)resultList;
 
             //Assert
             Assert.IsNotNull(projectionDomainModelResultList);
-            Assert.AreEqual(expectedResultCount, projectionDomainModelResultList.Count);
-            Assert.AreEqual(projectionDomainModel.Id, projectionDomainModelResultList[0].Id);
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+            Assert.AreEqual(projectionDomainModel.Id, projectionDomainModelResultList.Id);
+            Assert.IsInstanceOfType(result, typeof(AcceptedResult));
+            Assert.AreEqual(expectedStatusCode, ((AcceptedResult)result).StatusCode);
         }
 
 
@@ -246,7 +241,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             _projectionService = new Mock<IProjectionService>();
             _projectionService.Setup(x => x.CreateProjection(It.IsAny<ProjectionDomainModel>())).Throws(dbUpdateException);
             ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
-
+                
             //Act
             var result = projectionsController.PostAsync(createProjectionModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultResponse = (BadRequestObjectResult)result;
