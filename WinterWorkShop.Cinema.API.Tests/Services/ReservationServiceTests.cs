@@ -17,19 +17,36 @@ namespace WinterWorkShop.Cinema.Tests.Services
 	[TestClass]
 	public class ReservationServiceTests
 	{
-		private Mock<IReservationRepository> _reservationRepository;
-		private Mock<IProjectionService> _projectionService;
-		private Mock<ISeatReservationService> _seatReservationService;
-		private Mock<ISeatService> _seatService;
+		private Mock<IReservationRepository> _reservationRepository = new Mock<IReservationRepository>();
+		private Mock<IProjectionService> _projectionService = new Mock<IProjectionService>();
+		private Mock<ISeatReservationService> _seatReservationService = new Mock<ISeatReservationService>();
+		private Mock<ISeatService> _seatService = new Mock<ISeatService>();
 		private Reservation _reservation;
 		private Projection _projection;
 		private ReservationDomainModel _reservationDomain;
 		private CreateReservationResultModel _createReservation;
 		private SeatReservationDomainModel _seat;
+		private ValidateSeatDomainModel _seatValidation;
+		private SeatValidationDomainModel _seatValidationDomain;
 
 		[TestInitialize]
 		public void TestInitializre()
 		{
+			_seatValidationDomain = new SeatValidationDomainModel
+			{
+				AuditoriumId = 1,
+				ProjectionTime = DateTime.Parse("2021-02-28 23:00:00.000"),
+				SeatIds = new List<Guid>
+				{
+					new Guid()
+				}
+			};
+
+			_seatValidation = new ValidateSeatDomainModel
+			{
+				ErrorMessage = null,
+				IsSuccessful = true
+			};
 
 			_projection = new Projection()
 			{
@@ -39,12 +56,26 @@ namespace WinterWorkShop.Cinema.Tests.Services
 				AuditoriumId = 3
 			};
 
+			SeatReservation seatReservation = new SeatReservation
+			{
+				Seat = new Seat
+				{
+					Id = new Guid(),
+					AuditoriumId = 1,
+					Number = 1,
+					Row = 1
+				}
+			};
+
 			_reservation = new Reservation
 			{
-				Id = Guid.NewGuid(),
-				ProjectionId = Guid.NewGuid(),
-				UserId = Guid.NewGuid()
+				Id = new Guid("99B00556-D669-444B-37DE-08D7C50563B8"),
+				ProjectionId = new Guid("1827EE4B-56FA-4D50-5B51-08D7C40EEB04"),
+				UserId = new Guid("206F083A-1080-4EA3-92E4-62105C33FCB9"),
+				SeatReservation = new List<SeatReservation> { seatReservation}
 			};
+
+			
 
 			_reservationDomain = new ReservationDomainModel
 			{
@@ -73,39 +104,9 @@ namespace WinterWorkShop.Cinema.Tests.Services
 		}
 
 		[TestMethod]
-		public void ReservationService_GetAllAsync_ReturnsReservations()
-		{
-			//Arrange
-			_reservationRepository = new Mock<IReservationRepository>();
-			_projectionService = new Mock<IProjectionService>();
-			_seatReservationService = new Mock<ISeatReservationService>();
-			_seatService = new Mock<ISeatService>();
-			int expectedResult = 1;
-			List<Reservation> reservations = new List<Reservation>();
-			reservations.Add(_reservation);
-			IEnumerable<Reservation> allReservations = reservations;
-			Task<IEnumerable<Reservation>> responseTask = Task.FromResult(allReservations);
-
-			_reservationRepository.Setup(x => x.GetAll()).Returns(responseTask);
-			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
-
-			//Act
-			var resultAction = reservationService.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult().ToList();
-
-			//Assert
-			Assert.IsNotNull(resultAction);
-			Assert.AreEqual(resultAction.Count, expectedResult);
-		}
-
-		[TestMethod]
 		public void ReservationService_GetAllAsync_InsertedNull_ReturnsNull()
 		{
 			//Arrange
-			_reservationRepository = new Mock<IReservationRepository>();
-			_projectionService = new Mock<IProjectionService>();
-			_seatReservationService = new Mock<ISeatReservationService>();
-			_seatService = new Mock<ISeatService>();
-			
 			IEnumerable<Reservation> allReservations = null;
 			Task<IEnumerable<Reservation>> responseTask = Task.FromResult(allReservations);
 
@@ -113,7 +114,10 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
 
 			//Act
-			var resultAction = reservationService.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			var resultAction = reservationService.GetAllAsync()
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult();
 
 			//Assert
 			Assert.IsNull(resultAction);
@@ -123,10 +127,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
 		public void ReservationService_CreateReservation_ReturnReservation()
 		{
 			//Arrange
-			_reservationRepository = new Mock<IReservationRepository>();
-			_projectionService = new Mock<IProjectionService>();
-			_seatReservationService = new Mock<ISeatReservationService>();
-			_seatService = new Mock<ISeatService>();
 			List<SeatReservationDomainModel> seatReservationDomainModels = new List<SeatReservationDomainModel>();
 			seatReservationDomainModels.Add(_seat);
 			IEnumerable<SeatReservationDomainModel> seatReservation = seatReservationDomainModels;
@@ -135,12 +135,16 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			Reservation reservation = _reservation;
 			Task<Reservation> responseTask = Task.FromResult(reservation);
 
-			_reservationRepository.Setup(x => x.Insert(reservation)).Returns(responseTask.Result);
+
+			_reservationRepository.Setup(x => x.Insert(It.IsAny<Reservation>())).Returns(responseTask.Result);
 			_seatReservationService.Setup(x => x.InsertResevedSeats(It.IsAny<InsertSeatReservationModel>())).Returns(response);
 			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
-			//SeatReservationService seatReservationService = new SeatReservationService(_seatReservationService, _)
+
 			//Act
-			var resultAction = reservationService.CreateReservation(_reservationDomain).ConfigureAwait(false).GetAwaiter().GetResult();
+			var resultAction = reservationService.CreateReservation(_reservationDomain)
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult();
 
 			//Assert
 			Assert.IsNotNull(resultAction);
@@ -152,12 +156,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
 		public void ReservationService_CreateReservation_InsertedNull_ReturnReservationCreationError()
 		{
 			//Arrange
-			_reservationRepository = new Mock<IReservationRepository>();
-			_projectionService = new Mock<IProjectionService>();
-			_seatReservationService = new Mock<ISeatReservationService>();
-			_seatService = new Mock<ISeatService>();
-
-			ReservationDomainModel reservationDomain = null;
+			string message = "Error occurred while creating new reservation, please try again.";
 			Reservation reservation = null;
 			Task<Reservation> responseTask = Task.FromResult(reservation);
 
@@ -165,31 +164,62 @@ namespace WinterWorkShop.Cinema.Tests.Services
 			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
 
 			//Act
-			var resultAction = reservationService.CreateReservation(reservationDomain).ConfigureAwait(false).GetAwaiter().GetResult();
+			var resultAction = reservationService
+				.CreateReservation(_reservationDomain)
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult();
 
 			//Assert
 			Assert.IsFalse(resultAction.IsSuccessful);
+			Assert.AreEqual(resultAction.ErrorMessage, message);
 		}
 
 		[TestMethod]
 		public void ReservationService_CreateReservation_InsertedWrongSeatScheme_ReturnSeatReservationError() {
+
 			//Arrange
-			_reservationRepository = new Mock<IReservationRepository>();
-			_projectionService = new Mock<IProjectionService>();
-			_seatReservationService = new Mock<ISeatReservationService>();
-			_seatService = new Mock<ISeatService>();
+			string message = "Error occurred while reserving seats, please try again.";
+			Reservation allReservations = _reservation;
+			Task<Reservation> responseTask = Task.FromResult(allReservations);
 
-			IEnumerable<Reservation> allReservations = null;
-			Task<IEnumerable<Reservation>> responseTask = Task.FromResult(allReservations);
+			IEnumerable<SeatReservationDomainModel> insertSeats = null;
+			Task<IEnumerable<SeatReservationDomainModel>> response = Task.FromResult(insertSeats);
 
-			_reservationRepository.Setup(x => x.GetAll()).Returns(responseTask);
+			_reservationRepository.Setup(x => x.Insert(It.IsAny<Reservation>())).Returns(responseTask.Result);
+			_seatReservationService.Setup(x => x.InsertResevedSeats(It.IsAny<InsertSeatReservationModel>())).Returns(response);
 			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
 
 			//Act
-			var resultAction = reservationService.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			var resultAction = reservationService.CreateReservation(_reservationDomain).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			//Assert
-			Assert.IsNull(resultAction);
+			Assert.IsFalse(resultAction.IsSuccessful);
+			Assert.AreEqual(resultAction.ErrorMessage, message);
+		}
+
+		[TestMethod]
+		public void ReservationService_HandleSeatValidation_InsertedWrongSeatScheme_ReturnErrorMessage()
+		{
+
+			//Arrange
+			string message = "Error occurred while reserving seats, please try again.";
+			Reservation allReservations = _reservation;
+			Task<Reservation> responseTask = Task.FromResult(allReservations);
+
+			IEnumerable<SeatReservationDomainModel> insertSeats = null;
+			Task<IEnumerable<SeatReservationDomainModel>> response = Task.FromResult(insertSeats);
+
+			_reservationRepository.Setup(x => x.Insert(It.IsAny<Reservation>())).Returns(responseTask.Result);
+			_seatReservationService.Setup(x => x.InsertResevedSeats(It.IsAny<InsertSeatReservationModel>())).Returns(response);
+			ReservationService reservationService = new ReservationService(_reservationRepository.Object, _projectionService.Object, _seatReservationService.Object, _seatService.Object);
+
+			//Act
+			var resultAction = reservationService.CreateReservation(_reservationDomain).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			//Assert
+			Assert.IsFalse(resultAction.IsSuccessful);
+			Assert.AreEqual(resultAction.ErrorMessage, message);
 		}
 	}
 }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using WinterWorkShop.Cinema.Data;
 using WinterWorkShop.Cinema.Data.Entities;
 using WinterWorkShop.Cinema.Domain.Common;
 using WinterWorkShop.Cinema.Domain.Interfaces;
@@ -15,13 +13,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 	public class SeatReservationService : ISeatReservationService
 	{
 		private readonly ISeatReservationRepository _seatReservationRepository;
-		private readonly IAuditoriumsRepository _auditoriumsRepository;
 		private readonly ISeatsRepository _seatRepository;
 
-		public SeatReservationService(ISeatReservationRepository seatReservationRepository, IAuditoriumsRepository auditoriumsRepository, ISeatsRepository seatRepository)
+		public SeatReservationService(ISeatReservationRepository seatReservationRepository, ISeatsRepository seatRepository)
 		{
 			_seatReservationRepository = seatReservationRepository;
-			_auditoriumsRepository = auditoriumsRepository;
 			_seatRepository = seatRepository;
 		}
 
@@ -140,6 +136,11 @@ namespace WinterWorkShop.Cinema.Domain.Services
 
 			var seatsData = _seatRepository.GetAll().Result.Where(x => model.SeatIds.Contains(x.Id)).ToList();
 
+			if(seatsData == null)
+			{
+				return null;
+			}
+
 			foreach(var seat in seatsData)
 			{
 				seats.Add(new SeatDomainModel
@@ -210,7 +211,17 @@ namespace WinterWorkShop.Cinema.Domain.Services
 		{
 			var reserved = _seatReservationRepository.GetAll().Result.Where(x => x.ProjectionTime.Equals(projectionTime)).Select(x => x.SeatId).ToList();
 
+			if(reserved.Count == 0)
+			{
+				return null;
+			}
+
 			var data = _seatRepository.GetSeatsByAuditoriumId(auditoriumId).Result.Where(x => reserved.Contains(x.Id));
+
+			if(reserved.Count== 0)
+			{
+				return null;
+			}
 
 			List<SeatDomainModel> seats = new List<SeatDomainModel>();
 
