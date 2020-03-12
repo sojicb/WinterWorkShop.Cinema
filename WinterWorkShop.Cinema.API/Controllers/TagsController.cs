@@ -53,7 +53,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("get/{id}")]
-        public async Task<ActionResult<TagDomainModel>> GetAsync(int id)
+        public async Task<ActionResult<TagDomainModel>> GetByIdAsync(int id)
         {
             TagDomainModel movieTags;
 
