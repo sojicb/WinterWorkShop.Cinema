@@ -74,53 +74,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
         [TestMethod]
-        public void GetAsync_Return_All_MoviesByTag()
-        {
-
-            List<TagDomainModel> tags = new List<TagDomainModel>();
-            foreach (var item in tags)
-            {
-                tags.Add(new TagDomainModel
-                {
-                    Id = 1,
-                    value = "Action"
-                });
-            }
-
-            //Arrange
-            List<MovieDomainModel> movieDomainModelList = new List<MovieDomainModel>();
-            MovieDomainModel movieDomainModel = new MovieDomainModel
-            {
-                Id = Guid.NewGuid(),
-                Tags = tags
-            };
-
-            movieDomainModelList.Add(movieDomainModel);
-            IEnumerable<MovieDomainModel> movieDomainModels = movieDomainModelList;
-            Task<IEnumerable<MovieDomainModel>> responseTask = Task.FromResult(movieDomainModels);
-            int expectedResultCount = 1;
-            int expectedStatusCode = 200;
-
-            _movieService = new Mock<IMovieService>();
-            _projectionService = new Mock<IProjectionService>();
-
-            _movieService.Setup(x => x.GetMoviesByTag(It.IsAny<int>()));
-            MoviesController moviesController = new MoviesController(_movieService.Object, _projectionService.Object);
-
-            //Act
-            var result = moviesController.GetMoviesByTag(responseTask.Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
-            var resultList = ((OkObjectResult)result).Value;
-            var movieDomainModelResultList = (List<MovieDomainModel>)resultList;
-
-            //Assert
-            Assert.IsNotNull(movieDomainModelResultList);
-            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
-            Assert.AreEqual(movieDomainModel.Id, movieDomainModelResultList[0].Id);
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
-        }
-
-        [TestMethod]
         public void GetAsync_Return_NewList()
         {
             //Arrange 
@@ -255,52 +208,5 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((CreatedResult)result).StatusCode);
         }
 
-        [TestMethod]
-        public void PostAsync_Create_createMovieResultModel_IsSuccessful_False_Movie()
-        {
-            //Arrange
-            string expectedMessage = "Error occured while creating new movie, please try again.";
-            int expectedStatusCode = 400;
-
-            MovieModel movieModel = new MovieModel()
-            {
-               Title = "Movie title",
-               Rating = 9,
-               Year = 2015,
-               Current = true
-            };
-
-            CreateMovieResultModel createMovieResultModel = new CreateMovieResultModel()
-            {
-                Movie = new MovieDomainModel
-                {
-                    Id = Guid.NewGuid(),
-                    Title = movieModel.Title,
-                    Rating = movieModel.Rating,
-                    Year = movieModel.Year,
-                    Current = movieModel.Current
-                },
-                IsSuccessful = false,
-                ErrorMessage = Messages.MOVIE_CREATION_ERROR
-            };
-            Task<CreateMovieResultModel> responseTask = Task.FromResult(createMovieResultModel);
-
-            _movieService = new Mock<IMovieService>();
-            _projectionService = new Mock<IProjectionService>();
-            _movieService.Setup(x => x.AddMovie(It.IsAny<MovieDomainModel>())).Returns(responseTask);
-            MoviesController moviesController = new MoviesController(_movieService.Object, _projectionService.Object);
-
-            //Act
-            var result = moviesController.Post(movieModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
-            var resultResponse = (BadRequestObjectResult)result;
-            var badObjectResult = ((BadRequestObjectResult)result).Value;
-            var errorResult = (ErrorResponseModel)badObjectResult;
-
-            //Assert
-            Assert.IsNotNull(resultResponse);
-            Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-            Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-        }
     }
 }

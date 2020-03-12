@@ -214,7 +214,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
 
                 return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, errorResponse);
             }
-
+            
             return Accepted("projections//" + deleteProjection.Id, deleteProjection);
         }
 

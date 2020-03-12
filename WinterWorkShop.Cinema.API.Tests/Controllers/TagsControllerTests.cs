@@ -195,50 +195,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
 
 
         [TestMethod]
-        public void PostAsync_Create_crateTagResultModel_IsSuccessful_False_Return_BadRequest()
-        {
-            //Arrange
-            string expectedMessage = "Error occured while creating new tag, please try again";
-            int expectedStatusCode = 400;
-
-            TagModel tagModel = new TagModel()
-            {
-                Id = 1,
-                Value = "Naziv taga"
-            };
-
-            CreateTagResultModel createTagResultModel = new CreateTagResultModel
-            {
-                Tag = new TagDomainModel
-                {
-                    Id = tagModel.Id,
-                    value = tagModel.Value
-                },
-                IsSuccessful = false,
-                ErrorMessage = Messages.TAG_CREATION_ERROR,
-            };
-
-            Task<CreateTagResultModel> responseTask = Task.FromResult(createTagResultModel);
-
-            _tagService = new Mock<ITagService>();
-            _tagService.Setup(x => x.AddTag(It.IsAny<TagDomainModel>())).Returns(responseTask);
-            TagsController tagsController = new TagsController(_tagService.Object);
-
-            //Act
-            var result = tagsController.Post(tagModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
-            var resultResponse = (BadRequestObjectResult)result;
-            var badObjectResult = ((BadRequestObjectResult)result).Value;
-            var errorResult = (ErrorResponseModel)badObjectResult;
-
-            //Assert
-            Assert.IsNotNull(resultResponse);
-            Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-            Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-        }
-
-
-        [TestMethod]
         public void PostAsync_With_UnValid_ModelState_Return_BadRequest()
         {
             //Arrange

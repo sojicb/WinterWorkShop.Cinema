@@ -265,49 +265,5 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((CreatedResult)result).StatusCode);
         }
 
-
-        [TestMethod]
-        public void PostAsync_Create_createCinemaResultModel_IsSuccessful_False_Cinema()
-        {
-            //Arrange
-            string expectedMessage = "Error occured while creating new cinema, please try again.";
-            int expectedStatusCode = 400;
-
-            CinemaModels cinemaModel = new CinemaModels()
-            {
-                Name = "Cinema name"
-            };
-
-            CreateCinemaResultModel createCinemaResultModel = new CreateCinemaResultModel()
-            {
-                Cinema = new CinemaDomainModel
-                {
-                    Id = 1,
-                    Name = cinemaModel.Name
-                },
-
-                IsSuccessful = false,
-                ErrorMessage = Messages.CINEMA_CREATION_ERROR
-            };
-            Task<CreateCinemaResultModel> responseTask = Task.FromResult(createCinemaResultModel);
-
-            _cinemaService = new Mock<ICinemaService>();
-            _cinemaService.Setup(x => x.AddCinema(It.IsAny<CinemaDomainModel>())).Returns(responseTask);
-            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
-
-            //Act
-            var result = cinemasController.Post(cinemaModel).ConfigureAwait(false).GetAwaiter().GetResult();
-            var resultResponse = (BadRequestObjectResult)result;
-            var badObjectResult = ((BadRequestObjectResult)result).Value;
-            var errorResult = (ErrorResponseModel)badObjectResult;
-
-            //Assert
-            Assert.IsNotNull(resultResponse);
-            Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-            Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
-        }
-
-
     }
 }
