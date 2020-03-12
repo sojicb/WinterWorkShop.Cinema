@@ -241,7 +241,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             _projectionService = new Mock<IProjectionService>();
             _projectionService.Setup(x => x.CreateProjection(It.IsAny<ProjectionDomainModel>())).Throws(dbUpdateException);
             ProjectionsController projectionsController = new ProjectionsController(_projectionService.Object);
-
+                
             //Act
             var result = projectionsController.PostAsync(createProjectionModel).ConfigureAwait(false).GetAwaiter().GetResult().Result;
             var resultResponse = (BadRequestObjectResult)result;
