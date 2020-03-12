@@ -125,11 +125,6 @@ namespace WinterWorkShop.Cinema.Domain.Services
 			return reservations;
 		}
 
-		public Task<ReservationDomainModel> GetByIdAsync(Guid id)
-		{
-			throw new NotImplementedException();
-		}
-
 		public async Task<ValidateSeatDomainModel> HandleSeatValidation(ReservationDomainModel reservationDomain)
 		{
 			SeatValidationDomainModel model = new SeatValidationDomainModel

@@ -45,9 +45,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 });
             }
 
-
-
-            //Doradi
             _auditorium = new Auditorium
             {
                 Id = 1,

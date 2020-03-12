@@ -16,7 +16,7 @@ namespace WinterWorkShop.Cinema.Tests.Services
     [TestClass]
     public class UserServiceTests
     {
-        private Mock<IUsersRepository> _mockUsersRepository;
+        private Mock<IUsersRepository> _mockUsersRepository = new Mock<IUsersRepository>();
         private User _user;
         private UserDomainModel _userDomainModel;
 
@@ -40,15 +40,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
                 UserName = "User name",
                 IsAdmin = false
             };
-
-            List<User> userModelList = new List<User>();
-
-            userModelList.Add(_user);
-            IEnumerable<User> users = userModelList;
-            Task<IEnumerable<User>> responseTask = Task.FromResult(users);
-
-            _mockUsersRepository = new Mock<IUsersRepository>();
-            _mockUsersRepository.Setup(x => x.GetAll()).Returns(responseTask);
         }
 
         [TestMethod]
@@ -56,6 +47,13 @@ namespace WinterWorkShop.Cinema.Tests.Services
         {
             //Arrange
             int expectedResultCount = 1;
+            List<User> userModelList = new List<User>();
+
+            userModelList.Add(_user);
+            IEnumerable<User> users = userModelList;
+            Task<IEnumerable<User>> responseTask = Task.FromResult(users);
+
+            _mockUsersRepository.Setup(x => x.GetAll()).Returns(responseTask);
             UserService usersController = new UserService(_mockUsersRepository.Object);
             //Act
             var resultAction = usersController.GetAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -75,7 +73,6 @@ namespace WinterWorkShop.Cinema.Tests.Services
             IEnumerable<User> users = null;
             Task<IEnumerable<User>> responseTask = Task.FromResult(users);
 
-            _mockUsersRepository = new Mock<IUsersRepository>();
             _mockUsersRepository.Setup(x => x.GetAll()).Returns(responseTask);
             UserService usersController = new UserService(_mockUsersRepository.Object);
 
@@ -86,7 +83,75 @@ namespace WinterWorkShop.Cinema.Tests.Services
             Assert.IsNull(resultAction);
         }
 
-       
+        [TestMethod]
+        public void UserService_GetUserByIdAsync_ReturnUser()
+        {
+            //Arrange
+            User user = _user;
+            Task<User> responseTask = Task.FromResult(user);
+
+            _mockUsersRepository.Setup(x => x.GetByIdAsync(responseTask.Result.Id)).Returns(responseTask);
+            UserService usersController = new UserService(_mockUsersRepository.Object);
+
+            //Act
+            var resultAction = usersController.GetUserByIdAsync(_user.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(responseTask.Result.Id, resultAction.Id);
+        }
+
+        [TestMethod]
+        public void UserService_GetUserByIdAsync_InsertedMockedNull_ReturnNull()
+        {
+            //Arrange
+            User user = null;
+            Task<User> responseTask = Task.FromResult(user);
+
+            _mockUsersRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).Returns(responseTask);
+            UserService usersController = new UserService(_mockUsersRepository.Object);
+
+            //Act
+            var resultAction = usersController.GetUserByIdAsync(_user.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+        }
+
+        [TestMethod]
+        public void UserService_GetUserByUsernameAsync_ReturnUser()
+        {
+            //Arrange
+            User user = _user;
+            Task<User> responseTask = Task.FromResult(user);
+
+            _mockUsersRepository.Setup(x => x.GetByUserName(responseTask.Result.UserName)).Returns(responseTask.Result);
+            UserService usersController = new UserService(_mockUsersRepository.Object);
+
+            //Act
+            var resultAction = usersController.GetUserByUserName(_user.UserName).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(resultAction);
+            Assert.AreEqual(responseTask.Result.Id, resultAction.Id);
+        }
+
+        [TestMethod]
+        public void UserService_GetUserByUsernameAsync_InsertedMockedNull_ReturnNull()
+        {
+            //Arrange
+            User user = null;
+            Task<User> responseTask = Task.FromResult(user);
+
+            _mockUsersRepository.Setup(x => x.GetByUserName(It.IsAny<string>())).Returns(responseTask.Result);
+            UserService usersController = new UserService(_mockUsersRepository.Object);
+
+            //Act
+            var resultAction = usersController.GetUserByUserName(_user.UserName).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNull(resultAction);
+        }
 
     }
 }
