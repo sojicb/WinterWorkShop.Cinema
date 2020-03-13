@@ -78,7 +78,7 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
         [TestMethod]
-        public void TagsConrtoller_GetByIdAsync_ReturnsTag()
+        public void GetByIdAsync_Returns_Tag()
         {
             //Arrange
             List<TagDomainModel> tagDomainModelsList = new List<TagDomainModel>();
@@ -107,7 +107,54 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
-        
+
+        [TestMethod]
+        public void TagsConrtoller_GetByIdAsync_ReturnTagNotFound()
+        {
+
+            //Arrange
+            int Id = 1;
+
+            TagDomainModel tagDomainModel = null;
+            Task<TagDomainModel> responseTask = Task.FromResult(tagDomainModel);
+            int expectedStatusCode = 404;
+
+            _tagService.Setup(x => x.GetTagByIdAsync(Id)).Returns(responseTask);
+            TagsController tagsController = new TagsController(_tagService.Object);
+
+            //Act
+            var result = tagsController.GetByIdAsync(Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((NotFoundObjectResult)result).StatusCode);
+        }
+
+
+        [TestMethod]
+        public void UsersConrtoller_GetAsync_ReturnNull()
+        {
+            //Arrange
+            IEnumerable<TagDomainModel> tagDomainModels = null;
+            Task<IEnumerable<TagDomainModel>> responseTask = Task.FromResult(tagDomainModels);
+            int expectedResultCount = 0;
+            int expectedStatusCode = 200;
+
+            _tagService.Setup(x => x.GetAllAsync()).Returns(responseTask);
+            TagsController tagsController = new TagsController(_tagService.Object);
+
+            //Act
+            var result = tagsController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var tagDomainModelResultList = (List<TagDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(tagDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, tagDomainModelResultList.Count);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
 
         [TestMethod]
         public void PostAsync_Create_createTagResultModel_IsSuccessful_True_Tag()

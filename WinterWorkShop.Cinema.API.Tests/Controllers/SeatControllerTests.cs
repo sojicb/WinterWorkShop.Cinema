@@ -57,6 +57,32 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
         }
 
         [TestMethod]
+        public void GetAsync_Return_Null()
+        {
+            //Arrange
+            IEnumerable<SeatDomainModel> seatDomainModels = null;
+            Task<IEnumerable<SeatDomainModel>> responseTask = Task.FromResult(seatDomainModels);
+            int expectedResultCount = 0;
+            int expectedStatusCode = 200;
+
+            _seatService = new Mock<ISeatService>();
+            _seatService.Setup(x => x.GetAllAsync()).Returns(responseTask);
+            SeatsController seatsController = new SeatsController(_seatService.Object, _seatReservationService.Object);
+
+            //Act
+            var result = seatsController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var seatDomainModelResultList = (List<SeatDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(seatDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, seatDomainModelResultList.Count);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
+
+
+        [TestMethod]
         public void GetAsync_Return_NewList()
         {
             //Arrange
