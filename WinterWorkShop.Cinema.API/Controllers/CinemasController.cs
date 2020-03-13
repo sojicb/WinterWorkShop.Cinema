@@ -152,7 +152,7 @@ namespace WinterWorkShop.Cinema.API.Controllers
                 return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, error);
             }
 
-            if(deleteCinemaModel.Cinema == null)
+            if(deleteCinemaModel == null)
             {
                 ErrorResponseModel errorResponse = new ErrorResponseModel
                 {
