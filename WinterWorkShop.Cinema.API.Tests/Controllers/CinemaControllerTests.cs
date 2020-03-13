@@ -17,7 +17,47 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
     [TestClass]
     public class CinemaControllerTests
     {
-        private Mock<ICinemaService> _cinemaService;
+        private Mock<ICinemaService> _cinemaService = new Mock<ICinemaService>();
+        private CinemaModels _model;
+        private CinemaDomainModel _domainModel;
+        private DeleteCinemaDomainModel _deleteCinema;
+        private DeleteCinemaDomainModel _deletedCinema;
+        private DeleteCinemaDomainModel _deletedCinemaError;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            _domainModel = new CinemaDomainModel
+            {
+                Id = 1,
+                Name = "CinemaProba",
+            };
+
+            _model = new CinemaModels
+            {
+                Name = "Proba"
+            };
+
+            _deleteCinema = new DeleteCinemaDomainModel
+            {
+                ErrorMessage = "Cinema cannot be deleted due to projections in the future",
+                IsSuccessful = false
+            };
+
+            _deletedCinema = new DeleteCinemaDomainModel
+            {
+                Cinema = _domainModel,
+                ErrorMessage = null,
+                IsSuccessful = true
+            };
+
+            _deletedCinemaError = new DeleteCinemaDomainModel
+            {
+                Cinema = null,
+                ErrorMessage = null,
+                IsSuccessful = true
+            };
+        }
 
         [TestMethod]
         public void GetAsync_Return_All_Cinemas()
@@ -36,7 +76,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             int expectedResultCount = 1;
             int expectedStatusCode = 200;
 
-            _cinemaService = new Mock<ICinemaService>();
             _cinemaService.Setup(x => x.GetAllAsync()).Returns(responseTask);
             CinemasController cinemasController = new CinemasController(_cinemaService.Object);
 
@@ -68,7 +107,6 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Task<CinemaDomainModel> responseTask = Task.FromResult(cinemaDomainModel);
             int expectedStatusCode = 200;
 
-            _cinemaService = new Mock<ICinemaService>();
             _cinemaService.Setup(x => x.GetCinemaByIdAsync(It.IsAny<int>())).Returns(responseTask);
             CinemasController cinemasController = new CinemasController(_cinemaService.Object);
 
@@ -82,6 +120,27 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(cinemaDomainModel.Id, cinemaDomainModelResultList.Id);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void CinemaCotroller_GetAsyncById_InsertedNUll_ReturnsNull()
+        {
+            //Arrange
+            int id = 1;
+            int expectedStatusCode = 404;
+            CinemaDomainModel cinemaModel = null;
+            Task<CinemaDomainModel> responseTask = Task.FromResult(cinemaModel);
+
+            _cinemaService.Setup(x => x.GetCinemaByIdAsync(It.IsAny<int>())).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.GetAsyncById(id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultModel = ((NotFoundObjectResult)result);
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual(expectedStatusCode, resultModel.StatusCode);
         }
 
 
@@ -263,6 +322,79 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(cinemaModel.Name, auditoriumDomainModel.Name);
             Assert.IsInstanceOfType(result, typeof(CreatedResult));
             Assert.AreEqual(expectedStatusCode, ((CreatedResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void CinemaCotroller_Delete_ReturnsDeletedCinema()
+        {
+            //Arrange
+            DeleteCinemaDomainModel cinemaModel = _deletedCinema;
+            Task<DeleteCinemaDomainModel> responseTask = Task.FromResult(cinemaModel);
+
+            _cinemaService.Setup(x => x.DeleteCinema(responseTask.Result.Cinema.Id)).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.Delete(responseTask.Result.Cinema.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(AcceptedResult));
+
+        }
+
+        [TestMethod]
+        public void CinemaCotroller_Delete_InsertNull_ReturnsBadRequest()
+        {
+            //Arrange
+            string expectedMessage = "Inner exception error message.";
+            int id = 1;
+            int expectedStatusCode = 400;
+            DeleteCinemaDomainModel cinemaModel = null;
+            Task<DeleteCinemaDomainModel> responseTask = Task.FromResult(cinemaModel);
+            Exception exception = new Exception("Inner exception error message.");
+            DbUpdateException dbUpdateException = new DbUpdateException("Error.", exception);
+
+            _cinemaService.Setup(x => x.DeleteCinema(It.IsAny<int>())).Throws(dbUpdateException);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.Delete(id).ConfigureAwait(false).GetAwaiter().GetResult();
+            var resultResponse = (BadRequestObjectResult)result;
+            var badObjectResult = ((BadRequestObjectResult)result).Value;
+            var errorResult = (ErrorResponseModel)badObjectResult;
+
+            //Assert
+            Assert.IsNotNull(resultResponse);
+            Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
+        }
+
+        [TestMethod]
+        public void CinemaCotroller_Delete_InsertNull_ReturnsException_CinemaNotFound()
+        {
+            //Arrange
+            string expectedMessage = "Cinema does not exist.";
+            int id = 1;
+            int expectedStatusCode = 500;
+            DeleteCinemaDomainModel cinemaModel = _deletedCinemaError;
+            Task<DeleteCinemaDomainModel> responseTask = Task.FromResult(cinemaModel);
+
+
+            _cinemaService.Setup(x => x.DeleteCinema(id)).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.Delete(id).ConfigureAwait(false).GetAwaiter().GetResult();
+            var resultResponse = (ObjectResult)result;
+            var badObjectResult = ((ObjectResult)result).Value;
+            var errorResult = (ErrorResponseModel)badObjectResult;
+
+            //Assert
+            Assert.IsNotNull(resultResponse);
+            Assert.AreEqual(expectedMessage, errorResult.ErrorMessage);
+            Assert.AreEqual(expectedStatusCode, resultResponse.StatusCode);
         }
 
     }
