@@ -169,6 +169,54 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
+        [TestMethod]
+        public void GetByIdAsync_Return_CinemaNotFound()
+        {
+
+            //Arrange
+            int Id = 1;
+
+            CinemaDomainModel cinemaDomainModel = null;
+            Task<CinemaDomainModel> responseTask = Task.FromResult(cinemaDomainModel);
+            int expectedStatusCode = 404;
+
+            _cinemaService = new Mock<ICinemaService>();
+            _cinemaService.Setup(x => x.GetCinemaByIdAsync(Id)).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.GetAsyncById(Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((NotFoundObjectResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void GetAsync_Return_Null()
+        {
+            //Arrange
+            IEnumerable<CinemaDomainModel> cinemaDomainModels = null;
+            Task<IEnumerable<CinemaDomainModel>> responseTask = Task.FromResult(cinemaDomainModels);
+            int expectedResultCount = 0;
+            int expectedStatusCode = 200;
+
+            _cinemaService = new Mock<ICinemaService>();
+            _cinemaService.Setup(x => x.GetAllAsync()).Returns(responseTask);
+            CinemasController cinemasController = new CinemasController(_cinemaService.Object);
+
+            //Act
+            var result = cinemasController.GetAsync().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var cinemaDomainModelResultList = (List<CinemaDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(cinemaDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, cinemaDomainModelResultList.Count);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
 
         [TestMethod]
         public void PostAsync_Create_Throw_DbExcpetion()

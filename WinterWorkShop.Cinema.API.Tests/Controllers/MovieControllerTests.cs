@@ -99,6 +99,56 @@ namespace WinterWorkShop.Cinema.Tests.Controllers
             Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
         }
 
+        [TestMethod]
+        public void GetAllMovies_Return_Null()
+        {
+            //Arrange
+            IEnumerable<MovieDomainModel> movieDomainModels = null;
+            Task<IEnumerable<MovieDomainModel>> responseTask = Task.FromResult(movieDomainModels);
+            int expectedResultCount = 0;
+            int expectedStatusCode = 200;
+
+            _movieService = new Mock<IMovieService>();
+            _projectionService = new Mock<IProjectionService>();
+            _movieService.Setup(x => x.GetAll()).Returns(responseTask);
+            MoviesController moviesController = new MoviesController(_movieService.Object, _projectionService.Object);
+
+            //Act
+            var result = moviesController.GetAllMovies().ConfigureAwait(false).GetAwaiter().GetResult().Result;
+            var resultList = ((OkObjectResult)result).Value;
+            var movieDomainModelResultList = (List<MovieDomainModel>)resultList;
+
+            //Assert
+            Assert.IsNotNull(movieDomainModelResultList);
+            Assert.AreEqual(expectedResultCount, movieDomainModelResultList.Count);
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((OkObjectResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void UsersConrtoller_GetByUsernameAsync_ReturnUserNotFound()
+        {
+            //Arrange
+            Guid Id = Guid.NewGuid();
+
+            MovieDomainModel movieDomainModels = null;
+            Task<MovieDomainModel> responseTask = Task.FromResult(movieDomainModels);
+            int expectedStatusCode = 404;
+
+            _movieService = new Mock<IMovieService>();
+            _projectionService = new Mock<IProjectionService>();
+            _movieService.Setup(x => x.GetMovieByIdAsync(Id)).Returns(responseTask);
+            MoviesController moviesController = new MoviesController(_movieService.Object, _projectionService.Object);
+
+            //Act
+            var result = moviesController.GetAsync(Id).ConfigureAwait(false).GetAwaiter().GetResult().Result;
+
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual(expectedStatusCode, ((NotFoundObjectResult)result).StatusCode);
+        }
 
 
         [TestMethod]
